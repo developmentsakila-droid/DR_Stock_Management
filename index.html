@@ -509,30 +509,24 @@
           .then(res => res.json())
           .then(data => {
             if (data.found) {
-              itemCodeInput.value = data.itemCode || '';
-              itemNameInput.value = data.itemName || '';
-
-              itemCodeInput.setAttribute('readonly', 'readonly');
-              itemNameInput.setAttribute('readonly', 'readonly');
-              
-              addBtn.disabled = true; 
-              submitBtn.disabled = false; // ENABLE SUBMIT STOCK ONLY WHEN FOUND!
-
-              statusDiv.className = 'success';
-              statusDiv.innerText = 'Item found!';
-            } else {
-              itemCodeInput.value = '';
-              itemNameInput.value = '';
-
-              itemCodeInput.removeAttribute('readonly');
-              itemNameInput.removeAttribute('readonly');
-              
-              addBtn.disabled = false; 
-              submitBtn.disabled = true; // DISABLE SUBMIT STOCK WHEN ITEM IS NOT FOUND!
-
-              statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
-            }
+  itemCodeInput.value = data.itemCode || '';
+  itemNameInput.value = data.itemName || '';
+  itemCodeInput.setAttribute('readonly', 'readonly');
+  itemNameInput.setAttribute('readonly', 'readonly');
+  addBtn.disabled = true; 
+  submitBtn.disabled = false; // Enables submit when found
+  statusDiv.className = 'success';
+  statusDiv.innerText = 'Item found!';
+} else {
+  itemCodeInput.value = '';
+  itemNameInput.value = '';
+  itemCodeInput.removeAttribute('readonly');
+  itemNameInput.removeAttribute('readonly');
+  addBtn.disabled = false; 
+  submitBtn.disabled = true; // Disables submit when item is missing
+  statusDiv.className = 'warning';
+  statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
+}
           })
           .catch(() => {
             statusDiv.className = '';
@@ -581,12 +575,11 @@
       .then(res => res.json())
       .then(response => {
         if (response.status === "success") {
-          statusDiv.className = 'success';
-          statusDiv.innerText = 'Saved! Searching again...';
-
-          // AUTOMATICALLY RE-SEARCH AFTER NEW ITEM IS SAVED
-          fetchItemDetails(barcode);
-        } else {
+  statusDiv.className = 'success';
+  statusDiv.innerText = 'Saved! Searching again...';
+  fetchItemDetails(barcode); // Auto-searches to lock fields & enable Submit
+}
+        else {
           addBtn.disabled = false;
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + response.message;
