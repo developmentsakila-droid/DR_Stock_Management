@@ -259,7 +259,7 @@
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching Sheet2...';
+        statusDiv.innerText = 'Searching....';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
@@ -268,12 +268,12 @@
               itemNameInput.value = data.itemName;
               itemNameInput.setAttribute('readonly', 'readonly'); // Lock if found
               statusDiv.className = 'success';
-              statusDiv.innerText = 'Item found in Sheet2!';
+              statusDiv.innerText = 'Item founded';
             } else {
               itemNameInput.value = '';
               itemNameInput.removeAttribute('readonly'); // Unlock to allow typing a new name!
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode! Type an Item Name and click "Add / Edit Item in Sheet2".';
+              statusDiv.innerText = 'New barcode! Type an Item Name and click +".';
             }
           })
           .catch(() => {
@@ -298,14 +298,14 @@
 
       if (!itemName) {
         statusDiv.className = 'error';
-        statusDiv.innerText = 'Please type an Item Name to save to Sheet2.';
+        statusDiv.innerText = 'Please type an Item Name.';
         document.getElementById('itemName').focus();
         return;
       }
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving to Sheet2...';
+      statusDiv.innerText = 'Saving...';
 
       const payload = {
         action: 'addNewItem',
