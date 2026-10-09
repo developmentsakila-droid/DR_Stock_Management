@@ -149,7 +149,7 @@
 
   <form id="stockForm">
     <label for="barcode">Barcode:</label>
-    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
+    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" readonly>
 
     <label for="itemName">Item Name:</label>
     <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly>
@@ -161,7 +161,7 @@
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
 
     <!-- Add/Edit Master Database Item in Sheet2 -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)">+ Add / Edit Item in Sheet2 2</button>
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)">+ Add / Edit Item</button>
   </form>
 
   <div id="status"></div>
