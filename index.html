@@ -262,7 +262,7 @@
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching Sheet2...';
+        statusDiv.innerText = 'Searching....';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
@@ -274,7 +274,7 @@
               addBtn.disabled = true; 
 
               statusDiv.className = 'success';
-              statusDiv.innerText = 'Item found in Sheet2!';
+              statusDiv.innerText = 'Item founded!';
             } else {
               // BARCODE IS NEW: Unlock name input and ENABLE "Add New Item" button
               itemNameInput.value = '';
