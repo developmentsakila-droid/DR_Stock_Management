@@ -137,7 +137,7 @@
         <input type="text" id="scannerName" placeholder="e.g. John / Device 1">
       </div>
       <div class="col">
-        <label for="position">Position / Shelf:</label>
+        <label for="position">Position:</label>
         <input type="text" id="position" placeholder="e.g. Aisle 2, Bin 4">
       </div>
     </div>
@@ -149,26 +149,26 @@
 
   <form id="stockForm">
     <label for="barcode">Barcode:</label>
-    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" readonly>
+    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
     <label for="itemName">Item Name:</label>
     <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly>
 
     <label for="quantity">Quantity to Add:</label>
-    <input type="number" id="quantity" value="" min="0" required>
+    <input type="number" id="quantity" value="1" min="1" required>
 
     <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
 
-    <!-- Add/Edit Master Database Item in Sheet2 -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)">+ Add / Edit Item</button>
+    <!-- Add Item Button (Disabled by default, active ONLY for NEW barcodes) -->
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item</button>
   </form>
 
   <div id="status"></div>
 
   <script>
     // Paste your Google Apps Script Web App Deployment URL here
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK4N6CsuUBPf7Yvb_pL_NEfUvFxx-xKf8xRBqwRU1FGudM1qLO2-gu-gFf7RJZPe3s/exec';
+    const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
 
     let html5QrCode = null;
     let isCameraActive = false;
@@ -250,30 +250,39 @@
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
       let itemNameInput = document.getElementById('itemName');
+      let addBtn = document.getElementById('addNewItemBtn');
 
       if (!barcode.trim()) {
         itemNameInput.value = '';
-        itemNameInput.removeAttribute('readonly'); // Allow typing if empty
+        itemNameInput.setAttribute('readonly', 'readonly');
+        addBtn.disabled = true; // Disable button when barcode is empty
+        statusDiv.innerText = '';
         return;
       }
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching....';
+        statusDiv.innerText = 'Searching Sheet2...';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
           .then(data => {
             if (data.found && data.itemName) {
+              // BARCODE EXISTS: Lock name input and DISABLE "Add New Item" button
               itemNameInput.value = data.itemName;
-              itemNameInput.setAttribute('readonly', 'readonly'); // Lock if found
+              itemNameInput.setAttribute('readonly', 'readonly');
+              addBtn.disabled = true; 
+
               statusDiv.className = 'success';
-              statusDiv.innerText = 'Item founded';
+              statusDiv.innerText = 'Item found in Sheet2!';
             } else {
+              // BARCODE IS NEW: Unlock name input and ENABLE "Add New Item" button
               itemNameInput.value = '';
-              itemNameInput.removeAttribute('readonly'); // Unlock to allow typing a new name!
+              itemNameInput.removeAttribute('readonly');
+              addBtn.disabled = false; 
+
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode! Type an Item Name and click +".';
+              statusDiv.innerText = 'New barcode detected! Type item name.';
             }
           })
           .catch(() => {
@@ -283,7 +292,7 @@
       }, 300);
     }
 
-    // Add or Update Item in Sheet2 with Duplicate Handling
+    // Add New Item to Sheet2
     function addNewItemToSheet2(allowOverwrite = false) {
       let barcode = document.getElementById('barcode').value.trim();
       let itemName = document.getElementById('itemName').value.trim();
@@ -298,14 +307,14 @@
 
       if (!itemName) {
         statusDiv.className = 'error';
-        statusDiv.innerText = 'Please type an Item Name.';
+        statusDiv.innerText = 'Please type an Item Name to save to Sheet2.';
         document.getElementById('itemName').focus();
         return;
       }
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving...';
+      statusDiv.innerText = 'Saving....';
 
       const payload = {
         action: 'addNewItem',
@@ -321,22 +330,13 @@
       })
       .then(res => res.json())
       .then(response => {
-        addBtn.disabled = false;
-
-        if (response.status === "duplicate") {
-          // Ask for user confirmation to edit
-          let confirmEdit = confirm(`${response.message}\n\nClick OK to OVERWRITE with "${itemName}", or CANCEL to keep the existing name.`);
-          if (confirmEdit) {
-            addNewItemToSheet2(true); // Call again with allowOverwrite = true
-          } else {
-            statusDiv.className = 'warning';
-            statusDiv.innerText = 'Update cancelled.';
-          }
-        } else if (response.status === "success") {
+        if (response.status === "success") {
           statusDiv.className = 'success';
           statusDiv.innerText = response.message;
           document.getElementById('itemName').setAttribute('readonly', 'readonly');
+          addBtn.disabled = true; // Lock button again once added!
         } else {
+          addBtn.disabled = false;
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + response.message;
         }
@@ -357,6 +357,7 @@
       let position = document.getElementById('position').value;
       let statusDiv = document.getElementById('status');
       let btn = document.getElementById('submitBtn');
+      let addBtn = document.getElementById('addNewItemBtn');
 
       if (!barcode || !quantity) {
         statusDiv.className = 'error';
@@ -387,13 +388,14 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Clear Barcode and Item Name, reset Quantity
+        // Reset inputs
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
         btn.disabled = false;
+        addBtn.disabled = true; // Keep Add button disabled after submit
       })
       .catch(err => {
         statusDiv.className = 'error';
