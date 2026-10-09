@@ -107,7 +107,7 @@
 </head>
 <body>
 
-  <h2>Warehouse Stock Count</h2>
+  <h2>Dreamron Warehouse Stock Count</h2>
 
   <!-- Persistent Header Info -->
   <div class="top-info">
@@ -117,7 +117,7 @@
         <input type="text" id="scannerName" placeholder="e.g. John / Device 1">
       </div>
       <div class="col">
-        <label for="position">Position / Shelf:</label>
+        <label for="position">Position:</label>
         <input type="text" id="position" placeholder="e.g. Aisle 2, Bin 4">
       </div>
     </div>
@@ -131,8 +131,8 @@
     <label for="barcode">Barcode:</label>
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
-    <label for="itemName">Item Name:</label>
-    <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2">
+<label for="itemName">Item Name:</label>
+<input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly style="background-color: #e9ecef; cursor: not-allowed;">
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
