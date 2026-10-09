@@ -58,14 +58,27 @@
 
     #reader {
       width: 100%;
-      min-height: 250px;
-      background-color: #000;
+      min-height: 200px;
+      background-color: #222;
       border-radius: 6px;
       overflow: hidden;
       margin-bottom: 15px;
+      display: none; /* Hidden until camera is turned on */
     }
 
-    button {
+    .btn-camera {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .btn-submit {
       width: 100%;
       background-color: #28a745;
       color: white;
@@ -96,7 +109,7 @@
 
   <h2>Warehouse Stock Count</h2>
 
-  <!-- Top Info: Scanner Name and Position -->
+  <!-- Top Info: Persistent Scanner Name and Position -->
   <div class="top-info">
     <div class="row">
       <div class="col">
@@ -110,7 +123,10 @@
     </div>
   </div>
 
-  <!-- Camera Viewport -->
+  <!-- Toggle Camera Button -->
+  <button type="button" id="camBtn" class="btn-camera" onclick="toggleCamera()">Turn Camera ON</button>
+
+  <!-- Camera Viewport Container -->
   <div id="reader"></div>
 
   <form id="stockForm">
@@ -118,46 +134,75 @@
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
     <label for="itemName">Item Name:</label>
-    <input type="text" id="itemName" placeholder="Auto-fetches after barcode scan">
+    <input type="text" id="itemName" placeholder="Auto-fetches item name">
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
 
-    <button type="button" id="submitBtn" onclick="submitData()">Submit Stock</button>
+    <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
   </form>
 
   <div id="status"></div>
 
   <script>
     // Paste your Google Apps Script Web App Deployment URL here
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKWCiSsV0FZ5oyQ1Tm5T9SobwsHLOUws8LtUTds-3oOTJZC-BSGLa_ooDyLdqr1ZWE/exec';
+    const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
 
-    let html5QrCode;
+    let html5QrCode = null;
+    let isCameraActive = false;
     let debounceTimer;
 
-    function startRearCameraScanner() {
-      html5QrCode = new Html5Qrcode("reader");
+    function toggleCamera() {
+      const camBtn = document.getElementById('camBtn');
+      const readerDiv = document.getElementById('reader');
 
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 150 }
-      };
+      if (!isCameraActive) {
+        readerDiv.style.display = 'block';
+        html5QrCode = new Html5Qrcode("reader");
 
-      // Forces back camera automatically using facingMode: "environment"
-      html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        onScanSuccess,
-        onScanError
-      ).catch(err => {
-        console.warn("Rear camera init failed, falling back:", err);
-      });
+        const config = {
+          fps: 10,
+          qrbox: { width: 250, height: 150 }
+        };
+
+        // Always uses rear environment camera
+        html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          onScanSuccess,
+          onScanError
+        ).then(() => {
+          isCameraActive = true;
+          camBtn.innerText = "Turn Camera OFF";
+          camBtn.style.backgroundColor = "#dc3545"; // Red color when active
+        }).catch(err => {
+          alert("Error starting camera: " + err);
+          readerDiv.style.display = 'none';
+        });
+      } else {
+        stopCamera();
+      }
+    }
+
+    function stopCamera() {
+      const camBtn = document.getElementById('camBtn');
+      const readerDiv = document.getElementById('reader');
+
+      if (html5QrCode && isCameraActive) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+          isCameraActive = false;
+          readerDiv.style.display = 'none';
+          camBtn.innerText = "Turn Camera ON";
+          camBtn.style.backgroundColor = "#007bff"; // Blue color when inactive
+        }).catch(err => console.log(err));
+      }
     }
 
     function onScanSuccess(decodedText) {
       document.getElementById('barcode').value = decodedText;
 
-      // Beep sound feedback
+      // Audio feedback
       try {
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let osc = audioCtx.createOscillator();
@@ -166,12 +211,15 @@
         osc.stop(audioCtx.currentTime + 0.1);
       } catch (e) {}
 
-      // Automatically fetch item name when scanned
+      // 1. Fetch Item Name automatically
       fetchItemName(decodedText);
+
+      // 2. Automatically focus on Quantity input for easy typing
+      document.getElementById('quantity').select();
     }
 
     function onScanError(error) {
-      // Quiet background failure handling while frame scanning
+      // Quiet handler during background frame parsing
     }
 
     // Auto-fetches Item Name from Google Sheets
@@ -197,6 +245,7 @@
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
+              itemNameInput.value = '';
               statusDiv.className = '';
               statusDiv.innerText = 'New item barcode detected.';
             }
@@ -205,7 +254,7 @@
             statusDiv.className = '';
             statusDiv.innerText = '';
           });
-      }, 400); // Debounce to prevent unnecessary hits while typing manually
+      }, 300);
     }
 
     function submitData() {
@@ -245,10 +294,12 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Reset inputs while keeping scanner name and position active
+        // Clears ONLY Barcode, Item Name, and resets Quantity to 1
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('quantity').value = '1';
+
+        // NOTE: Scanner Name and Position are NOT cleared.
         btn.disabled = false;
       })
       .catch(err => {
@@ -257,8 +308,6 @@
         btn.disabled = false;
       });
     }
-
-    window.onload = startRearCameraScanner;
   </script>
 </body>
 </html>
