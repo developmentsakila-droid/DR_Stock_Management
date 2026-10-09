@@ -149,10 +149,18 @@
 
   <form id="stockForm">
     <label for="barcode">Barcode:</label>
-    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
+    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
 
-    <label for="itemName">Item Name:</label>
-    <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly>
+    <div class="row">
+      <div class="col">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
+      </div>
+      <div class="col">
+        <label for="itemCode">Item Code:</label>
+        <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
+      </div>
+    </div>
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
@@ -160,8 +168,8 @@
     <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
 
-    <!-- Add Item Button (Disabled by default, active ONLY for NEW barcodes) -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item</button>
+    <!-- Add Item Button (Active ONLY for NEW barcodes) -->
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2()" disabled>+ Add New Item</button>
   </form>
 
   <div id="status"></div>
@@ -227,7 +235,6 @@
     function onScanSuccess(decodedText) {
       document.getElementById('barcode').value = decodedText;
 
-      // Audio Beep
       try {
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let osc = audioCtx.createOscillator();
@@ -237,52 +244,59 @@
       } catch (e) {}
 
       stopCamera();
-      fetchItemName(decodedText);
+      fetchItemDetails(decodedText);
       document.getElementById('quantity').select();
     }
 
-    function onScanError(error) {
-      // Quiet handler during frame scan
-    }
+    function onScanError(error) {}
 
-    // Fetch Item Name from Sheet2
-    function fetchItemName(barcode) {
+    // Fetch Item Name AND Item Code from Sheet2
+    function fetchItemDetails(barcode) {
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
       let itemNameInput = document.getElementById('itemName');
+      let itemCodeInput = document.getElementById('itemCode');
       let addBtn = document.getElementById('addNewItemBtn');
 
       if (!barcode.trim()) {
         itemNameInput.value = '';
+        itemCodeInput.value = '';
         itemNameInput.setAttribute('readonly', 'readonly');
-        addBtn.disabled = true; // Disable button when barcode is empty
+        itemCodeInput.setAttribute('readonly', 'readonly');
+        addBtn.disabled = true;
         statusDiv.innerText = '';
         return;
       }
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching....';
+        statusDiv.innerText = 'Searching...';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
           .then(data => {
-            if (data.found && data.itemName) {
-              // BARCODE EXISTS: Lock name input and DISABLE "Add New Item" button
-              itemNameInput.value = data.itemName;
+            if (data.found) {
+              // BARCODE EXISTS: Populate, lock fields, and DISABLE "+ Add New Item" button
+              itemNameInput.value = data.itemName || '';
+              itemCodeInput.value = data.itemCode || '';
+
               itemNameInput.setAttribute('readonly', 'readonly');
+              itemCodeInput.setAttribute('readonly', 'readonly');
               addBtn.disabled = true; 
 
               statusDiv.className = 'success';
-              statusDiv.innerText = 'Item founded!';
+              statusDiv.innerText = 'Item found!';
             } else {
-              // BARCODE IS NEW: Unlock name input and ENABLE "Add New Item" button
+              // BARCODE IS NEW: Clear, unlock both fields, and ENABLE "+ Add New Item" button
               itemNameInput.value = '';
+              itemCodeInput.value = '';
+
               itemNameInput.removeAttribute('readonly');
+              itemCodeInput.removeAttribute('readonly');
               addBtn.disabled = false; 
 
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode detected! Type item name';
+              statusDiv.innerText = 'New barcode detected! Type Item Name & Code';
             }
           })
           .catch(() => {
@@ -292,10 +306,11 @@
       }, 300);
     }
 
-    // Add New Item to Sheet2
-    function addNewItemToSheet2(allowOverwrite = false) {
+    // Save New Item Name & Item Code to Sheet2
+    function addNewItemToSheet2() {
       let barcode = document.getElementById('barcode').value.trim();
       let itemName = document.getElementById('itemName').value.trim();
+      let itemCode = document.getElementById('itemCode').value.trim();
       let statusDiv = document.getElementById('status');
       let addBtn = document.getElementById('addNewItemBtn');
 
@@ -314,13 +329,13 @@
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving.....';
+      statusDiv.innerText = 'Saving...';
 
       const payload = {
         action: 'addNewItem',
         barcode: barcode,
         itemName: itemName,
-        allowOverwrite: allowOverwrite
+        itemCode: itemCode
       };
 
       fetch(SCRIPT_URL, {
@@ -333,8 +348,11 @@
         if (response.status === "success") {
           statusDiv.className = 'success';
           statusDiv.innerText = response.message;
+
+          // Lock fields and disable button after saving
           document.getElementById('itemName').setAttribute('readonly', 'readonly');
-          addBtn.disabled = true; // Lock button again once added!
+          document.getElementById('itemCode').setAttribute('readonly', 'readonly');
+          addBtn.disabled = true;
         } else {
           addBtn.disabled = false;
           statusDiv.className = 'error';
@@ -353,6 +371,7 @@
       let barcode = document.getElementById('barcode').value;
       let quantity = document.getElementById('quantity').value;
       let itemName = document.getElementById('itemName').value;
+      let itemCode = document.getElementById('itemCode').value;
       let scannerName = document.getElementById('scannerName').value;
       let position = document.getElementById('position').value;
       let statusDiv = document.getElementById('status');
@@ -374,6 +393,7 @@
         barcode: barcode,
         quantity: quantity,
         itemName: itemName,
+        itemCode: itemCode,
         scannerName: scannerName,
         position: position
       };
@@ -391,11 +411,13 @@
         // Reset inputs
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
+        document.getElementById('itemCode').value = '';
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
+        document.getElementById('itemCode').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
         btn.disabled = false;
-        addBtn.disabled = true; // Keep Add button disabled after submit
+        addBtn.disabled = true;
       })
       .catch(err => {
         statusDiv.className = 'error';
@@ -404,6 +426,7 @@
       });
     }
   </script>
+  <br>
   <label for="Name">Developed By HSDP</label>
 </body>
 </html>
