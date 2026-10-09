@@ -342,8 +342,8 @@
       </div>
     </div>
 
-    <!-- Stock Submission -->
-    <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">
+    <!-- Stock Submission (DISABLED BY DEFAULT, ENABLED ONLY WHEN ITEM IS FOUND) -->
+    <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()" disabled>
       <!-- Checkmark Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       Submit Stock
@@ -488,6 +488,7 @@
       let itemCodeInput = document.getElementById('itemCode');
       let itemNameInput = document.getElementById('itemName');
       let addBtn = document.getElementById('addNewItemBtn');
+      let submitBtn = document.getElementById('submitBtn');
 
       if (!barcode.trim()) {
         itemCodeInput.value = '';
@@ -495,13 +496,14 @@
         itemCodeInput.setAttribute('readonly', 'readonly');
         itemNameInput.setAttribute('readonly', 'readonly');
         addBtn.disabled = true;
+        submitBtn.disabled = true; // Disable submit if barcode is empty
         statusDiv.innerText = '';
         return;
       }
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching....';
+        statusDiv.innerText = 'Searching Sheet2...';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
@@ -512,7 +514,9 @@
 
               itemCodeInput.setAttribute('readonly', 'readonly');
               itemNameInput.setAttribute('readonly', 'readonly');
+              
               addBtn.disabled = true; 
+              submitBtn.disabled = false; // ENABLE SUBMIT STOCK ONLY WHEN FOUND!
 
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
@@ -522,7 +526,9 @@
 
               itemCodeInput.removeAttribute('readonly');
               itemNameInput.removeAttribute('readonly');
+              
               addBtn.disabled = false; 
+              submitBtn.disabled = true; // DISABLE SUBMIT STOCK WHEN ITEM IS NOT FOUND!
 
               statusDiv.className = 'warning';
               statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
@@ -531,6 +537,7 @@
           .catch(() => {
             statusDiv.className = '';
             statusDiv.innerText = '';
+            submitBtn.disabled = true;
           });
       }, 300);
     }
@@ -557,7 +564,7 @@
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving....';
+      statusDiv.innerText = 'Saving to Sheet2...';
 
       const payload = {
         action: 'addNewItem',
@@ -575,11 +582,10 @@
       .then(response => {
         if (response.status === "success") {
           statusDiv.className = 'success';
-          statusDiv.innerText = response.message;
+          statusDiv.innerText = 'Saved! Searching again...';
 
-          document.getElementById('itemCode').setAttribute('readonly', 'readonly');
-          document.getElementById('itemName').setAttribute('readonly', 'readonly');
-          addBtn.disabled = true;
+          // AUTOMATICALLY RE-SEARCH AFTER NEW ITEM IS SAVED
+          fetchItemDetails(barcode);
         } else {
           addBtn.disabled = false;
           statusDiv.className = 'error';
@@ -642,7 +648,7 @@
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
-        btn.disabled = false;
+        btn.disabled = true; // Lock Submit again until next valid item is scanned
         addBtn.disabled = true;
       })
       .catch(err => {
