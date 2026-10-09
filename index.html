@@ -62,6 +62,90 @@
       cursor: not-allowed;
     }
 
+    /* Quantity Input + Calculator Group */
+    .qty-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .qty-group input {
+      margin: 0;
+    }
+
+    .btn-calc-toggle {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      height: 41px;
+    }
+
+    /* Calculator Box Styling */
+    .calc-box {
+      display: none;
+      background: #ffffff;
+      border: 1px solid #007bff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .calc-display {
+      font-size: 16px;
+      font-weight: bold;
+      text-align: right;
+      padding: 8px;
+      background-color: #f1f3f5;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      min-height: 20px;
+      color: #212529;
+    }
+
+    .calc-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+
+    .calc-btn {
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #e9ecef;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .calc-btn:active {
+      background: #ced4da;
+    }
+
+    .calc-btn-op {
+      background: #ffc107;
+    }
+
+    .calc-btn-apply {
+      background: #28a745;
+      color: white;
+      grid-column: span 2;
+    }
+
+    .calc-btn-clear {
+      background: #dc3545;
+      color: white;
+    }
+
     #reader {
       width: 100%;
       min-height: 200px;
@@ -93,7 +177,7 @@
       border-radius: 4px;
       font-size: 18px;
       cursor: pointer;
-      margin-top: 5px;
+      margin-top: 15px;
     }
 
     .btn-add-item {
@@ -162,8 +246,37 @@
       </div>
     </div>
 
+    <!-- Quantity Label & Field with Calculator Toggle -->
     <label for="quantity">Quantity to Add:</label>
-    <input type="number" id="quantity" value="1" min="1" required>
+    <div class="qty-group">
+      <input type="number" id="quantity" value="1" min="1" required>
+      <button type="button" class="btn-calc-toggle" onclick="toggleCalculator()" title="Open Quantity Calculator">🧮</button>
+    </div>
+
+    <!-- Inline Quantity Calculator Box -->
+    <div id="calcBox" class="calc-box">
+      <div id="calcDisplay" class="calc-display">0</div>
+      <div class="calc-buttons">
+        <button type="button" class="calc-btn" onclick="calcInput('7')">7</button>
+        <button type="button" class="calc-btn" onclick="calcInput('8')">8</button>
+        <button type="button" class="calc-btn" onclick="calcInput('9')">9</button>
+        <button type="button" class="calc-btn calc-btn-op" onclick="calcInput('+')">+</button>
+
+        <button type="button" class="calc-btn" onclick="calcInput('4')">4</button>
+        <button type="button" class="calc-btn" onclick="calcInput('5')">5</button>
+        <button type="button" class="calc-btn" onclick="calcInput('6')">6</button>
+        <button type="button" class="calc-btn calc-btn-op" onclick="calcInput('-')">-</button>
+
+        <button type="button" class="calc-btn" onclick="calcInput('1')">1</button>
+        <button type="button" class="calc-btn" onclick="calcInput('2')">2</button>
+        <button type="button" class="calc-btn" onclick="calcInput('3')">3</button>
+        <button type="button" class="calc-btn calc-btn-clear" onclick="calcClear()">C</button>
+
+        <button type="button" class="calc-btn" onclick="calcInput('0')">0</button>
+        <button type="button" class="calc-btn calc-btn-op" onclick="calcEquals()">=</button>
+        <button type="button" class="calc-btn calc-btn-apply" onclick="calcApply()">Apply Qty</button>
+      </div>
+    </div>
 
     <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
@@ -181,6 +294,51 @@
     let html5QrCode = null;
     let isCameraActive = false;
     let debounceTimer;
+
+    // Quantity Calculator State Variables
+    let calcExpr = "";
+
+    function toggleCalculator() {
+      const calcBox = document.getElementById('calcBox');
+      if (calcBox.style.display === 'block') {
+        calcBox.style.display = 'none';
+      } else {
+        calcBox.style.display = 'block';
+        calcClear();
+      }
+    }
+
+    function calcInput(val) {
+      calcExpr += val;
+      document.getElementById('calcDisplay').innerText = calcExpr;
+    }
+
+    function calcClear() {
+      calcExpr = "";
+      document.getElementById('calcDisplay').innerText = "0";
+    }
+
+    function calcEquals() {
+      try {
+        if (!calcExpr) return;
+        // Safely evaluate simple mathematical expressions (+ and -)
+        let result = Function('"use strict"; return (' + calcExpr + ')')();
+        calcExpr = String(result);
+        document.getElementById('calcDisplay').innerText = calcExpr;
+      } catch (e) {
+        document.getElementById('calcDisplay').innerText = "Error";
+        calcExpr = "";
+      }
+    }
+
+    function calcApply() {
+      calcEquals();
+      let finalVal = parseInt(calcExpr, 10);
+      if (!isNaN(finalVal) && finalVal > 0) {
+        document.getElementById('quantity').value = finalVal;
+      }
+      document.getElementById('calcBox').style.display = 'none';
+    }
 
     function toggleCamera() {
       if (!isCameraActive) {
@@ -250,7 +408,6 @@
 
     function onScanError(error) {}
 
-    // Fetch Item Code AND Item Name from Sheet2
     function fetchItemDetails(barcode) {
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
@@ -270,13 +427,12 @@
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching Sheet2...';
+        statusDiv.innerText = 'Searching....';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
           .then(data => {
             if (data.found) {
-              // BARCODE EXISTS: Auto-fill, lock inputs, and DISABLE "+ Add New Item" button
               itemCodeInput.value = data.itemCode || '';
               itemNameInput.value = data.itemName || '';
 
@@ -287,7 +443,6 @@
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
-              // BARCODE IS NEW: Clear, unlock both fields, and ENABLE "+ Add New Item" button
               itemCodeInput.value = '';
               itemNameInput.value = '';
 
@@ -306,7 +461,6 @@
       }, 300);
     }
 
-    // Save New Item Code & Item Name to Sheet2
     function addNewItemToSheet2() {
       let barcode = document.getElementById('barcode').value.trim();
       let itemCode = document.getElementById('itemCode').value.trim();
@@ -329,7 +483,7 @@
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving to Sheet2...';
+      statusDiv.innerText = 'Saving....';
 
       const payload = {
         action: 'addNewItem',
@@ -349,7 +503,6 @@
           statusDiv.className = 'success';
           statusDiv.innerText = response.message;
 
-          // Lock fields and disable button after saving
           document.getElementById('itemCode').setAttribute('readonly', 'readonly');
           document.getElementById('itemName').setAttribute('readonly', 'readonly');
           addBtn.disabled = true;
@@ -366,7 +519,6 @@
       });
     }
 
-    // Submit Stock Entry to Sheet1
     function submitData() {
       let barcode = document.getElementById('barcode').value;
       let quantity = document.getElementById('quantity').value;
