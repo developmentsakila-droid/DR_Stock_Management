@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warehouse Stock Counter</title>
+  <title>Dreamron Warehouse Stock Counter</title>
   <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -153,12 +153,12 @@
 
     <div class="row">
       <div class="col">
-        <label for="itemName">Item Name:</label>
-        <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
-      </div>
-      <div class="col">
         <label for="itemCode">Item Code:</label>
         <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
+      </div>
+      <div class="col">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
       </div>
     </div>
 
@@ -250,19 +250,19 @@
 
     function onScanError(error) {}
 
-    // Fetch Item Name AND Item Code from Sheet2
+    // Fetch Item Code AND Item Name from Sheet2
     function fetchItemDetails(barcode) {
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
-      let itemNameInput = document.getElementById('itemName');
       let itemCodeInput = document.getElementById('itemCode');
+      let itemNameInput = document.getElementById('itemName');
       let addBtn = document.getElementById('addNewItemBtn');
 
       if (!barcode.trim()) {
-        itemNameInput.value = '';
         itemCodeInput.value = '';
-        itemNameInput.setAttribute('readonly', 'readonly');
+        itemNameInput.value = '';
         itemCodeInput.setAttribute('readonly', 'readonly');
+        itemNameInput.setAttribute('readonly', 'readonly');
         addBtn.disabled = true;
         statusDiv.innerText = '';
         return;
@@ -270,33 +270,33 @@
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching...';
+        statusDiv.innerText = 'Searching Sheet2...';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
           .then(data => {
             if (data.found) {
-              // BARCODE EXISTS: Populate, lock fields, and DISABLE "+ Add New Item" button
-              itemNameInput.value = data.itemName || '';
+              // BARCODE EXISTS: Auto-fill, lock inputs, and DISABLE "+ Add New Item" button
               itemCodeInput.value = data.itemCode || '';
+              itemNameInput.value = data.itemName || '';
 
-              itemNameInput.setAttribute('readonly', 'readonly');
               itemCodeInput.setAttribute('readonly', 'readonly');
+              itemNameInput.setAttribute('readonly', 'readonly');
               addBtn.disabled = true; 
 
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
               // BARCODE IS NEW: Clear, unlock both fields, and ENABLE "+ Add New Item" button
-              itemNameInput.value = '';
               itemCodeInput.value = '';
+              itemNameInput.value = '';
 
-              itemNameInput.removeAttribute('readonly');
               itemCodeInput.removeAttribute('readonly');
+              itemNameInput.removeAttribute('readonly');
               addBtn.disabled = false; 
 
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode detected! Type Item Name & Code';
+              statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
             }
           })
           .catch(() => {
@@ -306,11 +306,11 @@
       }, 300);
     }
 
-    // Save New Item Name & Item Code to Sheet2
+    // Save New Item Code & Item Name to Sheet2
     function addNewItemToSheet2() {
       let barcode = document.getElementById('barcode').value.trim();
-      let itemName = document.getElementById('itemName').value.trim();
       let itemCode = document.getElementById('itemCode').value.trim();
+      let itemName = document.getElementById('itemName').value.trim();
       let statusDiv = document.getElementById('status');
       let addBtn = document.getElementById('addNewItemBtn');
 
@@ -329,13 +329,13 @@
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving...';
+      statusDiv.innerText = 'Saving to Sheet2...';
 
       const payload = {
         action: 'addNewItem',
         barcode: barcode,
-        itemName: itemName,
-        itemCode: itemCode
+        itemCode: itemCode,
+        itemName: itemName
       };
 
       fetch(SCRIPT_URL, {
@@ -350,8 +350,8 @@
           statusDiv.innerText = response.message;
 
           // Lock fields and disable button after saving
-          document.getElementById('itemName').setAttribute('readonly', 'readonly');
           document.getElementById('itemCode').setAttribute('readonly', 'readonly');
+          document.getElementById('itemName').setAttribute('readonly', 'readonly');
           addBtn.disabled = true;
         } else {
           addBtn.disabled = false;
@@ -370,8 +370,8 @@
     function submitData() {
       let barcode = document.getElementById('barcode').value;
       let quantity = document.getElementById('quantity').value;
-      let itemName = document.getElementById('itemName').value;
       let itemCode = document.getElementById('itemCode').value;
+      let itemName = document.getElementById('itemName').value;
       let scannerName = document.getElementById('scannerName').value;
       let position = document.getElementById('position').value;
       let statusDiv = document.getElementById('status');
@@ -392,8 +392,8 @@
         action: 'updateStock',
         barcode: barcode,
         quantity: quantity,
-        itemName: itemName,
         itemCode: itemCode,
+        itemName: itemName,
         scannerName: scannerName,
         position: position
       };
@@ -410,10 +410,10 @@
 
         // Reset inputs
         document.getElementById('barcode').value = '';
-        document.getElementById('itemName').value = '';
         document.getElementById('itemCode').value = '';
-        document.getElementById('itemName').setAttribute('readonly', 'readonly');
+        document.getElementById('itemName').value = '';
         document.getElementById('itemCode').setAttribute('readonly', 'readonly');
+        document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
         btn.disabled = false;
