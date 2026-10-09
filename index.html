@@ -56,6 +56,12 @@
       border-radius: 4px;
     }
 
+    /* Readonly style */
+    input[readonly] {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
+
     #reader {
       width: 100%;
       min-height: 200px;
@@ -90,8 +96,21 @@
       margin-top: 5px;
     }
 
+    .btn-add-item {
+      width: 100%;
+      background-color: #17a2b8;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
     button:disabled {
-      background-color: #cccccc;
+      background-color: #cccccc !important;
+      cursor: not-allowed;
     }
 
     #status {
@@ -103,13 +122,14 @@
     .success { color: green; }
     .error { color: red; }
     .loading { color: #0056b3; }
+    .warning { color: #d39e00; }
   </style>
 </head>
 <body>
 
-  <h2>Dreamron Warehouse Stock Count</h2>
+  <h2>Warehouse Stock Count</h2>
 
-  <!-- Persistent Header Info -->
+  <!-- Header Info -->
   <div class="top-info">
     <div class="row">
       <div class="col">
@@ -117,7 +137,7 @@
         <input type="text" id="scannerName" placeholder="e.g. John / Device 1">
       </div>
       <div class="col">
-        <label for="position">Position:</label>
+        <label for="position">Position / Shelf:</label>
         <input type="text" id="position" placeholder="e.g. Aisle 2, Bin 4">
       </div>
     </div>
@@ -131,19 +151,23 @@
     <label for="barcode">Barcode:</label>
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
-<label for="itemName">Item Name:</label>
-<input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+    <label for="itemName">Item Name:</label>
+    <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2" readonly>
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
 
+    <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
+
+    <!-- Add/Edit Master Database Item in Sheet2 -->
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)">+ Add / Edit Item in Sheet2</button>
   </form>
 
   <div id="status"></div>
 
   <script>
-    // Paste your Web App Deployment URL here
+    // Paste your Google Apps Script Web App Deployment URL here
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKWCiSsV0FZ5oyQ1Tm5T9SobwsHLOUws8LtUTds-3oOTJZC-BSGLa_ooDyLdqr1ZWE/exec';
 
     let html5QrCode = null;
@@ -212,13 +236,8 @@
         osc.stop(audioCtx.currentTime + 0.1);
       } catch (e) {}
 
-      // 1. Immediately turn camera off after scan
       stopCamera();
-
-      // 2. Lookup Item Name from Sheet2
       fetchItemName(decodedText);
-
-      // 3. Highlight quantity box for fast typing
       document.getElementById('quantity').select();
     }
 
@@ -226,6 +245,7 @@
       // Quiet handler during frame scan
     }
 
+    // Fetch Item Name from Sheet2
     function fetchItemName(barcode) {
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
@@ -233,6 +253,7 @@
 
       if (!barcode.trim()) {
         itemNameInput.value = '';
+        itemNameInput.removeAttribute('readonly'); // Allow typing if empty
         return;
       }
 
@@ -245,12 +266,14 @@
           .then(data => {
             if (data.found && data.itemName) {
               itemNameInput.value = data.itemName;
+              itemNameInput.setAttribute('readonly', 'readonly'); // Lock if found
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found in Sheet2!';
             } else {
               itemNameInput.value = '';
-              statusDiv.className = '';
-              statusDiv.innerText = 'Barcode not found in Sheet2.';
+              itemNameInput.removeAttribute('readonly'); // Unlock to allow typing a new name!
+              statusDiv.className = 'warning';
+              statusDiv.innerText = 'New barcode! Type an Item Name and click "Add / Edit Item in Sheet2".';
             }
           })
           .catch(() => {
@@ -260,6 +283,72 @@
       }, 300);
     }
 
+    // Add or Update Item in Sheet2 with Duplicate Handling
+    function addNewItemToSheet2(allowOverwrite = false) {
+      let barcode = document.getElementById('barcode').value.trim();
+      let itemName = document.getElementById('itemName').value.trim();
+      let statusDiv = document.getElementById('status');
+      let addBtn = document.getElementById('addNewItemBtn');
+
+      if (!barcode) {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Please scan or enter a barcode first.';
+        return;
+      }
+
+      if (!itemName) {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Please type an Item Name to save to Sheet2.';
+        document.getElementById('itemName').focus();
+        return;
+      }
+
+      addBtn.disabled = true;
+      statusDiv.className = 'loading';
+      statusDiv.innerText = 'Saving to Sheet2...';
+
+      const payload = {
+        action: 'addNewItem',
+        barcode: barcode,
+        itemName: itemName,
+        allowOverwrite: allowOverwrite
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(response => {
+        addBtn.disabled = false;
+
+        if (response.status === "duplicate") {
+          // Ask for user confirmation to edit
+          let confirmEdit = confirm(`${response.message}\n\nClick OK to OVERWRITE with "${itemName}", or CANCEL to keep the existing name.`);
+          if (confirmEdit) {
+            addNewItemToSheet2(true); // Call again with allowOverwrite = true
+          } else {
+            statusDiv.className = 'warning';
+            statusDiv.innerText = 'Update cancelled.';
+          }
+        } else if (response.status === "success") {
+          statusDiv.className = 'success';
+          statusDiv.innerText = response.message;
+          document.getElementById('itemName').setAttribute('readonly', 'readonly');
+        } else {
+          statusDiv.className = 'error';
+          statusDiv.innerText = 'Error: ' + response.message;
+        }
+      })
+      .catch(err => {
+        addBtn.disabled = false;
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Connection Error: ' + err.message;
+      });
+    }
+
+    // Submit Stock Entry to Sheet1
     function submitData() {
       let barcode = document.getElementById('barcode').value;
       let quantity = document.getElementById('quantity').value;
@@ -276,10 +365,11 @@
       }
 
       btn.disabled = true;
-      statusDiv.className = '';
-      statusDiv.innerText = 'Saving to Sheet1...';
+      statusDiv.className = 'loading';
+      statusDiv.innerText = 'Saving stock record...';
 
       const payload = {
+        action: 'updateStock',
         barcode: barcode,
         quantity: quantity,
         itemName: itemName,
@@ -297,12 +387,12 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Clear Barcode and Item Name, reset Quantity to 1
+        // Clear Barcode and Item Name, reset Quantity
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
+        document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
-        // Keep Scanner Name and Position untouched
         btn.disabled = false;
       })
       .catch(err => {
