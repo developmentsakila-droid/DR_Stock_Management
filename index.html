@@ -20,6 +20,10 @@
       text-align: center;
       color: #333;
       margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .top-info {
@@ -42,7 +46,9 @@
     label {
       font-weight: bold;
       margin-top: 8px;
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 14px;
     }
 
@@ -83,6 +89,9 @@
       border-radius: 4px;
       cursor: pointer;
       height: 41px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Calculator Box Styling */
@@ -166,6 +175,10 @@
       cursor: pointer;
       width: 100%;
       margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-submit {
@@ -178,6 +191,10 @@
       font-size: 18px;
       cursor: pointer;
       margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-add-item {
@@ -190,6 +207,10 @@
       font-size: 15px;
       cursor: pointer;
       margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     button:disabled {
@@ -207,50 +228,92 @@
     .error { color: red; }
     .loading { color: #0056b3; }
     .warning { color: #d39e00; }
+
+    /* Inline SVG Styling */
+    .icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
   </style>
 </head>
 <body>
 
-  <h2>Dreamron Warehouse Stock Count</h2>
+  <h2>
+    <!-- Warehouse Icon -->
+    <svg class="icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 2.84L18 11v7H6v-7l6-5.16zM10 13h4v5h-4v-5z"/></svg>
+    Dreamron Warehouse Stock Count
+  </h2>
 
   <!-- Header Info -->
   <div class="top-info">
     <div class="row">
       <div class="col">
-        <label for="scannerName">Scanner Name:</label>
+        <label for="scannerName">
+          <!-- User Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Scanner Name:
+        </label>
         <input type="text" id="scannerName" placeholder="e.g. Kamal / Device 1">
       </div>
       <div class="col">
-        <label for="position">Position:</label>
+        <label for="position">
+          <!-- Pin Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Position:
+        </label>
         <input type="text" id="position" placeholder="e.g. Auditor">
       </div>
     </div>
   </div>
 
   <!-- Camera Controls -->
-  <button type="button" id="camBtn" class="btn-camera" onclick="toggleCamera()">Turn Camera ON</button>
+  <button type="button" id="camBtn" class="btn-camera" onclick="toggleCamera()">
+    <!-- Camera Icon -->
+    <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+    <span id="camBtnText">Turn Camera ON</span>
+  </button>
   <div id="reader"></div>
 
   <form id="stockForm">
-    <label for="barcode">Barcode:</label>
+    <label for="barcode">
+      <!-- Barcode Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
+      Barcode:
+    </label>
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
 
     <div class="row">
       <div class="col">
-        <label for="itemCode">Item Code:</label>
+        <label for="itemCode">
+          <!-- Tag Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+          Item Code:
+        </label>
         <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
       </div>
       <div class="col">
-        <label for="itemName">Item Name:</label>
+        <label for="itemName">
+          <!-- Box Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20 13H4V4h16v9zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 15H6v-2h12v2z"/></svg>
+          Item Name:
+        </label>
         <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
       </div>
     </div>
 
     <!-- Quantity Label & Field with Calculator Toggle -->
-    <label for="quantity">Quantity to Add:</label>
+    <label for="quantity">
+      <!-- Numbers Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14H7v-2h3v2zm0-4H7v-2h3v2zm0-4H7V7h3v2zm7 8h-5v-2h5v2zm0-4h-5v-2h5v2zm0-4h-5V7h5v2z"/></svg>
+      Quantity to Add:
+    </label>
     <div class="qty-group">
       <input type="number" id="quantity" value="1" min="1" required>
-      <button type="button" class="btn-calc-toggle" onclick="toggleCalculator()" title="Open Quantity Calculator">🧮</button>
+      <button type="button" class="btn-calc-toggle" onclick="toggleCalculator()" title="Open Quantity Calculator">
+        <!-- Calculator Icon -->
+        <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </button>
     </div>
 
     <!-- Inline Quantity Calculator Box -->
@@ -280,10 +343,18 @@
     </div>
 
     <!-- Stock Submission -->
-    <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
+    <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">
+      <!-- Checkmark Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      Submit Stock
+    </button>
 
     <!-- Add Item Button (Active ONLY for NEW barcodes) -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2()" disabled>+ Add New Item</button>
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2()" disabled>
+      <!-- Plus Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      Add New Item
+    </button>
   </form>
 
   <div id="status"></div>
@@ -322,7 +393,6 @@
     function calcEquals() {
       try {
         if (!calcExpr) return;
-        // Replace '×' with JavaScript multiplication operator '*'
         let sanitizedExpr = calcExpr.replace(/×/g, '*');
         let result = Function('"use strict"; return (' + sanitizedExpr + ')')();
         calcExpr = String(result);
@@ -351,6 +421,7 @@
     }
 
     function startCamera() {
+      const camBtnText = document.getElementById('camBtnText');
       const camBtn = document.getElementById('camBtn');
       const readerDiv = document.getElementById('reader');
 
@@ -369,7 +440,7 @@
         onScanError
       ).then(() => {
         isCameraActive = true;
-        camBtn.innerText = "Turn Camera OFF";
+        camBtnText.innerText = "Turn Camera OFF";
         camBtn.style.backgroundColor = "#dc3545";
       }).catch(err => {
         alert("Camera error: " + err);
@@ -378,6 +449,7 @@
     }
 
     function stopCamera() {
+      const camBtnText = document.getElementById('camBtnText');
       const camBtn = document.getElementById('camBtn');
       const readerDiv = document.getElementById('reader');
 
@@ -386,7 +458,7 @@
           html5QrCode.clear();
           isCameraActive = false;
           readerDiv.style.display = 'none';
-          camBtn.innerText = "Turn Camera ON";
+          camBtnText.innerText = "Turn Camera ON";
           camBtn.style.backgroundColor = "#007bff";
         }).catch(err => console.log(err));
       }
