@@ -127,7 +127,7 @@
 </head>
 <body>
 
-  <h2>Warehouse Stock Count</h2>
+  <h2>Dreamron Warehouse Stock Count</h2>
 
   <!-- Header Info -->
   <div class="top-info">
@@ -161,7 +161,7 @@
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
 
     <!-- Add Item Button (Disabled by default, active ONLY for NEW barcodes) -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item to Sheet2</button>
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item</button>
   </form>
 
   <div id="status"></div>
@@ -282,7 +282,7 @@
               addBtn.disabled = false; 
 
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode detected! Type item name & click "+ Add New Item".';
+              statusDiv.innerText = 'New barcode detected! Type item name';
             }
           })
           .catch(() => {
@@ -307,14 +307,14 @@
 
       if (!itemName) {
         statusDiv.className = 'error';
-        statusDiv.innerText = 'Please type an Item Name to save to Sheet2.';
+        statusDiv.innerText = 'Please type an Item Name';
         document.getElementById('itemName').focus();
         return;
       }
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving to Sheet2...';
+      statusDiv.innerText = 'Saving.....';
 
       const payload = {
         action: 'addNewItem',
@@ -404,5 +404,6 @@
       });
     }
   </script>
+  <label for="Name">Developed By HSDP</label>
 </body>
 </html>
