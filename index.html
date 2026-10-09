@@ -137,7 +137,7 @@
         <input type="text" id="scannerName" placeholder="e.g. John / Device 1">
       </div>
       <div class="col">
-        <label for="position">Position:</label>
+        <label for="position">Position / Shelf:</label>
         <input type="text" id="position" placeholder="e.g. Aisle 2, Bin 4">
       </div>
     </div>
@@ -161,7 +161,7 @@
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit Stock</button>
 
     <!-- Add Item Button (Disabled by default, active ONLY for NEW barcodes) -->
-    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item</button>
+    <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2(false)" disabled>+ Add New Item to Sheet2</button>
   </form>
 
   <div id="status"></div>
@@ -282,7 +282,7 @@
               addBtn.disabled = false; 
 
               statusDiv.className = 'warning';
-              statusDiv.innerText = 'New barcode detected! Type item name.';
+              statusDiv.innerText = 'New barcode detected! Type item name & click "+ Add New Item".';
             }
           })
           .catch(() => {
@@ -314,7 +314,7 @@
 
       addBtn.disabled = true;
       statusDiv.className = 'loading';
-      statusDiv.innerText = 'Saving....';
+      statusDiv.innerText = 'Saving to Sheet2...';
 
       const payload = {
         action: 'addNewItem',
