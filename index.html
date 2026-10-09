@@ -19,27 +19,50 @@
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 15px;
     }
 
-    #reader {
-      width: 100%;
+    .top-info {
+      background-color: #e9ecef;
+      padding: 12px;
+      border-radius: 6px;
       margin-bottom: 15px;
+      border: 1px solid #ced4da;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .col {
+      flex: 1;
     }
 
     label {
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 8px;
       display: block;
+      font-size: 14px;
     }
 
     input {
       width: 100%;
       padding: 10px;
-      margin: 5px 0 15px 0;
+      margin: 4px 0 10px 0;
       box-sizing: border-box;
-      font-size: 16px;
+      font-size: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
+    }
+
+    #reader {
+      width: 100%;
+      min-height: 250px;
+      background-color: #000;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px;
     }
 
     button {
@@ -51,6 +74,7 @@
       border-radius: 4px;
       font-size: 18px;
       cursor: pointer;
+      margin-top: 5px;
     }
 
     button:disabled {
@@ -63,28 +87,38 @@
       font-weight: bold;
     }
 
-    .success {
-      color: green;
-    }
-
-    .error {
-      color: red;
-    }
+    .success { color: green; }
+    .error { color: red; }
+    .loading { color: #0056b3; }
   </style>
 </head>
 <body>
 
   <h2>Warehouse Stock Count</h2>
 
-  <!-- Scanner Container -->
+  <!-- Top Info: Scanner Name and Position -->
+  <div class="top-info">
+    <div class="row">
+      <div class="col">
+        <label for="scannerName">Scanner Name:</label>
+        <input type="text" id="scannerName" placeholder="e.g. John / Device 1">
+      </div>
+      <div class="col">
+        <label for="position">Position / Shelf:</label>
+        <input type="text" id="position" placeholder="e.g. Aisle 2, Bin 4">
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera Viewport -->
   <div id="reader"></div>
 
   <form id="stockForm">
     <label for="barcode">Barcode:</label>
-    <input type="text" id="barcode" placeholder="Scan or enter barcode" required>
+    <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
-    <label for="itemName">Item Name (Optional):</label>
-    <input type="text" id="itemName" placeholder="e.g. Widget A">
+    <label for="itemName">Item Name:</label>
+    <input type="text" id="itemName" placeholder="Auto-fetches after barcode scan">
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
@@ -98,35 +132,88 @@
     // Paste your Google Apps Script Web App Deployment URL here
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKWCiSsV0FZ5oyQ1Tm5T9SobwsHLOUws8LtUTds-3oOTJZC-BSGLa_ooDyLdqr1ZWE/exec';
 
-    let html5QrcodeScanner;
+    let html5QrCode;
+    let debounceTimer;
 
-    function onScanSuccess(decodedText, decodedResult) {
+    function startRearCameraScanner() {
+      html5QrCode = new Html5Qrcode("reader");
+
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 }
+      };
+
+      // Forces back camera automatically using facingMode: "environment"
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        onScanSuccess,
+        onScanError
+      ).catch(err => {
+        console.warn("Rear camera init failed, falling back:", err);
+      });
+    }
+
+    function onScanSuccess(decodedText) {
       document.getElementById('barcode').value = decodedText;
 
-      // Audio feedback on scan
+      // Beep sound feedback
       try {
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let osc = audioCtx.createOscillator();
         osc.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.1);
-      } catch (e) {
-        console.log("Audio feedback unavailable or blocked.");
-      }
+      } catch (e) {}
+
+      // Automatically fetch item name when scanned
+      fetchItemName(decodedText);
     }
 
-    function startScanner() {
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", {
-        fps: 10,
-        qrbox: { width: 250, height: 150 }
-      });
-      html5QrcodeScanner.render(onScanSuccess);
+    function onScanError(error) {
+      // Quiet background failure handling while frame scanning
+    }
+
+    // Auto-fetches Item Name from Google Sheets
+    function fetchItemName(barcode) {
+      clearTimeout(debounceTimer);
+      let statusDiv = document.getElementById('status');
+      let itemNameInput = document.getElementById('itemName');
+
+      if (!barcode.trim()) {
+        itemNameInput.value = '';
+        return;
+      }
+
+      debounceTimer = setTimeout(() => {
+        statusDiv.className = 'loading';
+        statusDiv.innerText = 'Searching database...';
+
+        fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.found && data.itemName) {
+              itemNameInput.value = data.itemName;
+              statusDiv.className = 'success';
+              statusDiv.innerText = 'Item found!';
+            } else {
+              statusDiv.className = '';
+              statusDiv.innerText = 'New item barcode detected.';
+            }
+          })
+          .catch(() => {
+            statusDiv.className = '';
+            statusDiv.innerText = '';
+          });
+      }, 400); // Debounce to prevent unnecessary hits while typing manually
     }
 
     function submitData() {
       let barcode = document.getElementById('barcode').value;
       let quantity = document.getElementById('quantity').value;
       let itemName = document.getElementById('itemName').value;
+      let scannerName = document.getElementById('scannerName').value;
+      let position = document.getElementById('position').value;
       let statusDiv = document.getElementById('status');
       let btn = document.getElementById('submitBtn');
 
@@ -143,22 +230,22 @@
       const payload = {
         barcode: barcode,
         quantity: quantity,
-        itemName: itemName
+        itemName: itemName,
+        scannerName: scannerName,
+        position: position
       };
 
       fetch(SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Bypasses CORS restrictions for Apps Script
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
       .then(() => {
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Reset input fields
+        // Reset inputs while keeping scanner name and position active
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('quantity').value = '1';
@@ -171,7 +258,7 @@
       });
     }
 
-    window.onload = startScanner;
+    window.onload = startRearCameraScanner;
   </script>
 </body>
 </html>
