@@ -63,7 +63,7 @@
       border-radius: 6px;
       overflow: hidden;
       margin-bottom: 15px;
-      display: none; /* Hidden until camera is turned on */
+      display: none;
     }
 
     .btn-camera {
@@ -109,7 +109,7 @@
 
   <h2>Warehouse Stock Count</h2>
 
-  <!-- Top Info: Persistent Scanner Name and Position -->
+  <!-- Persistent Header Info -->
   <div class="top-info">
     <div class="row">
       <div class="col">
@@ -123,10 +123,8 @@
     </div>
   </div>
 
-  <!-- Toggle Camera Button -->
+  <!-- Camera Controls -->
   <button type="button" id="camBtn" class="btn-camera" onclick="toggleCamera()">Turn Camera ON</button>
-
-  <!-- Camera Viewport Container -->
   <div id="reader"></div>
 
   <form id="stockForm">
@@ -134,7 +132,7 @@
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemName(this.value)" required>
 
     <label for="itemName">Item Name:</label>
-    <input type="text" id="itemName" placeholder="Auto-fetches item name">
+    <input type="text" id="itemName" placeholder="Auto-fetches from Sheet2">
 
     <label for="quantity">Quantity to Add:</label>
     <input type="number" id="quantity" value="1" min="1" required>
@@ -145,7 +143,7 @@
   <div id="status"></div>
 
   <script>
-    // Paste your Google Apps Script Web App Deployment URL here
+    // Paste your Web App Deployment URL here
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKWCiSsV0FZ5oyQ1Tm5T9SobwsHLOUws8LtUTds-3oOTJZC-BSGLa_ooDyLdqr1ZWE/exec';
 
     let html5QrCode = null;
@@ -153,35 +151,38 @@
     let debounceTimer;
 
     function toggleCamera() {
-      const camBtn = document.getElementById('camBtn');
-      const readerDiv = document.getElementById('reader');
-
       if (!isCameraActive) {
-        readerDiv.style.display = 'block';
-        html5QrCode = new Html5Qrcode("reader");
-
-        const config = {
-          fps: 10,
-          qrbox: { width: 250, height: 150 }
-        };
-
-        // Always uses rear environment camera
-        html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          onScanSuccess,
-          onScanError
-        ).then(() => {
-          isCameraActive = true;
-          camBtn.innerText = "Turn Camera OFF";
-          camBtn.style.backgroundColor = "#dc3545"; // Red color when active
-        }).catch(err => {
-          alert("Error starting camera: " + err);
-          readerDiv.style.display = 'none';
-        });
+        startCamera();
       } else {
         stopCamera();
       }
+    }
+
+    function startCamera() {
+      const camBtn = document.getElementById('camBtn');
+      const readerDiv = document.getElementById('reader');
+
+      readerDiv.style.display = 'block';
+      html5QrCode = new Html5Qrcode("reader");
+
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 }
+      };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        onScanSuccess,
+        onScanError
+      ).then(() => {
+        isCameraActive = true;
+        camBtn.innerText = "Turn Camera OFF";
+        camBtn.style.backgroundColor = "#dc3545";
+      }).catch(err => {
+        alert("Camera error: " + err);
+        readerDiv.style.display = 'none';
+      });
     }
 
     function stopCamera() {
@@ -194,7 +195,7 @@
           isCameraActive = false;
           readerDiv.style.display = 'none';
           camBtn.innerText = "Turn Camera ON";
-          camBtn.style.backgroundColor = "#007bff"; // Blue color when inactive
+          camBtn.style.backgroundColor = "#007bff";
         }).catch(err => console.log(err));
       }
     }
@@ -202,7 +203,7 @@
     function onScanSuccess(decodedText) {
       document.getElementById('barcode').value = decodedText;
 
-      // Audio feedback
+      // Audio Beep
       try {
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let osc = audioCtx.createOscillator();
@@ -211,18 +212,20 @@
         osc.stop(audioCtx.currentTime + 0.1);
       } catch (e) {}
 
-      // 1. Fetch Item Name automatically
+      // 1. Immediately turn camera off after scan
+      stopCamera();
+
+      // 2. Lookup Item Name from Sheet2
       fetchItemName(decodedText);
 
-      // 2. Automatically focus on Quantity input for easy typing
+      // 3. Highlight quantity box for fast typing
       document.getElementById('quantity').select();
     }
 
     function onScanError(error) {
-      // Quiet handler during background frame parsing
+      // Quiet handler during frame scan
     }
 
-    // Auto-fetches Item Name from Google Sheets
     function fetchItemName(barcode) {
       clearTimeout(debounceTimer);
       let statusDiv = document.getElementById('status');
@@ -235,7 +238,7 @@
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
-        statusDiv.innerText = 'Searching database...';
+        statusDiv.innerText = 'Searching Sheet2...';
 
         fetch(`${SCRIPT_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
           .then(res => res.json())
@@ -243,11 +246,11 @@
             if (data.found && data.itemName) {
               itemNameInput.value = data.itemName;
               statusDiv.className = 'success';
-              statusDiv.innerText = 'Item found!';
+              statusDiv.innerText = 'Item found in Sheet2!';
             } else {
               itemNameInput.value = '';
               statusDiv.className = '';
-              statusDiv.innerText = 'New item barcode detected.';
+              statusDiv.innerText = 'Barcode not found in Sheet2.';
             }
           })
           .catch(() => {
@@ -274,7 +277,7 @@
 
       btn.disabled = true;
       statusDiv.className = '';
-      statusDiv.innerText = 'Saving to Google Sheet...';
+      statusDiv.innerText = 'Saving to Sheet1...';
 
       const payload = {
         barcode: barcode,
@@ -294,12 +297,12 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Clears ONLY Barcode, Item Name, and resets Quantity to 1
+        // Clear Barcode and Item Name, reset Quantity to 1
         document.getElementById('barcode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('quantity').value = '1';
 
-        // NOTE: Scanner Name and Position are NOT cleared.
+        // Keep Scanner Name and Position untouched
         btn.disabled = false;
       })
       .catch(err => {
