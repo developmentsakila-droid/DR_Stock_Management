@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warehouse Stock Counter</title>
+  <!-- Barcode Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 15px;
+      max-width: 500px;
+      margin: auto;
+      background-color: #f4f4f9;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    #reader {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px 0;
+      box-sizing: border-box;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Warehouse Stock Count</h2>
+
+  <!-- Scanner Container -->
+  <div id="reader"></div>
+
+  <form id="stockForm">
+    <label for="barcode">Barcode:</label>
+    <input type="text" id="barcode" placeholder="Scan or enter barcode" required>
+
+    <label for="itemName">Item Name (Optional):</label>
+    <input type="text" id="itemName" placeholder="e.g. Widget A">
+
+    <label for="quantity">Quantity to Add:</label>
+    <input type="number" id="quantity" value="1" min="1" required>
+
+    <button type="button" id="submitBtn" onclick="submitData()">Submit Stock</button>
+  </form>
+
+  <div id="status"></div>
+
+  <script>
+    // Paste your Google Apps Script Web App Deployment URL here
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKWCiSsV0FZ5oyQ1Tm5T9SobwsHLOUws8LtUTds-3oOTJZC-BSGLa_ooDyLdqr1ZWE/exec';
+
+    let html5QrcodeScanner;
+
+    function onScanSuccess(decodedText, decodedResult) {
+      document.getElementById('barcode').value = decodedText;
+
+      // Audio feedback on scan
+      try {
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let osc = audioCtx.createOscillator();
+        osc.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } catch (e) {
+        console.log("Audio feedback unavailable or blocked.");
+      }
+    }
+
+    function startScanner() {
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        qrbox: { width: 250, height: 150 }
+      });
+      html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    function submitData() {
+      let barcode = document.getElementById('barcode').value;
+      let quantity = document.getElementById('quantity').value;
+      let itemName = document.getElementById('itemName').value;
+      let statusDiv = document.getElementById('status');
+      let btn = document.getElementById('submitBtn');
+
+      if (!barcode || !quantity) {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Please enter barcode and quantity.';
+        return;
+      }
+
+      btn.disabled = true;
+      statusDiv.className = '';
+      statusDiv.innerText = 'Saving to Google Sheet...';
+
+      const payload = {
+        barcode: barcode,
+        quantity: quantity,
+        itemName: itemName
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Bypasses CORS restrictions for Apps Script
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        statusDiv.className = 'success';
+        statusDiv.innerText = 'Stock updated successfully!';
+
+        // Reset input fields
+        document.getElementById('barcode').value = '';
+        document.getElementById('itemName').value = '';
+        document.getElementById('quantity').value = '1';
+        btn.disabled = false;
+      })
+      .catch(err => {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Error submitting data: ' + err.message;
+        btn.disabled = false;
+      });
+    }
+
+    window.onload = startScanner;
+  </script>
+</body>
+</html>
