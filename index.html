@@ -354,23 +354,25 @@
 
   <form id="stockForm">
 
-      <div class="row">
+   <div class="row layout-row">
+  <!-- Left Side: Barcode -->
+  <div class="field-group">
     <label for="barcode">
       <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
       Barcode:
     </label>
-    
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
-    
-    
-    <div class="col">
-        <label for="itemCode">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M20 13H4V4h16v9zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 15H6v-2h12v2z"/></svg>
-          Item Code:
-        </label>
-        <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
-      </div>
   </div>
+    
+  <!-- Right Side: Item Code -->
+  <div class="field-group">
+    <label for="itemCode">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M20 13H4V4h16v9zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 15H6v-2h12v2z"/></svg>
+      Item Code:
+    </label>
+    <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
+  </div>
+</div>
     
     <div class="row">
       <div class="col">
