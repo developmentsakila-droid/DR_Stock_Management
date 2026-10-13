@@ -213,6 +213,23 @@
       gap: 8px;
     }
 
+    .btn-qa {
+      width: 100%;
+      background-color: #ffc107;
+      color: #212529;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
     button:disabled {
       background-color: #cccccc !important;
       cursor: not-allowed;
@@ -228,6 +245,66 @@
     .error { color: red; }
     .loading { color: #0056b3; }
     .warning { color: #d39e00; }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 8px;
+      max-width: 450px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #6c757d;
+    }
+
+    .modal-select {
+      width: 100%;
+      padding: 10px;
+      margin: 4px 0 10px 0;
+      box-sizing: border-box;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+    }
 
     /* Inline SVG Styling */
     .icon {
@@ -342,22 +419,85 @@
       </div>
     </div>
 
-    <!-- Stock Submission (DISABLED BY DEFAULT, ENABLED ONLY WHEN ITEM IS FOUND) -->
+    <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()" disabled>
       <!-- Checkmark Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       Submit Stock
     </button>
 
-    <!-- Add Item Button (Active ONLY for NEW barcodes) -->
+    <!-- Add New Item Button -->
     <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2()" disabled>
       <!-- Plus Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       Add New Item
     </button>
+
+    <!-- QA Defect Button -->
+    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()">
+      <!-- Warning / Defect Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      Add QA Defect
+    </button>
   </form>
 
   <div id="status"></div>
+
+  <!-- Modal Frame: Add QA Defect -->
+  <div id="qaDefectModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <!-- Warning Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+          Log Quality Defect
+        </h3>
+        <button type="button" class="modal-close" onclick="closeQADefectModal()">✕</button>
+      </div>
+
+      <form id="qaDefectForm" onsubmit="handleQADefectSubmit(event)">
+        <label for="qaItemCode">Item Code / Barcode *</label>
+        <input type="text" id="qaItemCode" required placeholder="Scan or type barcode/item code">
+
+        <label for="qaItemName">Item Name *</label>
+        <input type="text" id="qaItemName" required placeholder="e.g. Dreamron Hair Cream">
+
+        <div class="row">
+          <div class="col">
+            <label for="qaCategory">Defect Category *</label>
+            <select id="qaCategory" class="modal-select" required>
+              <option value="Packaging Damage">Packaging Damage</option>
+              <option value="Leakage / Spillage">Leakage / Spillage</option>
+              <option value="Labeling Error">Labeling Error</option>
+              <option value="Expired / Near Expiry">Expired / Near Expiry</option>
+              <option value="Manufacturing Defect">Manufacturing Defect</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="qaSeverity">Severity *</label>
+            <select id="qaSeverity" class="modal-select" required>
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="qaQuantity">Quantity Affected *</label>
+        <input type="number" id="qaQuantity" min="1" value="1" required>
+
+        <label for="qaNotes">Defect Description / Notes</label>
+        <input type="text" id="qaNotes" placeholder="Additional details...">
+
+        <div class="row" style="margin-top: 15px;">
+          <button type="button" onclick="closeQADefectModal()" style="flex:1; padding:10px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">Cancel</button>
+          <button type="submit" style="flex:1; padding:10px; background:#ffc107; color:#212529; border:none; border-radius:4px; cursor:pointer; font-size:16px; font-weight:bold;">Submit Defect</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script>
     // Paste your Google Apps Script Web App Deployment URL here
@@ -496,7 +636,7 @@
         itemCodeInput.setAttribute('readonly', 'readonly');
         itemNameInput.setAttribute('readonly', 'readonly');
         addBtn.disabled = true;
-        submitBtn.disabled = true; // Disable submit if barcode is empty
+        submitBtn.disabled = true;
         statusDiv.innerText = '';
         return;
       }
@@ -509,24 +649,24 @@
           .then(res => res.json())
           .then(data => {
             if (data.found) {
-  itemCodeInput.value = data.itemCode || '';
-  itemNameInput.value = data.itemName || '';
-  itemCodeInput.setAttribute('readonly', 'readonly');
-  itemNameInput.setAttribute('readonly', 'readonly');
-  addBtn.disabled = true; 
-  submitBtn.disabled = false; // Enables submit when found
-  statusDiv.className = 'success';
-  statusDiv.innerText = 'Item found!';
-} else {
-  itemCodeInput.value = '';
-  itemNameInput.value = '';
-  itemCodeInput.removeAttribute('readonly');
-  itemNameInput.removeAttribute('readonly');
-  addBtn.disabled = false; 
-  submitBtn.disabled = true; // Disables submit when item is missing
-  statusDiv.className = 'warning';
-  statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
-}
+              itemCodeInput.value = data.itemCode || '';
+              itemNameInput.value = data.itemName || '';
+              itemCodeInput.setAttribute('readonly', 'readonly');
+              itemNameInput.setAttribute('readonly', 'readonly');
+              addBtn.disabled = true; 
+              submitBtn.disabled = false;
+              statusDiv.className = 'success';
+              statusDiv.innerText = 'Item found!';
+            } else {
+              itemCodeInput.value = '';
+              itemNameInput.value = '';
+              itemCodeInput.removeAttribute('readonly');
+              itemNameInput.removeAttribute('readonly');
+              addBtn.disabled = false; 
+              submitBtn.disabled = true;
+              statusDiv.className = 'warning';
+              statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
+            }
           })
           .catch(() => {
             statusDiv.className = '';
@@ -575,11 +715,10 @@
       .then(res => res.json())
       .then(response => {
         if (response.status === "success") {
-  statusDiv.className = 'success';
-  statusDiv.innerText = 'Saved! Searching again...';
-  fetchItemDetails(barcode); // Auto-searches to lock fields & enable Submit
-}
-        else {
+          statusDiv.className = 'success';
+          statusDiv.innerText = 'Saved! Searching again...';
+          fetchItemDetails(barcode);
+        } else {
           addBtn.disabled = false;
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + response.message;
@@ -641,13 +780,82 @@
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '1';
 
-        btn.disabled = true; // Lock Submit again until next valid item is scanned
+        btn.disabled = true;
         addBtn.disabled = true;
       })
       .catch(err => {
         statusDiv.className = 'error';
         statusDiv.innerText = 'Error submitting data: ' + err.message;
         btn.disabled = false;
+      });
+    }
+
+    // QA Defect Modal Management Functions
+    function openQADefectModal() {
+      document.getElementById('qaDefectForm').reset();
+      
+      // Auto-populate barcode/item info if present on main form
+      const currentBarcode = document.getElementById('barcode').value;
+      const currentItemCode = document.getElementById('itemCode').value;
+      const currentItemName = document.getElementById('itemName').value;
+
+      if (currentBarcode) {
+        document.getElementById('qaItemCode').value = currentBarcode;
+      }
+      if (currentItemName || currentItemCode) {
+        document.getElementById('qaItemName').value = currentItemName || currentItemCode;
+      }
+
+      document.getElementById('qaDefectModal').style.display = 'flex';
+    }
+
+    function closeQADefectModal() {
+      document.getElementById('qaDefectModal').style.display = 'none';
+    }
+
+    function handleQADefectSubmit(e) {
+      e.preventDefault();
+
+      let itemCode = document.getElementById('qaItemCode').value.trim();
+      let itemName = document.getElementById('qaItemName').value.trim();
+      let category = document.getElementById('qaCategory').value;
+      let severity = document.getElementById('qaSeverity').value;
+      let quantity = document.getElementById('qaQuantity').value;
+      let notes = document.getElementById('qaNotes').value.trim();
+      let scannerName = document.getElementById('scannerName').value;
+      let position = document.getElementById('position').value;
+
+      let statusDiv = document.getElementById('status');
+      statusDiv.className = 'loading';
+      statusDiv.innerText = 'Logging QA defect...';
+
+      const payload = {
+        action: 'saveQADefect',
+        barcode: itemCode,
+        itemCode: itemCode,
+        itemName: itemName,
+        category: category,
+        severity: severity,
+        quantity: quantity,
+        notes: notes,
+        scannerName: scannerName,
+        position: position
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        statusDiv.className = 'success';
+        statusDiv.innerText = 'QA Defect logged successfully!';
+        closeQADefectModal();
+      })
+      .catch(err => {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Error logging QA defect: ' + err.message;
       });
     }
   </script>
