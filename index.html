@@ -358,6 +358,16 @@
       <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
       Barcode:
     </label>
+
+
+    <!-- QA Defect Button (Disabled by Default) -->
+    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
+      <!-- Warning / Defect Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      Add QA Defect
+    </button>
+
+    
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
 
     <div class="row">
@@ -433,17 +443,12 @@
       Add New Item
     </button>
 
-    <!-- QA Defect Button (Disabled by Default) -->
-    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
-      <!-- Warning / Defect Icon -->
-      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-      Add QA Defect
-    </button>
+
   </form>
 
   <div id="status"></div>
 
-  <!-- Modal Frame: Add QA Defect -->
+  <!-- Modal Frame: Add QA Defect (Item Code & Item Name are Readonly) -->
   <div id="qaDefectModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -456,11 +461,11 @@
       </div>
 
       <form id="qaDefectForm" onsubmit="handleQADefectSubmit(event)">
-        <label for="qaItemCode">Item Code*</label>
-        <input type="text" id="qaItemCode" required placeholder="Scan or type barcode/item code">
+        <label for="qaItemCode">Item Code *</label>
+        <input type="text" id="qaItemCode" readonly required placeholder="Auto-populated item code">
 
         <label for="qaItemName">Item Name *</label>
-        <input type="text" id="qaItemName" required placeholder="e.g. Dreamron Hair Cream">
+        <input type="text" id="qaItemName" readonly required placeholder="Auto-populated item name">
 
         <div class="row">
           <div class="col">
@@ -624,7 +629,7 @@
       let itemNameInput = document.getElementById('itemName');
       let addBtn = document.getElementById('addNewItemBtn');
       let submitBtn = document.getElementById('submitBtn');
-      let qaBtn = document.getElementById('qaBtn'); // QA Defect Button reference
+      let qaBtn = document.getElementById('qaBtn');
 
       if (!barcode.trim()) {
         itemCodeInput.value = '';
@@ -633,12 +638,11 @@
         itemNameInput.setAttribute('readonly', 'readonly');
         addBtn.disabled = true;
         submitBtn.disabled = true;
-        qaBtn.disabled = true; // Disable QA button when barcode field is empty
+        qaBtn.disabled = true;
         statusDiv.innerText = '';
         return;
       }
 
-      // Enable QA button as soon as a barcode is scanned/typed
       qaBtn.disabled = false;
 
       debounceTimer = setTimeout(() => {
@@ -783,7 +787,7 @@
 
         btn.disabled = true;
         addBtn.disabled = true;
-        qaBtn.disabled = true; // Disable QA button on reset
+        qaBtn.disabled = true;
       })
       .catch(err => {
         statusDiv.className = 'error';
@@ -792,21 +796,16 @@
       });
     }
 
-    // Fetch Defect Categories from Google Sheets and Open Modal
+    // Open QA Defect Modal and populate read-only Item Code & Item Name
     function openQADefectModal() {
       document.getElementById('qaDefectForm').reset();
       
-      // Auto-populate barcode/item info if present on main form
-      const currentBarcode = document.getElementById('barcode').value;
-      const currentItemCode = document.getElementById('itemCode').value;
-      const currentItemName = document.getElementById('itemName').value;
+      // Pull Item Code and Item Name from the main form fields
+      const currentItemCode = document.getElementById('itemCode').value.trim();
+      const currentItemName = document.getElementById('itemName').value.trim();
 
-      if (currentBarcode) {
-        document.getElementById('qaItemCode').value = currentBarcode;
-      }
-      if (currentItemName || currentItemCode) {
-        document.getElementById('qaItemName').value = currentItemName || currentItemCode;
-      }
+      document.getElementById('qaItemCode').value = currentItemCode || document.getElementById('barcode').value.trim();
+      document.getElementById('qaItemName').value = currentItemName || "N/A";
 
       // Fetch dynamic categories from list_sheet Column A
       const categorySelect = document.getElementById('qaCategory');
@@ -851,7 +850,6 @@
 
       const payload = {
         action: 'saveQADefect',
-        barcode: itemCode,
         itemCode: itemCode,
         itemName: itemName,
         category: category,
