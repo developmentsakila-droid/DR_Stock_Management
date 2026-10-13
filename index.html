@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dreamron Warehouse Stock Counter</title>
-  <!-- Barcode Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
@@ -62,13 +61,11 @@
       border-radius: 4px;
     }
 
-    /* Readonly style */
     input[readonly] {
       background-color: #e9ecef;
       cursor: not-allowed;
     }
 
-    /* Quantity Input + Calculator Group */
     .qty-group {
       display: flex;
       gap: 8px;
@@ -94,7 +91,6 @@
       justify-content: center;
     }
 
-    /* Calculator Box Styling */
     .calc-box {
       display: none;
       background: #ffffff;
@@ -246,7 +242,6 @@
     .loading { color: #0056b3; }
     .warning { color: #d39e00; }
 
-    /* Modal Styling */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -306,7 +301,6 @@
       background-color: white;
     }
 
-    /* Inline SVG Styling */
     .icon {
       width: 18px;
       height: 18px;
@@ -317,17 +311,14 @@
 <body>
 
   <h2>
-    <!-- Warehouse Icon -->
     <svg class="icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 2.84L18 11v7H6v-7l6-5.16zM10 13h4v5h-4v-5z"/></svg>
     Dreamron Warehouse Stock Count
   </h2>
 
-  <!-- Header Info -->
   <div class="top-info">
     <div class="row">
       <div class="col">
         <label for="scannerName">
-          <!-- User Icon -->
           <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
           Scanner Name:
         </label>
@@ -335,7 +326,6 @@
       </div>
       <div class="col">
         <label for="position">
-          <!-- Pin Icon -->
           <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
           Position:
         </label>
@@ -344,9 +334,7 @@
     </div>
   </div>
 
-  <!-- Camera Controls -->
   <button type="button" id="camBtn" class="btn-camera" onclick="toggleCamera()">
-    <!-- Camera Icon -->
     <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
     <span id="camBtnText">Turn Camera ON</span>
   </button>
@@ -354,32 +342,27 @@
 
   <form id="stockForm">
     <label for="barcode">
-      <!-- Barcode Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
       Barcode:
     </label>
     
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
 
-    <!-- QA Defect Button (Disabled by Default - Enabled only after item found) -->
     <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
-      <!-- Warning / Defect Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
       Add QA Defect
     </button>
     
     <div class="row">
       <div class="col">
-        <label for="itemCode">
-          <!-- Tag Icon -->
+        <label for="itemName">
           <svg class="icon" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
           Item Name:
         </label>
         <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
       </div>
       <div class="col">
-        <label for="itemName">
-          <!-- Box Icon -->
+        <label for="itemCode">
           <svg class="icon" viewBox="0 0 24 24"><path d="M20 13H4V4h16v9zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 15H6v-2h12v2z"/></svg>
           Item Code:
         </label>
@@ -387,21 +370,17 @@
       </div>
     </div>
 
-    <!-- Quantity Label & Field with Calculator Toggle -->
     <label for="quantity">
-      <!-- Numbers Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14H7v-2h3v2zm0-4H7v-2h3v2zm0-4H7V7h3v2zm7 8h-5v-2h5v2zm0-4h-5v-2h5v2zm0-4h-5V7h5v2z"/></svg>
       Quantity to Add:
     </label>
     <div class="qty-group">
       <input type="number" id="quantity" value="" min="0" required>
       <button type="button" class="btn-calc-toggle" onclick="toggleCalculator()" title="Open Quantity Calculator">
-        <!-- Calculator Icon -->
         <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
       </button>
     </div>
 
-    <!-- Inline Quantity Calculator Box -->
     <div id="calcBox" class="calc-box">
       <div id="calcDisplay" class="calc-display">0</div>
       <div class="calc-buttons">
@@ -427,29 +406,41 @@
       </div>
     </div>
 
-    <!-- Stock Submission -->
     <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()" disabled>
-      <!-- Checkmark Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       Submit Stock
     </button>
 
-    <!-- Add New Item Button -->
     <button type="button" id="addNewItemBtn" class="btn-add-item" onclick="addNewItemToSheet2()" disabled>
-      <!-- Plus Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       Add New Item
     </button>
   </form>
 
+  <!-- Summary Report Section -->
+  <div class="top-info" style="margin-top: 25px;">
+    <h3>Summary Report</h3>
+    <div class="row">
+      <div class="col">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="col">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+    <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 10px;" onclick="fetchSummaryReport()">Generate Report</button>
+  </div>
+
+  <div id="reportResult" style="margin-top: 15px; overflow-x: auto;"></div>
+
   <div id="status"></div>
 
-  <!-- Modal Frame: Add QA Defect (Item Code & Item Name are Readonly) -->
   <div id="qaDefectModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
         <h3>
-          <!-- Warning Icon -->
           <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
           Log Quality Defect
         </h3>
@@ -496,14 +487,11 @@
   </div>
 
   <script>
-    // Paste your Google Apps Script Web App Deployment URL here
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSztlq_hVXQgB-Qf8xjtLzZI9u4ICys1rSBDtOR_sQEXAKPeC9niVlPqVxe0-sIoIa/exec';
+    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_DEPLOYMENT_URL';
 
     let html5QrCode = null;
     let isCameraActive = false;
     let debounceTimer;
-
-    // Quantity Calculator State Variables
     let calcExpr = "";
 
     function toggleCalculator() {
@@ -653,7 +641,7 @@
               itemNameInput.setAttribute('readonly', 'readonly');
               addBtn.disabled = true; 
               submitBtn.disabled = false;
-              qaBtn.disabled = false; // Enabled only after item is found!
+              qaBtn.disabled = false;
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
@@ -774,7 +762,6 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Reset inputs
         document.getElementById('barcode').value = '';
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
@@ -793,18 +780,15 @@
       });
     }
 
-    // Open QA Defect Modal and populate read-only Item Code & Item Name
     function openQADefectModal() {
       document.getElementById('qaDefectForm').reset();
       
-      // Pull Item Code and Item Name from the main form fields
       const currentItemCode = document.getElementById('itemCode').value.trim();
       const currentItemName = document.getElementById('itemName').value.trim();
 
       document.getElementById('qaItemCode').value = currentItemCode || "N/A";
       document.getElementById('qaItemName').value = currentItemName || "N/A";
 
-      // Fetch dynamic categories from list_sheet Column A
       const categorySelect = document.getElementById('qaCategory');
       categorySelect.innerHTML = '<option value="">Loading categories...</option>';
       
@@ -868,7 +852,6 @@
         statusDiv.innerText = 'QA Defect logged successfully!';
         closeQADefectModal();
 
-        // Clear barcode and form details after successful QA defect submission
         document.getElementById('barcode').value = '';
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
@@ -876,7 +859,6 @@
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '';
 
-        // Disable action buttons until next scan
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('addNewItemBtn').disabled = true;
         document.getElementById('qaBtn').disabled = true;
@@ -885,6 +867,69 @@
         statusDiv.className = 'error';
         statusDiv.innerText = 'Error logging QA defect: ' + err.message;
       });
+    }
+
+    function fetchSummaryReport() {
+      let startDate = document.getElementById('startDate').value;
+      let endDate = document.getElementById('endDate').value;
+      let statusDiv = document.getElementById('status');
+      let reportResultDiv = document.getElementById('reportResult');
+
+      statusDiv.className = 'loading';
+      statusDiv.innerText = 'Generating report...';
+      reportResultDiv.innerHTML = '';
+
+      let url = `${SCRIPT_URL}?action=getSummaryReport`;
+      if (startDate) url += `&startDate=${startDate}`;
+      if (endDate) url += `&endDate=${endDate}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success" && data.report) {
+            statusDiv.className = 'success';
+            statusDiv.innerText = 'Report generated successfully!';
+
+            if (data.report.length === 0) {
+              reportResultDiv.innerHTML = '<p style="text-align: center; color: #6c757d;">No records found for the selected date range.</p>';
+              return;
+            }
+
+            let html = `
+              <table style="width: 100%; border-collapse: collapse; background: white; font-size: 14px;">
+                <thead>
+                  <tr style="background-color: #e9ecef; border-bottom: 2px solid #ced4da;">
+                    <th style="padding: 8px; text-align: left;">Item Code</th>
+                    <th style="padding: 8px; text-align: left;">Item Name</th>
+                    <th style="padding: 8px; text-align: right;">Stock Added</th>
+                    <th style="padding: 8px; text-align: right;">QA Defects</th>
+                  </tr>
+                </thead>
+                <tbody>
+            `;
+
+            data.report.forEach(row => {
+              html += `
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                  <td style="padding: 8px;">${row.itemCode}</td>
+                  <td style="padding: 8px;">${row.itemName}</td>
+                  <td style="padding: 8px; text-align: right; color: green; font-weight: bold;">${row.totalStockAdded}</td>
+                  <td style="padding: 8px; text-align: right; color: red; font-weight: bold;">${row.totalDefects}</td>
+                </tr>
+              `;
+            });
+
+            html += `</tbody></table>`;
+            reportResultDiv.innerHTML = html;
+          } else {
+            statusDiv.className = 'error';
+            statusDiv.innerText = 'Failed to load report.';
+          }
+        })
+        .catch(err => {
+          statusDiv.className = 'error';
+          statusDiv.innerText = 'Error: ' + err.message;
+        });
     }
   </script>
   <br>
