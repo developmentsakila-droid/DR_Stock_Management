@@ -312,7 +312,7 @@
 
   <h2>
     <svg class="icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 2.84L18 11v7H6v-7l6-5.16zM10 13h4v5h-4v-5z"/></svg>
-    Dreamron Warehouse Stock Count[cite: 1]
+    Dreamron Warehouse Stock Count
   </h2>
 
   <div class="top-info">
@@ -487,7 +487,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_DEPLOYMENT_URL';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSztlq_hVXQgB-Qf8xjtLzZI9u4ICys1rSBDtOR_sQEXAKPeC9niVlPqVxe0-sIoIa/exec';
 
     let html5QrCode = null;
     let isCameraActive = false;
@@ -926,7 +926,7 @@
             statusDiv.innerText = 'Failed to load report.';
           }
         })
-        .catch_err => {
+        .catch(err => {
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + err.message;
         });
