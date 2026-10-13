@@ -264,6 +264,18 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
+    .report-modal-content {
+      background: #ffffff;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -417,7 +429,7 @@
     </button>
   </form>
 
-  <!-- Summary Report Section -->
+  <!-- Summary Report Section Control -->
   <div class="top-info" style="margin-top: 25px;">
     <h3>Summary Report</h3>
     <div class="row">
@@ -430,16 +442,30 @@
         <input type="date" id="endDate">
       </div>
     </div>
-    <div class="row" style="margin-top: 10px; gap: 5px;">
-      <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 0; flex: 1;" onclick="fetchSummaryReport()">Generate Report</button>
-      <button type="button" id="downloadReportBtn" class="btn-submit" style="background-color: #6c757d; margin-top: 0; flex: 1;" onclick="downloadCSVReport()" disabled>Download CSV</button>
-    </div>
+    <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 10px;" onclick="fetchSummaryReport()">Generate Report (Popup)</button>
   </div>
-
-  <div id="reportResult" style="margin-top: 15px; overflow-x: auto;"></div>
 
   <div id="status"></div>
 
+  <!-- Summary Report Modal / Separate Frame Overlay -->
+  <div id="reportModal" class="modal-overlay">
+    <div class="report-modal-content">
+      <div class="modal-header" style="padding: 15px 20px 10px 20px; margin-bottom: 0;">
+        <h3>
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Summary Report Frame
+        </h3>
+        <button type="button" class="modal-close" onclick="closeReportModal()">✕</button>
+      </div>
+      <div id="reportResult" style="padding: 15px 20px; overflow-y: auto; flex: 1;"></div>
+      <div style="padding: 12px 20px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" id="downloadReportBtn" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold;" onclick="downloadCSVReport()" disabled>Download CSV</button>
+        <button type="button" style="padding: 10px 15px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;" onclick="closeReportModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA Defect Modal -->
   <div id="qaDefectModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -496,7 +522,7 @@
     let isCameraActive = false;
     let debounceTimer;
     let calcExpr = "";
-    let lastReportData = []; // Store report data for CSV export
+    let lastReportData = [];
 
     function toggleCalculator() {
       const calcBox = document.getElementById('calcBox');
@@ -880,9 +906,9 @@
       let reportResultDiv = document.getElementById('reportResult');
       let downloadBtn = document.getElementById('downloadReportBtn');
 
-      statusDiv.className = 'loading';
-      statusDiv.innerText = 'Generating report...';
-      reportResultDiv.innerHTML = '';
+      // Open popup frame immediately with loading indicator
+      document.getElementById('reportModal').style.display = 'flex';
+      reportResultDiv.innerHTML = '<p style="text-align: center; color: #0056b3; font-weight: bold; margin-top: 30px;">Generating report...</p>';
       downloadBtn.disabled = true;
       lastReportData = [];
 
@@ -899,16 +925,16 @@
             lastReportData = data.report;
 
             if (data.report.length === 0) {
-              reportResultDiv.innerHTML = '<p style="text-align: center; color: #6c757d;">No records found for the selected date range.</p>';
+              reportResultDiv.innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 30px;">No records found for the selected date range.</p>';
               return;
             }
 
-            downloadBtn.disabled = false; // Enable download button
+            downloadBtn.disabled = false;
 
             let html = `
               <table style="width: 100%; border-collapse: collapse; background: white; font-size: 14px;">
                 <thead>
-                  <tr style="background-color: #e9ecef; border-bottom: 2px solid #ced4da;">
+                  <tr style="background-color: #e9ecef; border-bottom: 2px solid #ced4da; position: sticky; top: 0;">
                     <th style="padding: 8px; text-align: left;">Item Code</th>
                     <th style="padding: 8px; text-align: left;">Item Name</th>
                     <th style="padding: 8px; text-align: right;">Stock Added</th>
@@ -934,12 +960,18 @@
           } else {
             statusDiv.className = 'error';
             statusDiv.innerText = 'Failed to load report.';
+            reportResultDiv.innerHTML = '<p style="text-align: center; color: red; margin-top: 30px;">Failed to load report data from server.</p>';
           }
         })
         .catch(err => {
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + err.message;
+          reportResultDiv.innerHTML = `<p style="text-align: center; color: red; margin-top: 30px;">Error: ${err.message}</p>`;
         });
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').style.display = 'none';
     }
 
     function downloadCSVReport() {
