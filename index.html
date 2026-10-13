@@ -215,7 +215,7 @@
 
     .btn-qa {
       width: 100%;
-      background-color: #ffc107;
+      background-color: #ffd454;
       color: #212529;
       padding: 10px;
       border: none;
@@ -361,12 +361,7 @@
     
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
 
-    <!-- QA Defect Button (Disabled by Default - Enabled only after item found) -->
-    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
-      <!-- Warning / Defect Icon -->
-      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-      Add QA Defect
-    </button>
+   
     
     <div class="row">
       <div class="col">
@@ -440,6 +435,15 @@
       <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       Add New Item
     </button>
+
+     <!-- QA Defect Button (Disabled by Default - Enabled only after item found) -->
+    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
+      <!-- Warning / Defect Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      Add QA Defect
+    </button>
+
+    
   </form>
 
   <div id="status"></div>
