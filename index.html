@@ -466,12 +466,7 @@
           <div class="col">
             <label for="qaCategory">Defect Category *</label>
             <select id="qaCategory" class="modal-select" required>
-              <option value="Packaging Damage">Packaging Damage</option>
-              <option value="Leakage / Spillage">Leakage / Spillage</option>
-              <option value="Labeling Error">Labeling Error</option>
-              <option value="Expired / Near Expiry">Expired / Near Expiry</option>
-              <option value="Manufacturing Defect">Manufacturing Defect</option>
-              <option value="Other">Other</option>
+              <option value="">Loading categories...</option>
             </select>
           </div>
           <div class="col">
@@ -790,7 +785,7 @@
       });
     }
 
-    // QA Defect Modal Management Functions
+    // Fetch Defect Categories from Google Sheets and Open Modal
     function openQADefectModal() {
       document.getElementById('qaDefectForm').reset();
       
@@ -806,7 +801,25 @@
         document.getElementById('qaItemName').value = currentItemName || currentItemCode;
       }
 
+      // Fetch dynamic categories from list_sheet Column A
+      const categorySelect = document.getElementById('qaCategory');
+      categorySelect.innerHTML = '<option value="">Loading categories...</option>';
+      
       document.getElementById('qaDefectModal').style.display = 'flex';
+
+      fetch(`${SCRIPT_URL}?action=getDefectCategories`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success" && data.categories && data.categories.length > 0) {
+            categorySelect.innerHTML = data.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+          } else {
+            categorySelect.innerHTML = '<option value="Other">Other</option>';
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load categories:", err);
+          categorySelect.innerHTML = '<option value="Other">Other</option>';
+        });
     }
 
     function closeQADefectModal() {
