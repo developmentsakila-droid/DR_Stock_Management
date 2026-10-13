@@ -940,33 +940,35 @@
     }
 
     function openSummaryModal() {
-      const statsDiv = document.getElementById('summaryStats');
-      statsDiv.innerHTML = 'Fetching summary report...';
-      document.getElementById('summaryModal').style.display = 'flex';
+  const statsDiv = document.getElementById('summaryStats');
+  statsDiv.innerHTML = 'Fetching summary report...';
+  document.getElementById('summaryModal').style.display = 'flex';
 
-      fetch(`${SCRIPT_URL}?action=getSummaryReport`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            statsDiv.innerHTML = `
-              <strong>Total Stock Entries:</strong> ${data.totalEntries || 0}<br>
-              <strong>Total Quantity Counted:</strong> ${data.totalQuantity || 0}<br>
-              <strong>Total QA Defects Logged:</strong> ${data.totalDefects || 0}<br>
-              <strong>Last Updated:</strong> ${new Date().toLocaleTimeString()}
-            `;
-          } else {
-            statsDiv.innerHTML = 'Could not load summary statistics.';
-          }
-        })
-        .catch(() => {
-          statsDiv.innerHTML = `
-            <strong>Summary Report:</strong><br>
-            • Connection active to Apps Script.<br>
-            • To display live totals, ensure your Google Apps Script handles <code>?action=getSummaryReport</code>.
-          `;
-        });
-    }
-
+  fetch(`${SCRIPT_URL}?action=getSummaryReport`)
+    .then(res => {
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.json();
+    })
+    .then(data => {
+      if (data.status === "success") {
+        statsDiv.innerHTML = `
+          <strong>Total Stock Entries:</strong> ${data.totalEntries || 0}<br>
+          <strong>Total Quantity Counted:</strong> ${data.totalQuantity || 0}<br>
+          <strong>Total QA Defects Logged:</strong> ${data.totalDefects || 0}<br>
+          <hr style="border:0; border-top:1px solid #dee2e6; margin:10px 0;">
+          <small style="color: #666;">Last Updated: ${new Date().toLocaleTimeString()}</small>
+        `;
+      } else {
+        statsDiv.innerHTML = 'Error loading summary statistics: ' + (data.message || 'Unknown error');
+      }
+    })
+    .catch(err => {
+      statsDiv.innerHTML = `
+        <span class="error">Failed to connect to Google Sheets.</span><br>
+        <small>Error: ${err.message}</small>
+      `;
+    });
+}
     function closeSummaryModal() {
       document.getElementById('summaryModal').style.display = 'none';
     }
