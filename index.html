@@ -360,8 +360,13 @@
     </label>
     
     <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
- 
 
+    <!-- QA Defect Button (Disabled by Default - Enabled only after item found) -->
+    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
+      <!-- Warning / Defect Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      Add QA Defect
+    </button>
     
     <div class="row">
       <div class="col">
@@ -435,14 +440,6 @@
       <svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       Add New Item
     </button>
-
-       <!-- QA Defect Button (Disabled by Default) -->
-    <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
-      <!-- Warning / Defect Icon -->
-      <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-      Add QA Defect
-    </button>
-
   </form>
 
   <div id="status"></div>
@@ -637,12 +634,10 @@
         itemNameInput.setAttribute('readonly', 'readonly');
         addBtn.disabled = true;
         submitBtn.disabled = true;
-        qaBtn.disabled = true;
+        qaBtn.disabled = true; // Disabled when input is empty
         statusDiv.innerText = '';
         return;
       }
-
-      qaBtn.disabled = false;
 
       debounceTimer = setTimeout(() => {
         statusDiv.className = 'loading';
@@ -658,6 +653,7 @@
               itemNameInput.setAttribute('readonly', 'readonly');
               addBtn.disabled = true; 
               submitBtn.disabled = false;
+              qaBtn.disabled = false; // Enabled only after item is found!
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
@@ -667,6 +663,7 @@
               itemNameInput.removeAttribute('readonly');
               addBtn.disabled = false; 
               submitBtn.disabled = true;
+              qaBtn.disabled = true; // Kept disabled for new un-found items
               statusDiv.className = 'warning';
               statusDiv.innerText = 'New barcode detected! Type Item Code & Name';
             }
@@ -675,6 +672,7 @@
             statusDiv.className = '';
             statusDiv.innerText = '';
             submitBtn.disabled = true;
+            qaBtn.disabled = true;
           });
       }, 300);
     }
@@ -786,7 +784,7 @@
 
         btn.disabled = true;
         addBtn.disabled = true;
-        qaBtn.disabled = true;
+        qaBtn.disabled = true; // Disabled on reset
       })
       .catch(err => {
         statusDiv.className = 'error';
@@ -803,7 +801,7 @@
       const currentItemCode = document.getElementById('itemCode').value.trim();
       const currentItemName = document.getElementById('itemName').value.trim();
 
-      document.getElementById('qaItemCode').value = currentItemCode || document.getElementById('barcode').value.trim();
+      document.getElementById('qaItemCode').value = currentItemCode || "N/A";
       document.getElementById('qaItemName').value = currentItemName || "N/A";
 
       // Fetch dynamic categories from list_sheet Column A
