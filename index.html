@@ -37,10 +37,14 @@
     .row {
       display: flex;
       gap: 10px;
+      width: 100%;
+      margin-bottom: 5px;
     }
 
     .col {
       flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     label {
@@ -184,13 +188,13 @@
     .btn-submit {
       width: 100%;
       background-color: #28a745;
-      color: #292929;
+      color: #ffffff;
       padding: 12px;
       border: none;
       border-radius: 4px;
       font-size: 18px;
       cursor: pointer;
-        font-weight: bold;
+      font-weight: bold;
       margin-top: 15px;
       display: flex;
       align-items: center;
@@ -201,7 +205,7 @@
     .btn-add-item {
       width: 100%;
       background-color: #17a2b8;
-      color: #292929;
+      color: #ffffff;
       padding: 10px;
       border: none;
       border-radius: 4px;
@@ -216,13 +220,30 @@
 
     .btn-qa {
       width: 100%;
-      background-color: #ffd454;
-      color: #292929;
+      background-color: #ffc107;
+      color: #212529;
       padding: 10px;
       border: none;
       border-radius: 4px;
       font-size: 15px;
-      
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-report {
+      width: 100%;
+      background-color: #6f42c1;
+      color: #ffffff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
       display: flex;
@@ -307,6 +328,16 @@
       background-color: white;
     }
 
+    .report-stats {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      margin-bottom: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
     /* Inline SVG Styling */
     .icon {
       width: 18px;
@@ -354,45 +385,35 @@
   <div id="reader"></div>
 
   <form id="stockForm">
-  
-
-   
-  <div class="row">
-    <!-- Left Side: Barcode -->
-    <div class="col">
+    
+    <!-- Row 1: Barcode (Left) & Item Code (Right) - 50% / 50% Layout -->
+    <div class="row">
+      <div class="col">
         <label for="barcode">
-            <!-- Barcode Icon -->
-            <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
-            Barcode:
+          <!-- Barcode Icon -->
+          <svg class="icon" viewBox="0 0 24 24"><path d="M2 4h2v16H2V4zm3 0h1v16H5V4zm2 0h2v16H7V4zm3 0h1v16h-1V4zm2 0h3v16h-3V4zm4 0h1v16h-1V4zm2 0h2v16h-2V4zm3 0h1v16h-1V4z"/></svg>
+          Barcode:
         </label>
         <input type="text" id="barcode" placeholder="Scan or type barcode" oninput="fetchItemDetails(this.value)" required>
-    </div>
+      </div>
 
-  <div class="col">
-        <label for="itemName">
+      <div class="col">
+        <label for="itemCode">
           <!-- Box Icon -->
           <svg class="icon" viewBox="0 0 24 24"><path d="M20 13H4V4h16v9zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 15H6v-2h12v2z"/></svg>
           Item Code:
         </label>
         <input type="text" id="itemCode" placeholder="Auto-fetches" readonly>
       </div>
-</div>
-
-
-
-        <!-- Right Side: Item Name -->
-    <div class="col">
-        <label for="itemName">
-            <!-- Tag Icon -->
-            <svg class="icon" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
-            Item Name:
-        </label>
-        <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
     </div>
 
-    
-    
-    
+    <!-- Row 2: Item Name (Full Width) -->
+    <label for="itemName">
+      <!-- Tag Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+      Item Name:
+    </label>
+    <input type="text" id="itemName" placeholder="Auto-fetches" readonly>
 
     <!-- Quantity Label & Field with Calculator Toggle -->
     <label for="quantity">
@@ -448,24 +469,29 @@
       Add New Item
     </button>
 
-     <!-- QA Defect Button (Disabled by Default - Enabled only after item found) -->
+    <!-- QA Defect Button -->
     <button type="button" id="qaBtn" class="btn-qa" onclick="openQADefectModal()" disabled>
       <!-- Warning / Defect Icon -->
       <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
       Add QA Defect
     </button>
 
-    
+    <!-- Summary Report Button (su, report) -->
+    <button type="button" id="reportBtn" class="btn-report" onclick="openSummaryModal()">
+      <!-- Chart / Report Icon -->
+      <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Summary Report
+    </button>
+
   </form>
 
   <div id="status"></div>
 
-  <!-- Modal Frame: Add QA Defect (Item Code & Item Name are Readonly) -->
+  <!-- Modal Frame: Add QA Defect -->
   <div id="qaDefectModal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
         <h3>
-          <!-- Warning Icon -->
           <svg class="icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
           Log Quality Defect
         </h3>
@@ -511,15 +537,31 @@
     </div>
   </div>
 
+  <!-- Modal Frame: Summary Report -->
+  <div id="summaryModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          Stock & QA Summary Report
+        </h3>
+        <button type="button" class="modal-close" onclick="closeSummaryModal()">✕</button>
+      </div>
+
+      <div id="summaryStats" class="report-stats">
+        Loading summary report...
+      </div>
+
+      <button type="button" onclick="closeSummaryModal()" style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">Close</button>
+    </div>
+  </div>
+
   <script>
-    // Paste your Google Apps Script Web App Deployment URL here
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK4N6CsuUBPf7Yvb_pL_NEfUvFxx-xKf8xRBqwRU1FGudM1qLO2-gu-gFf7RJZPe3s/exec';
 
     let html5QrCode = null;
     let isCameraActive = false;
     let debounceTimer;
-
-    // Quantity Calculator State Variables
     let calcExpr = "";
 
     function toggleCalculator() {
@@ -669,7 +711,7 @@
               itemNameInput.setAttribute('readonly', 'readonly');
               addBtn.disabled = true; 
               submitBtn.disabled = false;
-              qaBtn.disabled = false; // Enabled only after item is found!
+              qaBtn.disabled = false;
               statusDiv.className = 'success';
               statusDiv.innerText = 'Item found!';
             } else {
@@ -790,13 +832,12 @@
         statusDiv.className = 'success';
         statusDiv.innerText = 'Stock updated successfully!';
 
-        // Reset inputs
         document.getElementById('barcode').value = '';
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
         document.getElementById('itemCode').setAttribute('readonly', 'readonly');
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
-        document.getElementById('quantity').value = '1';
+        document.getElementById('quantity').value = '';
 
         btn.disabled = true;
         addBtn.disabled = true;
@@ -809,18 +850,15 @@
       });
     }
 
-    // Open QA Defect Modal and populate read-only Item Code & Item Name
     function openQADefectModal() {
       document.getElementById('qaDefectForm').reset();
       
-      // Pull Item Code and Item Name from the main form fields
       const currentItemCode = document.getElementById('itemCode').value.trim();
       const currentItemName = document.getElementById('itemName').value.trim();
 
       document.getElementById('qaItemCode').value = currentItemCode || "N/A";
       document.getElementById('qaItemName').value = currentItemName || "N/A";
 
-      // Fetch dynamic categories from list_sheet Column A
       const categorySelect = document.getElementById('qaCategory');
       categorySelect.innerHTML = '<option value="">Loading categories...</option>';
       
@@ -884,7 +922,6 @@
         statusDiv.innerText = 'QA Defect logged successfully!';
         closeQADefectModal();
 
-        // Clear barcode and form details after successful QA defect submission
         document.getElementById('barcode').value = '';
         document.getElementById('itemCode').value = '';
         document.getElementById('itemName').value = '';
@@ -892,7 +929,6 @@
         document.getElementById('itemName').setAttribute('readonly', 'readonly');
         document.getElementById('quantity').value = '';
 
-        // Disable action buttons until next scan
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('addNewItemBtn').disabled = true;
         document.getElementById('qaBtn').disabled = true;
@@ -902,8 +938,40 @@
         statusDiv.innerText = 'Error logging QA defect: ' + err.message;
       });
     }
+
+    function openSummaryModal() {
+      const statsDiv = document.getElementById('summaryStats');
+      statsDiv.innerHTML = 'Fetching summary report...';
+      document.getElementById('summaryModal').style.display = 'flex';
+
+      fetch(`${SCRIPT_URL}?action=getSummaryReport`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            statsDiv.innerHTML = `
+              <strong>Total Stock Entries:</strong> ${data.totalEntries || 0}<br>
+              <strong>Total Quantity Counted:</strong> ${data.totalQuantity || 0}<br>
+              <strong>Total QA Defects Logged:</strong> ${data.totalDefects || 0}<br>
+              <strong>Last Updated:</strong> ${new Date().toLocaleTimeString()}
+            `;
+          } else {
+            statsDiv.innerHTML = 'Could not load summary statistics.';
+          }
+        })
+        .catch(() => {
+          statsDiv.innerHTML = `
+            <strong>Summary Report:</strong><br>
+            • Connection active to Apps Script.<br>
+            • To display live totals, ensure your Google Apps Script handles <code>?action=getSummaryReport</code>.
+          `;
+        });
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summaryModal').style.display = 'none';
+    }
   </script>
   <br>
-  <label for="Name">Developed By HSDP</label>
+  <label style="justify-content: center; font-weight: normal; color: #666;">Developed By HSDP</label>
 </body>
 </html>
