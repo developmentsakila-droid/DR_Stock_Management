@@ -269,7 +269,7 @@
       border-radius: 8px;
       max-width: 600px;
       width: 100%;
-      max-height: 85vh;
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -429,20 +429,10 @@
     </button>
   </form>
 
-  <!-- Summary Report Section Control -->
+  <!-- Summary Report Trigger Button -->
   <div class="top-info" style="margin-top: 25px;">
     <h3>Summary Report</h3>
-    <div class="row">
-      <div class="col">
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate">
-      </div>
-      <div class="col">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate">
-      </div>
-    </div>
-    <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 10px;" onclick="fetchSummaryReport()">Generate Report (Popup)</button>
+    <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 5px;" onclick="openReportModal()">Open Summary Report Popup</button>
   </div>
 
   <div id="status"></div>
@@ -450,12 +440,28 @@
   <!-- Summary Report Modal / Separate Frame Overlay -->
   <div id="reportModal" class="modal-overlay">
     <div class="report-modal-content">
-      <div class="modal-header" style="padding: 15px 20px 10px 20px; margin-bottom: 0;">
-        <h3>
-          <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-          Summary Report Frame
-        </h3>
-        <button type="button" class="modal-close" onclick="closeReportModal()">✕</button>
+      <div class="modal-header" style="padding: 15px 20px 10px 20px; margin-bottom: 0; flex-direction: column; align-items: stretch;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
+          <h3 style="margin: 0;">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Summary Report Frame
+          </h3>
+          <button type="button" class="modal-close" onclick="closeReportModal()">✕</button>
+        </div>
+        <!-- Date filters and Generate button inside popup frame -->
+        <div class="row" style="align-items: flex-end; gap: 8px;">
+          <div class="col">
+            <label for="modalStartDate" style="font-size: 12px; margin-top: 0;">Start Date:</label>
+            <input type="date" id="modalStartDate" style="margin: 2px 0 0 0; padding: 6px; font-size: 13px;">
+          </div>
+          <div class="col">
+            <label for="modalEndDate" style="font-size: 12px; margin-top: 0;">End Date:</label>
+            <input type="date" id="modalEndDate" style="margin: 2px 0 0 0; padding: 6px; font-size: 13px;">
+          </div>
+          <div style="flex: 1;">
+            <button type="button" style="width: 100%; padding: 7px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 2px;" onclick="fetchSummaryReport()">Generate</button>
+          </div>
+        </div>
       </div>
       <div id="reportResult" style="padding: 15px 20px; overflow-y: auto; flex: 1;"></div>
       <div style="padding: 12px 20px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
@@ -899,15 +905,30 @@
       });
     }
 
+    function openReportModal() {
+      // Set Start Date and End Date to TODAY's date automatically
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('modalStartDate').value = today;
+      document.getElementById('modalEndDate').value = today;
+
+      // Clear previous results and open modal
+      document.getElementById('reportResult').innerHTML = '<p style="text-align: center; color: #6c757d; margin-top: 30px;">Select dates above and click Generate.</p>';
+      document.getElementById('downloadReportBtn').disabled = true;
+      lastReportData = [];
+      document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').style.display = 'none';
+    }
+
     function fetchSummaryReport() {
-      let startDate = document.getElementById('startDate').value;
-      let endDate = document.getElementById('endDate').value;
+      let startDate = document.getElementById('modalStartDate').value;
+      let endDate = document.getElementById('modalEndDate').value;
       let statusDiv = document.getElementById('status');
       let reportResultDiv = document.getElementById('reportResult');
       let downloadBtn = document.getElementById('downloadReportBtn');
 
-      // Open popup frame immediately with loading indicator
-      document.getElementById('reportModal').style.display = 'flex';
       reportResultDiv.innerHTML = '<p style="text-align: center; color: #0056b3; font-weight: bold; margin-top: 30px;">Generating report...</p>';
       downloadBtn.disabled = true;
       lastReportData = [];
@@ -968,10 +989,6 @@
           statusDiv.innerText = 'Error: ' + err.message;
           reportResultDiv.innerHTML = `<p style="text-align: center; color: red; margin-top: 30px;">Error: ${err.message}</p>`;
         });
-    }
-
-    function closeReportModal() {
-      document.getElementById('reportModal').style.display = 'none';
     }
 
     function downloadCSVReport() {
