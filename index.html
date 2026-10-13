@@ -430,7 +430,10 @@
         <input type="date" id="endDate">
       </div>
     </div>
-    <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 10px;" onclick="fetchSummaryReport()">Generate Report</button>
+    <div class="row" style="margin-top: 10px; gap: 5px;">
+      <button type="button" class="btn-submit" style="background-color: #17a2b8; margin-top: 0; flex: 1;" onclick="fetchSummaryReport()">Generate Report</button>
+      <button type="button" id="downloadReportBtn" class="btn-submit" style="background-color: #6c757d; margin-top: 0; flex: 1;" onclick="downloadCSVReport()" disabled>Download CSV</button>
+    </div>
   </div>
 
   <div id="reportResult" style="margin-top: 15px; overflow-x: auto;"></div>
@@ -493,6 +496,7 @@
     let isCameraActive = false;
     let debounceTimer;
     let calcExpr = "";
+    let lastReportData = []; // Store report data for CSV export
 
     function toggleCalculator() {
       const calcBox = document.getElementById('calcBox');
@@ -874,10 +878,13 @@
       let endDate = document.getElementById('endDate').value;
       let statusDiv = document.getElementById('status');
       let reportResultDiv = document.getElementById('reportResult');
+      let downloadBtn = document.getElementById('downloadReportBtn');
 
       statusDiv.className = 'loading';
       statusDiv.innerText = 'Generating report...';
       reportResultDiv.innerHTML = '';
+      downloadBtn.disabled = true;
+      lastReportData = [];
 
       let url = `${SCRIPT_URL}?action=getSummaryReport`;
       if (startDate) url += `&startDate=${startDate}`;
@@ -889,11 +896,14 @@
           if (data.status === "success" && data.report) {
             statusDiv.className = 'success';
             statusDiv.innerText = 'Report generated successfully!';
+            lastReportData = data.report;
 
             if (data.report.length === 0) {
               reportResultDiv.innerHTML = '<p style="text-align: center; color: #6c757d;">No records found for the selected date range.</p>';
               return;
             }
+
+            downloadBtn.disabled = false; // Enable download button
 
             let html = `
               <table style="width: 100%; border-collapse: collapse; background: white; font-size: 14px;">
@@ -930,6 +940,25 @@
           statusDiv.className = 'error';
           statusDiv.innerText = 'Error: ' + err.message;
         });
+    }
+
+    function downloadCSVReport() {
+      if (!lastReportData || lastReportData.length === 0) return;
+
+      let csvContent = "data:text/csv;charset=utf-8,Item Code,Item Name,Stock Added,QA Defects\r\n";
+      
+      lastReportData.forEach(row => {
+        let line = `"${row.itemCode}","${row.itemName}",${row.totalStockAdded},${row.totalDefects}`;
+        csvContent += line + "\r\n";
+      });
+
+      let encodedUri = encodeURI(csvContent);
+      let link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Warehouse_Stock_Report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
   <br>
