@@ -740,12 +740,12 @@
         itemName: itemName
       };
 
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
+   fetch(SCRIPT_URL, {
+  method: 'POST',
+  headers: { 'Content-Type': 'text/plain' },
+  body: JSON.stringify(payload)
+})
+.then(res => res.json()) // <--- Can fail due to CORS redirects on Google Apps Script
       .then(response => {
         if (response.status === "success") {
           statusDiv.className = 'success';
