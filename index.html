@@ -190,6 +190,18 @@
       color: var(--text-color);
     }
 
+     .calc-btn1 {
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      background: var(--calc-btn-bg);
+      border: 1px solid var(--calc-btn-border);
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      color: var(--text-color);
+    }
+
     .calc-btn:active {
       background: #ced4da;
     }
@@ -467,12 +479,12 @@
         <button type="button" class="calc-btn" onclick="calcInput('7')">7</button>
         <button type="button" class="calc-btn" onclick="calcInput('8')">8</button>
         <button type="button" class="calc-btn" onclick="calcInput('9')">9</button>
-        <button type="button" class="calc-btn calc-btn-op1" onclick="calcInput('×')">×</button>
+        <button type="button" class="calc-btn1 calc-btn-op1" onclick="calcInput('×')">×</button>
 
         <button type="button" class="calc-btn" onclick="calcInput('4')">4</button>
         <button type="button" class="calc-btn" onclick="calcInput('5')">5</button>
         <button type="button" class="calc-btn" onclick="calcInput('6')">6</button>
-        <button type="button" class="calc-btn calc-btn-op1" onclick="calcInput('+')">+</button>
+        <button type="button" class="calc-btn1 calc-btn-op1" onclick="calcInput('+')">+</button>
 
         <button type="button" class="calc-btn" onclick="calcInput('1')">1</button>
         <button type="button" class="calc-btn" onclick="calcInput('2')">2</button>
