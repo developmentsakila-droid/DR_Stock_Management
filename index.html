@@ -66,31 +66,6 @@
             background-color: rgba(15, 23, 42, 0.9);
             border-color: #1e293b;
         }
-        .btn-calc-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 800;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: color 0.15s ease-in-out;
-            color: #475569;
-            background-color: transparent;
-        }
-        .btn-calc-toggle:hover {
-            color: #059669; 
-        }
-        @media (prefers-color-scheme: dark) {
-            .btn-calc-toggle {
-                color: #94a3b8;
-            }
-            .btn-calc-toggle:hover {
-                color: #ffffff;
-            }
-        }
         .btn-camera {
             width: 100%;
             padding-top: 0.875rem;
@@ -125,6 +100,13 @@
             border-radius: 1rem;
             display: none;
         }
+        .dashboard-card {
+            transition: all 0.25s ease-in-out;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
@@ -143,7 +125,7 @@
     <header class="sticky top-0 z-30 glass-card dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center space-x-3.5 w-full sm:w-auto justify-between sm:justify-start">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
                     <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/30">
                         <i class="fa-solid fa-warehouse"></i>
                     </div>
@@ -165,18 +147,12 @@
                 </button>
             </div>
 
-            <!-- Tab Switcher & Utilities -->
+            <!-- Quick Utilities & Theme -->
             <div class="flex items-center gap-2 flex-wrap justify-center">
-                <div class="flex bg-slate-200/70 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300/50 dark:border-slate-800">
-                    <button onclick="switchTab('delivery')" id="tabBtnDelivery" class="px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 bg-emerald-600 text-white shadow-md">
-                        <i class="fa-solid fa-map-location-dot"></i> Delivery Finder
-                    </button>
-                    <button onclick="switchTab('stock')" id="tabBtnStock" class="btn-calc-toggle">
-                        <i class="fa-solid fa-barcode"></i> Stock Counter
-                    </button>
-                </div>
-
-                <button onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Theme" class="hidden sm:flex p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:scale-105 shadow-sm transition">
+                <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </button>
+                <button onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Theme" class="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:scale-105 shadow-sm transition">
                     <i class="fa-solid fa-sun text-base" id="themeIcon"></i>
                 </button>
             </div>
@@ -185,8 +161,89 @@
 
     <main class="max-w-6xl mx-auto px-4 pt-6">
 
+        <!-- ================= DASHBOARD HOME PAGE ================= -->
+        <div id="sectionDashboard" class="space-y-6">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center sm:text-left">
+                    <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
+                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Welcome to Warehouse Portal</h2>
+                    <p class="text-emerald-100 text-xs sm:text-sm font-medium max-w-lg">Manage dispatch locations, track stock counts with barcode scanners, assign vehicles, and coordinate delivery schedules seamlessly.</p>
+                </div>
+                <div class="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center text-3xl shrink-0 border border-white/20 shadow-inner">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </div>
+            </div>
+
+            <h3 class="font-extrabold text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Navigation Modules</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Delivery Finder Card -->
+                <div onclick="switchTab('delivery')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold border border-emerald-500/20">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Finder</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Search customer locations, routes, and live GPS maps.</p>
+                    </div>
+                    <div class="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 gap-1 pt-2">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Stock Count Card -->
+                <div onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
+                        <i class="fa-solid fa-barcode"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Stock Count & QA</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Scan barcodes, log inventory additions, and track QA defects.</p>
+                    </div>
+                    <div class="flex items-center text-xs font-bold text-blue-600 dark:text-blue-400 gap-1 pt-2">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Vehicle Card -->
+                <div onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Manage delivery trucks, drivers, and capacity logs.</p>
+                    </div>
+                    <div class="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 gap-1 pt-2">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Delivery Schedule Card -->
+                <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">View daily dispatch itineraries and route calendars.</p>
+                    </div>
+                    <div class="flex items-center text-xs font-bold text-purple-600 dark:text-purple-400 gap-1 pt-2">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
-        <div id="sectionDelivery" class="space-y-6">
+        <div id="sectionDelivery" class="space-y-6 hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Location Finder</h3>
+            </div>
+
             <!-- Delivery Action Bar -->
             <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
                 <div class="flex items-center gap-2">
@@ -207,7 +264,6 @@
 
             <!-- Search & Filters Container -->
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-4">
-                <!-- Search bar -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-lg"></i>
@@ -220,7 +276,6 @@
                     </button>
                 </div>
 
-                <!-- Category Filter Pills -->
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
                     <button onclick="setCustomerTypeFilter('ALL')" id="typeBtn-ALL" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md">
                         <i class="fa-solid fa-layer-group"></i> All Types
@@ -239,7 +294,6 @@
                     </button>
                 </div>
 
-                <!-- Route Buttons -->
                 <div>
                     <div class="flex items-center justify-between mb-2 px-1">
                         <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
@@ -252,7 +306,6 @@
                     <div class="flex flex-wrap gap-2 pt-1" id="routeTabs"></div>
                 </div>
 
-                <!-- Route Action Banner -->
                 <div class="bg-gradient-to-r from-emerald-50 via-teal-50/50 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-inner">
                     <div class="flex items-center gap-3.5">
                         <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0 border border-emerald-500/20">
@@ -268,7 +321,6 @@
                         <button onclick="openMyMapModal()" class="px-3.5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
                             <i class="fa-solid fa-map text-emerald-500"></i> My Maps
                         </button>
-
                         <button onclick="launchFullRouteMap()" class="btn-nav-mix w-full sm:w-auto px-4 py-2.5 font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
                             <i class="fa-solid fa-diamond-turn-right text-base text-emerald-200"></i>
                             <span>Navigate Route Points</span>
@@ -277,7 +329,6 @@
                 </div>
             </section>
 
-            <!-- Count & Global Control Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 px-1">
                 <p class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400" id="resultCount">Showing 0 locations</p>
                 <div class="flex items-center gap-2 flex-wrap">
@@ -291,10 +342,8 @@
                 </div>
             </div>
 
-            <!-- Customer Cards Grid -->
             <div id="customerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-            <!-- Empty State -->
             <div id="emptyState" class="hidden text-center py-16 px-4 glass-card dark:bg-slate-900/60 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 my-4 shadow-sm">
                 <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-3.5 text-2xl border border-emerald-500/20">
                     <i class="fa-solid fa-map-pin"></i>
@@ -309,27 +358,32 @@
 
         <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
         <div id="sectionStock" class="space-y-6 hidden">
-            <!-- Auditor Info Card -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Stock Counter & QA Inspection</h3>
+            </div>
+
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
                 </h3>
 
-                 <div class="top-info">
-    <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
-            <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-        </div>
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Warehouse Position</label>
-            <input type="text" id="position" placeholder="e.g. Stock Auditor" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-        </div>
-    </div>
-</div>
+                <div class="top-info">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
+                            <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Warehouse Position</label>
+                            <input type="text" id="position" placeholder="e.g. Stock Auditor" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Camera Scanner Section -->
             <section class="scanner-card">
               <button type="button" id="camBtn" onclick="toggleCamera()" class="btn-camera">
                 <i class="fa-solid fa-camera text-base"></i>
@@ -338,9 +392,8 @@
               <div id="reader"></div>
             </section>
 
-            <!-- Stock Input Form Section -->
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
-                <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Barcode *</label>
                         <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
@@ -366,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- Interactive Calculator Dropdown -->
                 <div id="calcBox" class="hidden bg-slate-100 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
                     <div id="calcDisplay" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-3 rounded-xl font-mono text-right text-lg font-bold text-slate-900 dark:text-white">0</div>
                     <div class="grid grid-cols-4 gap-2">
@@ -392,7 +444,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <button type="button" id="submitBtn" onclick="submitStockData()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition disabled:opacity-50" disabled>
                         <i class="fa-solid fa-check"></i> Submit Stock
@@ -406,7 +457,6 @@
                 </div>
             </section>
 
-            <!-- Summary Report Section Card -->
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl flex items-center justify-between gap-4">
                 <div>
                     <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Summary Report</h4>
@@ -418,6 +468,60 @@
             </section>
 
             <div id="status" class="text-center font-bold text-sm"></div>
+        </div>
+
+        <!-- ================= TAB 3: VEHICLE MANAGEMENT ================= -->
+        <div id="sectionVehicle" class="space-y-6 hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
+            </div>
+
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet & Assignment Registry
+                    </h4>
+                    <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
+                        <i class="fa-solid fa-plus"></i> Add Vehicle
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Manage assigned transport vehicles, drivers, and loading status.</p>
+                
+                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
+                    <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicles registered yet or ready for display.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= TAB 4: DELIVERY SCHEDULE ================= -->
+        <div id="sectionSchedule" class="space-y-6 hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Schedule</h3>
+            </div>
+
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-purple-500"></i> Dispatch Itineraries
+                    </h4>
+                    <button class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
+                        <i class="fa-solid fa-plus"></i> New Schedule
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Organize and track upcoming delivery dates and dispatch order sheets.</p>
+                
+                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
+                    <i class="fa-solid fa-calendar-days text-3xl text-slate-400 mb-2"></i>
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No schedules created for this date range.</p>
+                </div>
+            </section>
         </div>
     </main>
 
@@ -666,17 +770,12 @@
         }
 
         function switchTab(tab) {
-            const isDelivery = tab === 'delivery';
-            document.getElementById('sectionDelivery').classList.toggle('hidden', !isDelivery);
-            document.getElementById('sectionStock').classList.toggle('hidden', isDelivery);
-            
-            document.getElementById('tabBtnDelivery').className = isDelivery 
-                ? "px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 bg-emerald-600 text-white shadow-md" 
-                : "px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900";
-            
-            document.getElementById('tabBtnStock').className = !isDelivery 
-                ? "px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 bg-emerald-600 text-white shadow-md" 
-                : "px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900";
+            const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule'];
+            sections.forEach(s => {
+                const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+                if (el) el.classList.toggle('hidden', s !== tab);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function initTheme() {
@@ -933,7 +1032,7 @@
             window.open(mapUrl, '_blank');
         }
 
-        // ================= MODAL HANDLERS (DELIVERY & TEAM) =================
+        // ================= MODAL HANDLERS =================
         function openAddModal() {
             document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-600"></i> Add Delivery Location`;
             document.getElementById('customerForm').reset();
@@ -1267,7 +1366,6 @@
             });
         }
 
-        // Report & QA Modals
         function openReportModal() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('modalStartDate').value = today;
