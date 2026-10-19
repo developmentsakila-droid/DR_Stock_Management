@@ -20,9 +20,6 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {}
                     }
                 }
             }
@@ -87,12 +84,6 @@
         .btn-camera:hover {
             background-color: #044b70;
         }
-        .scanner-reader {
-            display: none;
-        }
-        .scanner-reader.active {
-            display: block;
-        }
         #reader {
             width: 100%;
             min-height: 220px;
@@ -151,6 +142,9 @@
             <div class="flex items-center gap-2 flex-wrap justify-center">
                 <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                     <i class="fa-solid fa-house"></i> Dashboard
+                </button>
+                <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition hover:bg-slate-50">
+                    <i class="fa-solid fa-sun text-base" id="themeIcon"></i> Theme
                 </button>
             </div>
         </div>
@@ -330,7 +324,7 @@
                         <i class="fa-solid fa-eye" id="globalToggleIcon"></i>
                         <span id="globalToggleText">Show All Details</span>
                     </button>
-                    <button onclick="fetchDeliveryData()" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                    <button onclick="fetchAllData()" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
                         <i class="fa-solid fa-rotate-right text-emerald-500"></i> Refresh
                     </button>
                 </div>
@@ -775,26 +769,32 @@
         function initTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
-                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-base';
-                document.getElementById('themeIconMobile').className = 'fa-solid fa-moon text-base';
+                const themeIcon = document.getElementById('themeIcon');
+                const themeIconMobile = document.getElementById('themeIconMobile');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
+                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
             } else {
                 document.documentElement.classList.remove('dark');
-                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-base';
-                document.getElementById('themeIconMobile').className = 'fa-solid fa-sun text-base';
+                const themeIcon = document.getElementById('themeIcon');
+                const themeIconMobile = document.getElementById('themeIconMobile');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
+                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
             }
         }
 
         function toggleTheme() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeIconMobile = document.getElementById('themeIconMobile');
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.theme = 'light';
-                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-base';
-                document.getElementById('themeIconMobile').className = 'fa-solid fa-sun text-base';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
+                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
             } else {
                 document.documentElement.classList.add('dark');
                 localStorage.theme = 'dark';
-                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-base';
-                document.getElementById('themeIconMobile').className = 'fa-solid fa-moon text-base';
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
+                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
             }
         }
 
@@ -926,7 +926,7 @@
                 const isExpanded = expandedCards.has(item.id) || allExpanded;
                 const mapSingleUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
                 let badgeClass = "bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/50";
-                if(item.type.includes("Agency")) badgeClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/50";
+                if(item.type && item.type.includes("Agency")) badgeClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/50";
                 if(item.type === "Modern Trade") badgeClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/50";
 
                 return `
@@ -934,26 +934,26 @@
                         <div>
                             <div class="flex items-start justify-between gap-2 mb-3">
                                 <div>
-                                    <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">${item.type}</span>
-                                    <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition-colors">${item.name}</h3>
+                                    <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">${item.type || 'Direct Customer'}</span>
+                                    <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition-colors">${item.name || ''}</h3>
                                 </div>
                                 <span class="text-xs font-bold px-2.5 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shrink-0 flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-route text-emerald-500"></i>${item.route}
+                                    <i class="fa-solid fa-route text-emerald-500"></i>${item.route || ''}
                                 </span>
                             </div>
                             <p class="text-xs text-slate-600 dark:text-slate-400 font-medium mb-4 flex items-start gap-2">
                                 <i class="fa-solid fa-location-dot text-rose-500 mt-0.5 shrink-0"></i>
-                                <span>${item.address}</span>
+                                <span>${item.address || ''}</span>
                             </p>
                             <div class="${isExpanded ? 'block' : 'hidden'} space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 mb-4 text-xs animate-fadeIn">
                                 <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200/60">
                                     <div>
                                         <p class="text-[10px] font-extrabold text-slate-400 uppercase">Phone</p>
-                                        <a href="tel:${item.phone}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone}</a>
+                                        <a href="tel:${item.phone}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || ''}</a>
                                     </div>
                                     <div>
                                         <p class="text-[10px] font-extrabold text-slate-400 uppercase">GPS Coords</p>
-                                        <p class="font-mono text-slate-700 dark:text-slate-300 mt-0.5 select-all">${item.lat}, ${item.lng}</p>
+                                        <p class="font-mono text-slate-700 dark:text-slate-300 mt-0.5 select-all">${item.lat || ''}, ${item.lng || ''}</p>
                                     </div>
                                     <div>
                                         <p class="text-[10px] font-extrabold text-slate-400 uppercase">ASM</p>
