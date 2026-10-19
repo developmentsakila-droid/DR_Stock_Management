@@ -22,10 +22,7 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        brand: {
-                           
-                            
-                        }
+                        brand: {}
                     }
                 }
             }
@@ -52,115 +49,81 @@
             backdrop-filter: blur(12px);
         }
         .dark .glass-card {
-            background: rgba(15, 23, 242, 0.85);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
         }
-        
-   .scanner-card {
-  background-color: #ffffff; /* Clean solid white background */
-  border: 1.5px solid #e2e8f0; /* Crisp light border */
-  border-radius: 1.5rem; /* rounded-3xl */
-  padding: 1.25rem; /* p-5 */
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02); /* Soft professional shadow */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem; /* space-y-4 */
-}
-
-/* Dark mode support for the scanner card */
-.dark .scanner-card {
-  background-color: rgba(15, 23, 42, 0.9); /* slate-900/90 */
-  border-color: #1e293b; /* dark border */
-}
-
-
-        .btn-calc-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  border-radius: 0.75rem;
-  border: none;
-  cursor: pointer;
-  transition: color 0.15s ease-in-out;
-  color: #475569; /* slate-600 */
-  background-color: transparent; /* Add a background-color here if you need a solid fill */
-}
-
-.btn-calc-toggle:hover {
-  color: #0f472a; 
-  
-}
-
-/* If you need dark mode support */
-@media (prefers-color-scheme: dark) {
-  .btn-calc-toggle {
-    color: #94a3b8; /* slate-400 */
-  }
-  .btn-calc-toggle:hover {
-    color: #ffffff; /* white */
-  }
-}
-
-        /* 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
         .scanner-card {
-  background-color: rgba(255, 255, 255, 0.7); /* Adjust as needed for your glass effect */
-  border: 1px solid rgba(226, 232, 240, 0.8); /* border-slate-200/80 */
-  border-radius: 1.5rem; /* rounded-3xl */
-  padding: 1.25rem; /* p-5 */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem; /* space-y-4 */
-}
-
-.btn-camera {
-  width: 100%;
-  padding-top: 0.875rem; /* py-3.5 */
-  padding-bottom: 0.875rem;
-  background-color: #056396; /* bg-emerald-600 */
-  color: #ffffff;
-  font-weight: 800; /* font-extrabold */
-  border-radius: 1rem; /* rounded-2xl */
-  font-size: 0.875rem; /* text-sm */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem; /* gap-2 */
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.25); /* shadow-lg shadow-emerald-600/25 */
-  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.btn-camera:hover {
-  background-color: #055078; /* hover:bg-emerald-700 */
-}
-
-.scanner-reader {
-  display: none;/* hidden */
-}
-
-.scanner-reader.active {
-  display: block;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .scanner-card {
-    background-color: rgba(15, 23, 42, 0.9); /* dark:bg-slate-900/90 */
-    border-color: #1e293b; /* dark:border-slate-800 */
-  }
-}
-               /* 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 */
-        
+            background-color: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .dark .scanner-card {
+            background-color: rgba(15, 23, 42, 0.9);
+            border-color: #1e293b;
+        }
+        .btn-calc-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out;
+            color: #475569;
+            background-color: transparent;
+        }
+        .btn-calc-toggle:hover {
+            color: #059669; 
+        }
+        @media (prefers-color-scheme: dark) {
+            .btn-calc-toggle {
+                color: #94a3b8;
+            }
+            .btn-calc-toggle:hover {
+                color: #ffffff;
+            }
+        }
+        .btn-camera {
+            width: 100%;
+            padding-top: 0.875rem;
+            padding-bottom: 0.875rem;
+            background-color: #056396;
+            color: #ffffff;
+            font-weight: 800;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(5, 99, 150, 0.25);
+            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .btn-camera:hover {
+            background-color: #044b70;
+        }
+        .scanner-reader {
+            display: none;
+        }
+        .scanner-reader.active {
+            display: block;
+        }
         #reader {
             width: 100%;
             min-height: 220px;
             overflow: hidden;
             border-radius: 1rem;
+            display: none;
         }
     </style>
 </head>
@@ -364,14 +327,14 @@
             </section>
 
             <!-- Camera Scanner Section -->
-  <!-- Camera Scanner Section -->
-<section class="scanner-card">
-  <button type="button" id="camBtn" onclick="toggleCamera()" class="btn-camera">
-    <i class="fa-solid fa-camera text-base"></i>
-    <span id="camBtnText">Turn Camera ON</span>
-  </button>
-  <div id="reader" class="scanner-reader"></div>
-</section>
+            <section class="scanner-card">
+              <button type="button" id="camBtn" onclick="toggleCamera()" class="btn-camera">
+                <i class="fa-solid fa-camera text-base"></i>
+                <span id="camBtnText">Turn Camera ON</span>
+              </button>
+              <div id="reader"></div>
+            </section>
+
             <!-- Stock Input Form Section -->
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -429,7 +392,7 @@
                 <!-- Action Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <button type="button" id="submitBtn" onclick="submitStockData()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition disabled:opacity-50" disabled>
-                        <i class="fa-solid fa-check">></i> Submit Stock
+                        <i class="fa-solid fa-check"></i> Submit Stock
                     </button>
                     <button type="button" id="addNewItemBtn" onclick="addNewItemToSheet()" class="py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50" disabled>
                         <i class="fa-solid fa-plus"></i> Add New Item
@@ -672,7 +635,6 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Replace with your deployed Google Apps Script Web App URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzh-XAW9q3SUCZboU4TS9Z00UWdx9Vn30Xc5EQ20YcMt0sEtqgzv3Y5rftfBVQ5tvxh/exec";
 
         let locations = [];
@@ -1143,31 +1105,67 @@
         }
 
         function startCamera() {
+            const camBtnText = document.getElementById('camBtnText');
+            const camBtn = document.getElementById('camBtn');
             const readerDiv = document.getElementById('reader');
-            readerDiv.classList.remove('hidden');
+
+            readerDiv.style.display = 'block';
             html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, (text) => {
-                document.getElementById('barcode').value = text;
-                stopCamera();
-                fetchItemDetails(text);
-            }, () => {}).then(() => {
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 150 }
+            };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanError
+            ).then(() => {
                 isCameraActive = true;
-                document.getElementById('camBtnText').textContent = "Turn Camera OFF";
-                document.getElementById('camBtn').className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
-            }).catch(err => { alert("Camera error: " + err); readerDiv.classList.add('hidden'); });
+                camBtnText.textContent = "Turn Camera OFF";
+                camBtn.className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
+            }).catch(err => {
+                alert("Camera error: " + err);
+                readerDiv.style.display = 'none';
+            });
         }
 
         function stopCamera() {
+            const camBtnText = document.getElementById('camBtnText');
+            const camBtn = document.getElementById('camBtn');
+            const readerDiv = document.getElementById('reader');
+
             if (html5QrCode && isCameraActive) {
                 html5QrCode.stop().then(() => {
                     html5QrCode.clear();
                     isCameraActive = false;
-                    document.getElementById('reader').classList.add('hidden');
-                    document.getElementById('camBtnText').textContent = "Turn Camera ON";
-                    document.getElementById('camBtn').className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
+                    readerDiv.style.display = 'none';
+                    camBtnText.textContent = "Turn Camera ON";
+                    camBtn.className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
                 }).catch(err => console.log(err));
             }
         }
+
+        function onScanSuccess(decodedText) {
+            document.getElementById('barcode').value = decodedText;
+
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                osc.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch (e) {}
+
+            stopCamera();
+            fetchItemDetails(decodedText);
+            const qtyInput = document.getElementById('quantity');
+            if(qtyInput) qtyInput.select();
+        }
+
+        function onScanError(error) {}
 
         function fetchItemDetails(barcode) {
             clearTimeout(debounceTimer);
