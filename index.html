@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dreamron Warehouse - Management Portal</title>
+    <title>Warehouse Management</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Html5-Qrcode Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
     
     <script>
         tailwind.config = {
@@ -20,6 +18,13 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
                     }
                 }
             }
@@ -49,102 +54,57 @@
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
         }
-        .scanner-card {
-            background-color: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .dark .scanner-card {
-            background-color: rgba(15, 23, 42, 0.9);
-            border-color: #1e293b;
-        }
-        .btn-camera {
-            width: 100%;
-            padding-top: 0.875rem;
-            padding-bottom: 0.875rem;
-            background-color: #056396;
-            color: #ffffff;
-            font-weight: 800;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(5, 99, 150, 0.25);
-            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        .btn-camera:hover {
-            background-color: #044b70;
-        }
-        #reader {
-            width: 100%;
-            min-height: 220px;
-            overflow: hidden;
-            border-radius: 1rem;
-            display: none;
-        }
-        .dashboard-card {
-            transition: all 0.25s ease-in-out;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
 
-    <!-- Global Loading Overlay -->
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="glass-card dark:bg-slate-900/90 p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-3 border border-slate-200 dark:border-slate-800">
             <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl animate-bounce">
                 <i class="fa-solid fa-truck-fast"></i>
             </div>
-            <span id="loadingText" class="font-extrabold text-sm text-slate-800 dark:text-slate-100 tracking-wide">Syncing with Google Sheets...</span>
+            <span class="font-extrabold text-sm text-slate-800 dark:text-slate-100 tracking-wide">Syncing with Google Sheets...</span>
         </div>
     </div>
 
-    <!-- Header Navigation -->
+    <!-- Header -->
     <header class="sticky top-0 z-30 glass-card dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center space-x-3.5 w-full sm:w-auto justify-between sm:justify-start">
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/30">
-                        <i class="fa-solid fa-warehouse"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-black text-base sm:text-lg leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                            Dreamron Warehouse 
-                            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise</span>
-                        </h1>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                            Harumi Holdings (PVT) LTD
-                        </p>
-                    </div>
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/30">
+                    <i class="fa-solid fa-map-location-dot"></i>
                 </div>
-                
-                <!-- Mobile Theme Toggle -->
-                <button onclick="toggleTheme()" class="sm:hidden p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm">
-                    <i class="fa-solid fa-sun text-base" id="themeIconMobile"></i>
-                </button>
+                <div>
+                    <h1 class="font-black text-base sm:text-lg leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                        Warehouse Management System
+                        <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Portal</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                        Harumi Holdings (PVT) LTD
+                    </p>
+                </div>
             </div>
-
-            <!-- Quick Utilities & Theme -->
-            <div class="flex items-center gap-2 flex-wrap justify-center">
-                <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-                    <i class="fa-solid fa-house"></i> Dashboard
+            
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Theme" class="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:scale-105 shadow-sm transition">
+                    <i class="fa-solid fa-sun text-base" id="themeIcon"></i>
                 </button>
-                <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition hover:bg-slate-50">
-                    <i class="fa-solid fa-sun text-base" id="themeIcon"></i> Theme
+
+                <button onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm flex items-center gap-2 shadow-sm transition">
+                    <i class="fa-solid fa-users text-emerald-600 dark:text-emerald-400"></i>
+                    <span class="hidden md:inline">Team</span>
+                </button>
+
+                <button onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm flex items-center gap-2 shadow-sm transition">
+                    <i class="fa-solid fa-folder-plus text-emerald-600 dark:text-emerald-400"></i>
+                    <span class="hidden sm:inline">Add Route</span>
+                </button>
+
+                <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/25">
+                    <i class="fa-solid fa-plus text-sm"></i>
+                    <span>Add Location</span>
                 </button>
             </div>
         </div>
@@ -152,585 +112,288 @@
 
     <main class="max-w-6xl mx-auto px-4 pt-6">
 
-        <!-- ================= DASHBOARD HOME PAGE ================= -->
-        <div id="sectionDashboard" class="space-y-6">
-            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="space-y-2 text-center sm:text-left">
-                    <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
-                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Welcome to Warehouse Portal</h2>
-                    <p class="text-emerald-100 text-xs sm:text-sm font-medium max-w-lg">Manage dispatch locations, track stock counts with barcode scanners, assign vehicles, and coordinate delivery schedules seamlessly.</p>
+        <!-- Search & Filters Container -->
+        <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl shadow-slate-200/50 dark:shadow-none mb-6 space-y-4">
+            <!-- Search bar -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
                 </div>
+                <input type="text" id="searchInput" oninput="applyFilters()" 
+                    placeholder="Search customer name, phone number, route, coordinates, or ASM..." 
+                    class="w-full pl-12 pr-10 py-3.5 bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white font-medium transition">
+                <button id="clearSearch" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
             </div>
 
-            <h3 class="font-extrabold text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Navigation Modules</h3>
+            <!-- Category Filter Pills -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <button onclick="setCustomerTypeFilter('ALL')" id="typeBtn-ALL" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/20">
+                    <i class="fa-solid fa-layer-group"></i> All Types
+                </button>
+                <button onclick="setCustomerTypeFilter('Agency Dreamron')" id="typeBtn-Agency Dreamron" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+                    <i class="fa-solid fa-store"></i> Agency Dreamron
+                </button>
+                 <button onclick="setCustomerTypeFilter('Agency Evon')" id="typeBtn-Agency Evon" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+                    <i class="fa-solid fa-shop"></i> Agency Evon
+                </button>
+                <button onclick="setCustomerTypeFilter('Direct Customer')" id="typeBtn-Direct Customer" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+                    <i class="fa-solid fa-user-check"></i> Direct
+                </button>
+                <button onclick="setCustomerTypeFilter('Modern Trade')" id="typeBtn-Modern Trade" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+                    <i class="fa-solid fa-building-columns"></i> Modern Trade
+                </button>
+            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Delivery Finder Card -->
-                <div onclick="switchTab('delivery')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold border border-emerald-500/20">
+            <!-- Route Buttons -->
+            <div>
+                <div class="flex items-center justify-between mb-2 px-1">
+                    <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        Select Delivery Route / Region
+                    </label>
+                    <button onclick="openAddRouteModal()" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-[10px]"></i> New Route
+                    </button>
+                </div>
+                <div class="flex flex-wrap gap-2 pt-1" id="routeTabs"></div>
+            </div>
+
+            <!-- Route Action Banner -->
+            <div id="fullRouteBanner" class="bg-gradient-to-r from-emerald-50 via-teal-50/50 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-inner">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0 border border-emerald-500/20">
                         <i class="fa-solid fa-map-location-dot"></i>
                     </div>
-                    <div class="space-y-1">
-                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Finder</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Search customer locations, routes, and live GPS maps.</p>
-                    </div>
-                    <div class="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    <div>
+                        <h4 class="font-extrabold text-sm text-slate-900 dark:text-white" id="fullRouteTitle">Full Route GPS Navigation</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="fullRouteSub">Navigate all delivery points in selected route via Google Maps</p>
                     </div>
                 </div>
 
-                <!-- Stock Count Card -->
-                <div onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
-                        <i class="fa-solid fa-barcode"></i>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Stock Count & QA</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Scan barcodes, log inventory additions, and track QA defects.</p>
-                    </div>
-                    <div class="flex items-center text-xs font-bold text-blue-600 dark:text-blue-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
-                </div>
-
-                <!-- Vehicle Card -->
-                <div onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20">
-                        <i class="fa-solid fa-truck"></i>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Manage delivery trucks, drivers, and capacity logs.</p>
-                    </div>
-                    <div class="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
-                </div>
-
-                <!-- Delivery Schedule Card -->
-                <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
-                        <i class="fa-solid fa-calendar-days"></i>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">View daily dispatch itineraries and route calendars.</p>
-                    </div>
-                    <div class="flex items-center text-xs font-bold text-purple-600 dark:text-purple-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
-        <div id="sectionDelivery" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Location Finder</h3>
-            </div>
-
-            <!-- Delivery Action Bar -->
-            <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
-                </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
-                        <i class="fa-solid fa-users text-emerald-600"></i> Team
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="openMyMapModal()" class="px-3.5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
+                        <i class="fa-solid fa-map text-emerald-500"></i> My Maps
                     </button>
-                    <button onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
-                        <i class="fa-solid fa-folder-plus text-emerald-600"></i> Add Route
-                    </button>
-                    <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/25 transition">
-                        <i class="fa-solid fa-plus"></i> Add Location
+
+                    <button id="openFullRouteBtn" onclick="launchFullRouteMap()" class="btn-nav-mix w-full sm:w-auto px-4 py-2.5 font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
+                        <i class="fa-solid fa-diamond-turn-right text-base text-emerald-200"></i>
+                        <span>Navigate Route Points</span>
                     </button>
                 </div>
             </div>
+        </section>
 
-            <!-- Search & Filters Container -->
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-4">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
-                    </div>
-                    <input type="text" id="searchInput" oninput="applyFilters()" 
-                        placeholder="Search customer name, phone number, route, coordinates, or ASM..." 
-                        class="w-full pl-12 pr-10 py-3.5 bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white font-medium transition">
-                    <button id="clearSearch" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
-                        <i class="fa-solid fa-circle-xmark text-lg"></i>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                    <button onclick="setCustomerTypeFilter('ALL')" id="typeBtn-ALL" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md">
-                        <i class="fa-solid fa-layer-group"></i> All Types
-                    </button>
-                    <button onclick="setCustomerTypeFilter('Agency Dreamron')" id="typeBtn-Agency Dreamron" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800">
-                        <i class="fa-solid fa-store"></i> Agency Dreamron
-                    </button>
-                     <button onclick="setCustomerTypeFilter('Agency Evon')" id="typeBtn-Agency Evon" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800">
-                        <i class="fa-solid fa-shop"></i> Agency Evon
-                    </button>
-                    <button onclick="setCustomerTypeFilter('Direct Customer')" id="typeBtn-Direct Customer" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800">
-                        <i class="fa-solid fa-user-check"></i> Direct
-                    </button>
-                    <button onclick="setCustomerTypeFilter('Modern Trade')" id="typeBtn-Modern Trade" class="type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800">
-                        <i class="fa-solid fa-building-columns"></i> Modern Trade
-                    </button>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between mb-2 px-1">
-                        <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                            Select Delivery Route / Region
-                        </label>
-                        <button onclick="openAddRouteModal()" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
-                            <i class="fa-solid fa-plus text-[10px]"></i> New Route
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap gap-2 pt-1" id="routeTabs"></div>
-                </div>
-
-                <div class="bg-gradient-to-r from-emerald-50 via-teal-50/50 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-inner">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0 border border-emerald-500/20">
-                            <i class="fa-solid fa-map-location-dot"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white" id="fullRouteTitle">Full Route GPS Navigation</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Navigate all delivery points in selected route via Google Maps</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button onclick="openMyMapModal()" class="px-3.5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
-                            <i class="fa-solid fa-map text-emerald-500"></i> My Maps
-                        </button>
-                        <button onclick="launchFullRouteMap()" class="btn-nav-mix w-full sm:w-auto px-4 py-2.5 font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-diamond-turn-right text-base text-emerald-200"></i>
-                            <span>Navigate Route Points</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 px-1">
+        <!-- Count & Global Control Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 px-1">
+            <div class="flex items-center gap-2">
                 <p class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400" id="resultCount">Showing 0 locations</p>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="toggleAllDetails()" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
-                        <i class="fa-solid fa-eye" id="globalToggleIcon"></i>
-                        <span id="globalToggleText">Show All Details</span>
-                    </button>
-                    <button onclick="fetchAllData()" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
-                        <i class="fa-solid fa-rotate-right text-emerald-500"></i> Refresh
-                    </button>
-                </div>
             </div>
 
-            <div id="customerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="globalDetailsToggleBtn" onclick="toggleAllDetails()" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                    <i class="fa-solid fa-eye" id="globalToggleIcon"></i>
+                    <span id="globalToggleText">Show All Details</span>
+                </button>
 
-            <div id="emptyState" class="hidden text-center py-16 px-4 glass-card dark:bg-slate-900/60 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 my-4 shadow-sm">
-                <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-3.5 text-2xl border border-emerald-500/20">
-                    <i class="fa-solid fa-map-pin"></i>
-                </div>
-                <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">No Locations Found</h3>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto font-medium">No delivery points match your current filter or search criteria.</p>
-                <button onclick="resetAllFilters()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md transition">
-                    Clear Filters
+                <button onclick="fetchDataFromGoogleSheets()" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                    <i class="fa-solid fa-rotate-right text-emerald-500"></i> Refresh Sheet
                 </button>
             </div>
         </div>
 
-        <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
-        <div id="sectionStock" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Stock Counter & QA Inspection</h3>
+        <!-- Customer Cards Grid -->
+        <div id="customerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16 px-4 glass-card dark:bg-slate-900/60 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 my-4 shadow-sm">
+            <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-3.5 text-2xl border border-emerald-500/20 shadow-inner">
+                <i class="fa-solid fa-map-pin"></i>
             </div>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
-                </h3>
-
-                <div class="top-info">
-                    <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
-                            <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Warehouse Position</label>
-                            <input type="text" id="position" placeholder="e.g. Stock Auditor" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="scanner-card">
-              <button type="button" id="camBtn" onclick="toggleCamera()" class="btn-camera">
-                <i class="fa-solid fa-camera text-base"></i>
-                <span id="camBtnText">Turn Camera ON</span>
-              </button>
-              <div id="reader"></div>
-            </section>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
-                <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Barcode *</label>
-                        <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Item Code</label>
-                        <input type="text" id="itemCode" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Item Name</label>
-                    <input type="text" id="itemName" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed">
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Quantity to Add *</label>
-                    <div class="flex gap-2 items-center">
-                        <input type="number" id="quantity" min="0" placeholder="0" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-base text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
-                        <button type="button" onclick="toggleCalculator()" title="Calculator" class="px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-base transition">
-                            <i class="fa-solid fa-calculator"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="calcBox" class="hidden bg-slate-100 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <div id="calcDisplay" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-3 rounded-xl font-mono text-right text-lg font-bold text-slate-900 dark:text-white">0</div>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="calcInput('7')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">7</button>
-                        <button type="button" onclick="calcInput('8')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">8</button>
-                        <button type="button" onclick="calcInput('9')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">9</button>
-                        <button type="button" onclick="calcInput('×')" class="p-3 bg-emerald-500 text-white font-bold rounded-xl text-sm">×</button>
-
-                        <button type="button" onclick="calcInput('4')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">4</button>
-                        <button type="button" onclick="calcInput('5')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">5</button>
-                        <button type="button" onclick="calcInput('6')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">6</button>
-                        <button type="button" onclick="calcInput('+')" class="p-3 bg-emerald-500 text-white font-bold rounded-xl text-sm">+</button>
-
-                        <button type="button" onclick="calcInput('1')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">1</button>
-                        <button type="button" onclick="calcInput('2')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">2</button>
-                        <button type="button" onclick="calcInput('3')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">3</button>
-                        <button type="button" onclick="calcInput('-')" class="p-3 bg-emerald-500 text-white font-bold rounded-xl text-sm">-</button>
-
-                        <button type="button" onclick="calcInput('0')" class="p-3 bg-white dark:bg-slate-900 font-bold rounded-xl border border-slate-200 dark:border-slate-800 text-sm">0</button>
-                        <button type="button" onclick="calcClear()" class="p-3 bg-rose-500 text-white font-bold rounded-xl text-sm">C</button>
-                        <button type="button" onclick="calcEquals()" class="p-3 bg-amber-500 text-white font-bold rounded-xl text-sm">=</button>
-                        <button type="button" onclick="calcApply()" class="p-3 bg-emerald-600 text-white font-bold rounded-xl text-sm col-span-2">Apply Qty</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                    <button type="button" id="submitBtn" onclick="submitStockData()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition disabled:opacity-50" disabled>
-                        <i class="fa-solid fa-check"></i> Submit Stock
-                    </button>
-                    <button type="button" id="addNewItemBtn" onclick="addNewItemToSheet()" class="py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50" disabled>
-                        <i class="fa-solid fa-plus"></i> Add New Item
-                    </button>
-                    <button type="button" id="qaBtn" onclick="openQADefectModal()" class="py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50" disabled>
-                        <i class="fa-solid fa-triangle-exclamation"></i> Add QA Defect
-                    </button>
-                </div>
-            </section>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl flex items-center justify-between gap-4">
-                <div>
-                    <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Summary Report</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Generate and export inventory stock additions & defects CSV</p>
-                </div>
-                <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
-                    Open Report
-                </button>
-            </section>
-
-            <div id="status" class="text-center font-bold text-sm"></div>
-        </div>
-
-        <!-- ================= TAB 3: VEHICLE MANAGEMENT ================= -->
-        <div id="sectionVehicle" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
-            </div>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet & Assignment Registry
-                    </h4>
-                    <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
-                        <i class="fa-solid fa-plus"></i> Add Vehicle
-                    </button>
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Manage assigned transport vehicles, drivers, and loading status.</p>
-                
-                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
-                    <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicles registered yet or ready for display.</p>
-                </div>
-            </section>
-        </div>
-
-        <!-- ================= TAB 4: DELIVERY SCHEDULE ================= -->
-        <div id="sectionSchedule" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Schedule</h3>
-            </div>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check text-purple-500"></i> Dispatch Itineraries
-                    </h4>
-                    <button class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
-                        <i class="fa-solid fa-plus"></i> New Schedule
-                    </button>
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Organize and track upcoming delivery dates and dispatch order sheets.</p>
-                
-                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
-                    <i class="fa-solid fa-calendar-days text-3xl text-slate-400 mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No schedules created for this date range.</p>
-                </div>
-            </section>
+            <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">No Locations Found</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto font-medium">No delivery points match your current filter or search criteria.</p>
+            <button onclick="resetAllFilters()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md transition">
+                Clear Filters
+            </button>
         </div>
     </main>
 
-    <!-- ================= MODALS ================= -->
-
-    <!-- Modal: Add / Edit Location -->
+    <!-- Modal 1: Add / Edit Location -->
     <div id="locationModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl text-slate-900 dark:text-slate-100">
             <div class="sticky top-0 glass-card dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between z-10">
                 <h3 id="modalTitle" class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg flex items-center gap-2.5">
-                    <i class="fa-solid fa-location-dot text-emerald-600"></i> Add Delivery Location
+                    <i class="fa-solid fa-location-dot text-emerald-600"></i>
+                    Add Delivery Location
                 </h3>
-                <button onclick="closeModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 flex items-center justify-center transition">
+                <button onclick="closeModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <form id="customerForm" onsubmit="handleLocationFormSubmit(event)" class="p-6 space-y-4">
+            <form id="customerForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
                 <input type="hidden" id="formId">
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer Category *</label>
-                        <select id="formType" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                        <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Customer Category *</label>
+                        <select id="formType" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs sm:text-sm">
                             <option value="Direct Customer">Direct Customer</option>
                             <option value="Agency Dreamron">Agency Dreamron</option>
                             <option value="Agency Evon">Agency Evon</option>
                             <option value="Modern Trade">Modern Trade</option>
                         </select>
                     </div>
+
                     <div>
-                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Route / Region *</label>
-                        <select id="formRoute" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></select>
+                        <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Route / Region *</label>
+                        <select id="formRoute" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs sm:text-sm"></select>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer / Agency Name *</label>
-                    <input type="text" id="formName" required placeholder="e.g. Maharagama Pharmacy" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                    <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Customer / Agency Name *</label>
+                    <input type="text" id="formName" required placeholder="e.g. Maharagama Pharmacy" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white text-xs sm:text-sm">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Phone Number *</label>
-                    <input type="tel" id="formPhone" required placeholder="e.g. 077 xxx xxxx" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                    <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Customer Phone Number *</label>
+                    <input type="tel" id="formPhone" required placeholder="e.g. 077 xxx xxxx" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white text-xs sm:text-sm">
                 </div>
 
-                <div class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                    <label class="text-xs font-extrabold text-emerald-600 uppercase flex items-center gap-1.5">
-                        <i class="fa-solid fa-crosshairs text-emerald-500"></i> GPS Coordinates *
+                <div class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3">
+                    <label class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshairs text-emerald-500"></i>
+                        GPS Location Coordinates *
                     </label>
-                    <input type="text" id="formCoordsCombined" oninput="handleCombinedCoordsInput(this.value)" placeholder="Paste format: 6.84579, 79.92597" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+
+                    <div>
+                        <input type="text" id="formCoordsCombined" oninput="handleCombinedCoordsInput(this.value)" placeholder="Paste format: 6.84579, 79.92597" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="formLat" required placeholder="Latitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
-                        <input type="text" id="formLng" required placeholder="Longitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 mb-1">Latitude</label>
+                            <input type="text" id="formLat" required placeholder="6.84579" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-400 mb-1">Longitude</label>
+                            <input type="text" id="formLng" required placeholder="79.92597" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Full Address *</label>
-                    <textarea id="formAddress" required rows="2" placeholder="Street Address" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></textarea>
+                    <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Full Address *</label>
+                    <textarea id="formAddress" required rows="2" placeholder="No 12, High Level Road, Maharagama" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white text-xs sm:text-sm"></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
                     <div>
                         <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">ASM</label>
-                        <select id="formAsm" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                        <select id="formAsm" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
                     </div>
                     <div>
                         <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Sales Ref</label>
-                        <select id="formSalesRef" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                        <select id="formSalesRef" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Driver Notes</label>
-                    <input type="text" id="formNotes" placeholder="Landmarks / instructions" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                    <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase mb-1">Driver Notes / Landmarks</label>
+                    <input type="text" id="formNotes" placeholder="Near clock tower / Call before unloading" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white text-xs sm:text-sm">
                 </div>
 
                 <div class="pt-3 flex gap-3">
-                    <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
-                    <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
+                    <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Cancel</button>
+                    <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-600/25 transition text-sm">Save Location</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Add Route -->
+    <!-- Modal 2: Add Route -->
     <div id="routeModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl p-6">
+        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl text-slate-900 dark:text-slate-100 p-6">
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
-                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-folder-plus text-emerald-600"></i> Add Route / Region</h3>
-                <button onclick="closeRouteModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-folder-plus text-emerald-600"></i>
+                    Add New Route / Region
+                </h3>
+                <button onclick="closeRouteModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
+
             <form onsubmit="handleRouteFormSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Route Name *</label>
-                    <input type="text" id="newRouteInput" required placeholder="e.g. Matara" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                    <input type="text" id="newRouteInput" required placeholder="e.g. Matara, Negombo" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white text-xs sm:text-sm">
                 </div>
+
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Google My Maps URL (Optional)</label>
-                    <input type="url" id="newRouteMapUrl" placeholder="https://www.google.com/maps/d/embed?mid=..." class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-xs">
+                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Google My Maps Embed URL (Optional)</label>
+                    <input type="url" id="newRouteMapUrl" placeholder="https://www.google.com/maps/d/embed?mid=..." class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
                 </div>
+
                 <div class="pt-3 flex gap-3">
-                    <button type="button" onclick="closeRouteModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
-                    <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Add Route</button>
+                    <button type="button" onclick="closeRouteModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Cancel</button>
+                    <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-600/25 transition text-sm">Add Route</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Employee Management -->
+    <!-- Modal 3: Employee Team Management -->
     <div id="employeeModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6">
+        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl text-slate-900 dark:text-slate-100 p-6">
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
-                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-users text-emerald-600"></i> Team Members</h3>
-                <button onclick="closeEmployeeModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-users text-emerald-600"></i>
+                    Employee Details
+                </h3>
+                <button onclick="closeEmployeeModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <form onsubmit="handleAddEmployee(event)" class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 mb-4 space-y-3">
+
+            <form onsubmit="handleAddEmployee(event)" class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 mb-4 space-y-3">
+                <h4 class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase">Add Team Member</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <select id="empRoleInput" required class="px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
-                        <option value="ASM">ASM</option>
-                        <option value="Sales Ref">Sales Ref</option>
-                        <option value="Driver">Driver</option>
+                    <select id="empRoleInput" required class="px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white">
+                        <option value="ASM">ASM (Area Sales Mgr)</option>
+                        <option value="Sales Ref">Sales Ref / Rep</option>
+                        <option value="Driver">Warehouse Assistant</option>
                     </select>
-                    <input type="text" id="empNameInput" required placeholder="Full Name" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                    <input type="tel" id="empPhoneInput" required placeholder="Phone" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    <input type="text" id="empNameInput" required placeholder="Full Name" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white">
+                    <input type="tel" id="empPhoneInput" required placeholder="Phone Number" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white">
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 text-white font-extrabold text-xs rounded-xl">+ Add Employee</button>
+                <button type="submit" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-xs rounded-xl shadow-sm transition">+ Add Employee</button>
             </form>
+
             <div class="space-y-2.5" id="employeeList"></div>
         </div>
     </div>
 
-    <!-- Modal: Interactive My Maps Viewer -->
+    <!-- Modal 4: Google My Maps Embed Viewer -->
     <div id="myMapModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl text-slate-900 dark:text-slate-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-map text-emerald-600"></i> My Maps View</h3>
-                <button onclick="closeMyMapModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-map text-emerald-600"></i>
+                    Interactive My Maps View
+                </h3>
+                <button onclick="closeMyMapModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div class="grow relative w-full h-full bg-slate-100 dark:bg-slate-950" id="mapIframeContainer"></div>
         </div>
     </div>
 
-    <!-- Modal: Summary Report -->
-    <div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-600"></i> Stock & QA Summary Report</h3>
-                <button onclick="closeReportModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-wrap gap-3 items-end">
-                <div class="flex-1">
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Start Date</label>
-                    <input type="date" id="modalStartDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <div class="flex-1">
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">End Date</label>
-                    <input type="date" id="modalEndDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <button onclick="fetchSummaryReport()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs">Generate</button>
-            </div>
-            <div id="reportResult" class="p-4 overflow-y-auto grow max-h-[45vh]"></div>
-            <div class="px-6 py-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2 bg-slate-50 dark:bg-slate-950 shrink-0">
-                <button id="downloadReportBtn" onclick="downloadCSVReport()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow-sm" disabled>Download CSV</button>
-                <button onclick="closeReportModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 rounded-xl font-bold text-xs">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: QA Defect Logging -->
-    <div id="qaDefectModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl p-6">
-            <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
-                <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Log Quality Defect</h3>
-                <button onclick="closeQADefectModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleQADefectSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Item Code</label>
-                    <input type="text" id="qaItemCode" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-950 rounded-xl text-xs font-mono">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Item Name</label>
-                    <input type="text" id="qaItemName" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-950 rounded-xl text-xs">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase mb-1">Defect Category</label>
-                        <select id="qaCategory" required class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                            <option value="">Loading...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-extrabold uppercase mb-1">Severity</label>
-                        <select id="qaSeverity" required class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                            <option value="Low">Low</option>
-                            <option value="Medium" selected>Medium</option>
-                            <option value="High">High</option>
-                            <option value="Critical">Critical</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Quantity Affected *</label>
-                    <input type="number" id="qaQuantity" min="1" value="1" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Box No & Description</label>
-                    <input type="text" id="qaNotes" placeholder="Additional details..." class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <div class="pt-3 flex gap-3">
-                    <button type="button" onclick="closeQADefectModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
-                    <button type="submit" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Submit Defect</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- JavaScript Application Logic -->
+    <!-- JavaScript Core Integration -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzh-XAW9q3SUCZboU4TS9Z00UWdx9Vn30Xc5EQ20YcMt0sEtqgzv3Y5rftfBVQ5tvxh/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyh4iQkckp8B0K9tjqlzSkdha5HkH2dPBs3gLXV-PEwEVhEwOz-v88VNPq51S4OkCxa/exec";
 
         let locations = [];
         let routes = [{ name: "ALL", mapUrl: "" }];
@@ -741,69 +404,18 @@
         let expandedCards = new Set();
         let allExpanded = false;
 
-        let html5QrCode = null;
-        let isCameraActive = false;
-        let debounceTimer;
-        let calcExpr = "";
-        let lastReportData = [];
-
         document.addEventListener("DOMContentLoaded", () => {
             initTheme();
-            fetchAllData();
+            fetchDataFromGoogleSheets();
         });
 
-        function showLoading(show, text = "Syncing with Google Sheets...") {
-            document.getElementById('loadingText').textContent = text;
+        function showLoading(show) {
             document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
         }
 
-        function switchTab(tab) {
-            const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule'];
-            sections.forEach(s => {
-                const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
-                if (el) el.classList.toggle('hidden', s !== tab);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function initTheme() {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                const themeIcon = document.getElementById('themeIcon');
-                const themeIconMobile = document.getElementById('themeIconMobile');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
-            } else {
-                document.documentElement.classList.remove('dark');
-                const themeIcon = document.getElementById('themeIcon');
-                const themeIconMobile = document.getElementById('themeIconMobile');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
-            }
-        }
-
-        function toggleTheme() {
-            const themeIcon = document.getElementById('themeIcon');
-            const themeIconMobile = document.getElementById('themeIconMobile');
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
-            }
-        }
-
-        async function postToApi(action, data, requirePassword = true) {
-            let password = "";
-            if (requirePassword) {
-                password = prompt("Please enter the administrator password to proceed:");
-                if (password === null) return { status: "cancelled" };
-            }
+        async function postToApi(action, data) {
+            const password = prompt("Please enter the administrator password to proceed:");
+            if (password === null) return { status: "cancelled" };
 
             const body = new URLSearchParams();
             body.append("payload", JSON.stringify({ action, data, password }));
@@ -822,13 +434,13 @@
             return result;
         }
 
-        async function fetchAllData() {
+        async function fetchDataFromGoogleSheets() {
             if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-                console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+                alert("Please set your Google Apps Script Web App URL in the JavaScript API_URL variable.");
                 return;
             }
 
-            showLoading(true, "Loading Portal Data...");
+            showLoading(true);
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
@@ -841,21 +453,43 @@
                 renderEmployeeDropdowns();
                 applyFilters();
             } catch (error) {
-                console.error("Error loading data from Google Sheets:", error);
+                console.error("Error fetching data from Google Sheets:", error);
+                alert("Failed to load data from Google Sheets API.");
             } finally {
                 showLoading(false);
             }
         }
 
-        // ================= DELIVERY FINDER LOGIC =================
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-base';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-base';
+            }
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-base';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+                document.getElementById('themeIcon').className = 'fa-solid fa-moon text-base';
+            }
+        }
+
         function setCustomerTypeFilter(type) {
             activeType = type;
             document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800";
+                btn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50";
             });
             const activeBtn = document.getElementById(`typeBtn-${type}`);
             if (activeBtn) {
-                activeBtn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md";
+                activeBtn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/20";
             }
             applyFilters();
         }
@@ -873,8 +507,10 @@
             const filtered = locations.filter(loc => {
                 const matchesRoute = activeRoute === 'ALL' || loc.route === activeRoute;
                 const matchesType = activeType === 'ALL' || loc.type === activeType;
-                const combinedSearchStr = `${loc.name} ${loc.phone} ${loc.address} ${loc.route} ${loc.lat},${loc.lng} ${loc.asm} ${loc.salesRef}`.toLowerCase();
+                
+                const combinedSearchStr = `${loc.name || ''} ${loc.phone || ''} ${loc.address || ''} ${loc.route || ''} ${loc.lat || ''},${loc.lng || ''} ${loc.asm || ''} ${loc.salesRef || ''}`.toLowerCase();
                 const matchesSearch = query === '' || combinedSearchStr.includes(query);
+
                 return matchesRoute && matchesType && matchesSearch;
             });
 
@@ -901,12 +537,13 @@
                 const isActive = r.name === activeRoute;
                 const count = r.name === 'ALL' ? locations.length : locations.filter(l => l.route === r.name).length;
                 return `
-                    <button onclick="selectRoute('${r.name}')" class="px-3.5 py-2 rounded-2xl font-bold text-xs flex items-center gap-1.5 border transition ${isActive ? 'bg-slate-900 text-white border-slate-900 dark:bg-emerald-600 dark:text-white shadow-md' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}">
+                    <button onclick="selectRoute('${r.name}')" class="px-3.5 py-2 rounded-2xl font-bold text-xs flex items-center gap-1.5 border transition ${isActive ? 'bg-slate-900 text-white border-slate-900 dark:bg-emerald-600 dark:text-white dark:border-emerald-500 shadow-md' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'}">
                         <span>${r.name === 'ALL' ? 'All Routes' : r.name}</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-900'}">${count}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300'}">${count}</span>
                     </button>
                 `;
             }).join('');
+
             document.getElementById('fullRouteTitle').textContent = activeRoute === 'ALL' ? 'Full Route GPS Navigation' : `${activeRoute} Route Navigation`;
         }
 
@@ -924,58 +561,74 @@
             empty.classList.add('hidden');
             grid.innerHTML = data.map(item => {
                 const isExpanded = expandedCards.has(item.id) || allExpanded;
-                const mapSingleUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+                const mapSingleUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat || 0},${item.lng || 0}`;
+
                 let badgeClass = "bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/50";
-                if(item.type && item.type.includes("Agency")) badgeClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/50";
-                if(item.type === "Modern Trade") badgeClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/50";
+                const typeVal = item.type || 'Direct Customer';
+                if(typeVal.includes("Agency")) badgeClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/50";
+                if(typeVal === "Modern Trade") badgeClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/50";
 
                 return `
                     <div class="glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                         <div>
                             <div class="flex items-start justify-between gap-2 mb-3">
                                 <div>
-                                    <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">${item.type || 'Direct Customer'}</span>
-                                    <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition-colors">${item.name || ''}</h3>
+                                    <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">
+                                        ${typeVal}
+                                    </span>
+                                    <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition-colors">${item.name || 'Unnamed Customer'}</h3>
                                 </div>
                                 <span class="text-xs font-bold px-2.5 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shrink-0 flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-route text-emerald-500"></i>${item.route || ''}
+                                    <i class="fa-solid fa-route text-emerald-500"></i>${item.route || 'General'}
                                 </span>
                             </div>
+
                             <p class="text-xs text-slate-600 dark:text-slate-400 font-medium mb-4 flex items-start gap-2">
                                 <i class="fa-solid fa-location-dot text-rose-500 mt-0.5 shrink-0"></i>
-                                <span>${item.address || ''}</span>
+                                <span>${item.address || 'No address provided'}</span>
                             </p>
+
                             <div class="${isExpanded ? 'block' : 'hidden'} space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 mb-4 text-xs animate-fadeIn">
-                                <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200/60">
+                                <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
                                     <div>
-                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase">Phone</p>
-                                        <a href="tel:${item.phone}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || ''}</a>
+                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Phone</p>
+                                        <a href="tel:${item.phone || ''}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-0.5">
+                                            <i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || 'N/A'}
+                                        </a>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase">GPS Coords</p>
+                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">GPS Coords</p>
                                         <p class="font-mono text-slate-700 dark:text-slate-300 mt-0.5 select-all">${item.lat || ''}, ${item.lng || ''}</p>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase">ASM</p>
+                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">ASM</p>
                                         <p class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${item.asm || 'Unassigned'}</p>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase">Sales Ref</p>
+                                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sales Ref</p>
                                         <p class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${item.salesRef || 'Unassigned'}</p>
                                     </div>
                                 </div>
-                                ${item.notes ? `<p class="text-slate-600 dark:text-slate-300 italic bg-amber-50/80 dark:bg-amber-950/30 p-3 rounded-2xl border border-amber-200/50"><strong class="font-bold text-amber-600">Note:</strong> ${item.notes}</p>` : ''}
+                                ${item.notes ? `<p class="text-slate-600 dark:text-slate-300 italic bg-amber-50/80 dark:bg-amber-950/30 p-3 rounded-2xl border border-amber-200/50 dark:border-amber-800/30"><strong class="not-italic font-bold text-amber-600 dark:text-amber-400">Note:</strong> ${item.notes}</p>` : ''}
                             </div>
                         </div>
+
                         <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-                            <button onclick="toggleCard('${item.id}')" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 flex items-center gap-1.5 transition">
+                            <button onclick="toggleCard('${item.id}')" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white flex items-center gap-1.5 transition">
                                 <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]"></i>
                                 <span>${isExpanded ? 'Hide Details' : 'View Details'}</span>
                             </button>
+
                             <div class="flex items-center gap-1.5">
-                                <button onclick="openEditModal('${item.id}')" title="Edit" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
-                                <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</a>
+                                <button onclick="openEditModal('${item.id}')" title="Edit Location" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs transition shadow-sm">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteLocation('${item.id}')" title="Delete Location" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 dark:text-rose-400 text-xs transition shadow-sm">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                                <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition active:scale-95">
+                                    <i class="fa-solid fa-diamond-turn-right"></i> Navigate
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -984,16 +637,27 @@
         }
 
         function toggleCard(id) {
-            if (expandedCards.has(id)) expandedCards.delete(id);
-            else expandedCards.add(id);
+            if (expandedCards.has(id)) {
+                expandedCards.delete(id);
+            } else {
+                expandedCards.add(id);
+            }
             applyFilters();
         }
 
         function toggleAllDetails() {
             allExpanded = !allExpanded;
-            document.getElementById('globalToggleText').textContent = allExpanded ? "Hide All Details" : "Show All Details";
-            document.getElementById('globalToggleIcon').className = allExpanded ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
-            if (!allExpanded) expandedCards.clear();
+            const btnText = document.getElementById('globalToggleText');
+            const btnIcon = document.getElementById('globalToggleIcon');
+
+            if (allExpanded) {
+                btnText.textContent = "Hide All Details";
+                btnIcon.className = "fa-solid fa-eye-slash";
+            } else {
+                btnText.textContent = "Show All Details";
+                btnIcon.className = "fa-solid fa-eye";
+                expandedCards.clear();
+            }
             applyFilters();
         }
 
@@ -1001,7 +665,8 @@
             if (!val.trim()) return;
             const parts = val.split(/[\s,]+/);
             if (parts.length >= 2) {
-                const lat = parseFloat(parts[0]), lng = parseFloat(parts[1]);
+                const lat = parseFloat(parts[0]);
+                const lng = parseFloat(parts[1]);
                 if (!isNaN(lat) && !isNaN(lng)) {
                     document.getElementById('formLat').value = lat;
                     document.getElementById('formLng').value = lng;
@@ -1012,21 +677,28 @@
         function syncCombinedCoords() {
             const lat = document.getElementById('formLat').value.trim();
             const lng = document.getElementById('formLng').value.trim();
-            if (lat && lng) document.getElementById('formCoordsCombined').value = `${lat}, ${lng}`;
+            if (lat && lng) {
+                document.getElementById('formCoordsCombined').value = `${lat}, ${lng}`;
+            }
         }
 
         function launchFullRouteMap() {
             const activeList = activeRoute === 'ALL' ? locations : locations.filter(l => l.route === activeRoute);
-            if (activeList.length === 0) { alert("No locations found for this route."); return; }
+            if (activeList.length === 0) {
+                alert("No locations found for this route.");
+                return;
+            }
             const origin = `${activeList[0].lat},${activeList[0].lng}`;
             const destination = `${activeList[activeList.length - 1].lat},${activeList[activeList.length - 1].lng}`;
             const waypoints = activeList.slice(1, -1).map(l => `${l.lat},${l.lng}`).join('|');
+
             let mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
-            if (waypoints) mapUrl += `&waypoints=${waypoints}`;
+            if (waypoints) {
+                mapUrl += `&waypoints=${waypoints}`;
+            }
             window.open(mapUrl, '_blank');
         }
 
-        // ================= MODAL HANDLERS =================
         function openAddModal() {
             document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-600"></i> Add Delivery Location`;
             document.getElementById('customerForm').reset();
@@ -1037,7 +709,8 @@
         function openEditModal(id) {
             const loc = locations.find(l => String(l.id) === String(id));
             if (!loc) return;
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Location`;
+
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Delivery Location`;
             document.getElementById('formId').value = loc.id;
             document.getElementById('formType').value = loc.type;
             document.getElementById('formRoute').value = loc.route;
@@ -1050,16 +723,20 @@
             document.getElementById('formAsm').value = loc.asm || '';
             document.getElementById('formSalesRef').value = loc.salesRef || '';
             document.getElementById('formNotes').value = loc.notes || '';
+
             document.getElementById('locationModal').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('locationModal').classList.add('hidden'); }
+        function closeModal() {
+            document.getElementById('locationModal').classList.add('hidden');
+        }
 
-        async function handleLocationFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('formId').value || `loc-${Date.now()}`;
             const newLoc = {
-                id, type: document.getElementById('formType').value,
+                id: id,
+                type: document.getElementById('formType').value,
                 route: document.getElementById('formRoute').value,
                 name: document.getElementById('formName').value.trim(),
                 phone: document.getElementById('formPhone').value.trim(),
@@ -1070,49 +747,71 @@
                 salesRef: document.getElementById('formSalesRef').value,
                 notes: document.getElementById('formNotes').value.trim()
             };
+
             showLoading(true);
             try {
                 await postToApi("saveLocation", newLoc);
                 closeModal();
-                await fetchAllData();
-            } catch (err) { showLoading(false); }
-        }
-
-        async function deleteLocation(id) {
-            if (confirm("Delete this delivery location?")) {
-                showLoading(true);
-                try {
-                    await postToApi("deleteLocation", { id });
-                    await fetchAllData();
-                } catch (err) { showLoading(false); }
+                await fetchDataFromGoogleSheets();
+            } catch (err) {
+                showLoading(false);
             }
         }
 
-        function openAddRouteModal() { document.getElementById('routeModal').classList.remove('hidden'); }
-        function closeRouteModal() { document.getElementById('routeModal').classList.add('hidden'); }
+        async function deleteLocation(id) {
+            if (confirm("Are you sure you want to delete this delivery location?")) {
+                showLoading(true);
+                try {
+                    await postToApi("deleteLocation", { id: id });
+                    await fetchDataFromGoogleSheets();
+                } catch (err) {
+                    showLoading(false);
+                }
+            }
+        }
+
+        function openAddRouteModal() {
+            document.getElementById('newRouteInput').value = '';
+            document.getElementById('newRouteMapUrl').value = '';
+            document.getElementById('routeModal').classList.remove('hidden');
+        }
+
+        function closeRouteModal() {
+            document.getElementById('routeModal').classList.add('hidden');
+        }
 
         async function handleRouteFormSubmit(e) {
             e.preventDefault();
             const name = document.getElementById('newRouteInput').value.trim();
             const mapUrl = document.getElementById('newRouteMapUrl').value.trim();
+
             if (name) {
                 showLoading(true);
                 try {
                     await postToApi("saveRoute", { name, mapUrl });
                     closeRouteModal();
-                    await fetchAllData();
-                } catch (err) { showLoading(false); }
+                    await fetchDataFromGoogleSheets();
+                } catch (err) {
+                    showLoading(false);
+                }
             }
         }
 
-        function openEmployeeModal() { renderEmployeeList(); document.getElementById('employeeModal').classList.remove('hidden'); }
-        function closeEmployeeModal() { document.getElementById('employeeModal').classList.add('hidden'); }
+        function openEmployeeModal() {
+            renderEmployeeList();
+            document.getElementById('employeeModal').classList.remove('hidden');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.add('hidden');
+        }
 
         async function handleAddEmployee(e) {
             e.preventDefault();
             const role = document.getElementById('empRoleInput').value;
             const name = document.getElementById('empNameInput').value.trim();
             const phone = document.getElementById('empPhoneInput').value.trim();
+
             if (name && phone) {
                 const newEmp = { id: `emp-${Date.now()}`, role, name, phone };
                 showLoading(true);
@@ -1120,30 +819,41 @@
                     await postToApi("saveEmployee", newEmp);
                     document.getElementById('empNameInput').value = '';
                     document.getElementById('empPhoneInput').value = '';
-                    await fetchAllData();
+                    await fetchDataFromGoogleSheets();
                     renderEmployeeList();
-                } catch (err) { showLoading(false); }
+                } catch (err) {
+                    showLoading(false);
+                }
             }
         }
 
         async function deleteEmployee(id) {
             showLoading(true);
             try {
-                await postToApi("deleteEmployee", { id });
-                await fetchAllData();
+                await postToApi("deleteEmployee", { id: id });
+                await fetchDataFromGoogleSheets();
                 renderEmployeeList();
-            } catch (err) { showLoading(false); }
+            } catch (err) {
+                showLoading(false);
+            }
         }
 
         function renderEmployeeList() {
             const container = document.getElementById('employeeList');
             container.innerHTML = employees.map(emp => `
-                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${emp.role === 'ASM' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-700'}">${emp.role}</span>
-                        <div><p class="text-xs font-bold text-slate-900 dark:text-white">${emp.name}</p><p class="text-[10px] text-slate-500">${emp.phone}</p></div>
+                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${emp.role === 'ASM' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200/50' : 'bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300 border border-slate-200'}">
+                            ${emp.role}
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">${emp.name}</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">${emp.phone}</p>
+                        </div>
                     </div>
-                    <button onclick="deleteEmployee('${emp.id}')" class="text-rose-500 hover:text-rose-700 text-xs p-2"><i class="fa-solid fa-trash"></i></button>
+                    <button onclick="deleteEmployee('${emp.id}')" class="text-rose-500 hover:text-rose-700 text-xs p-2 rounded-xl hover:bg-rose-50 transition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             `).join('');
         }
@@ -1152,285 +862,57 @@
             const formRouteSelect = document.getElementById('formRoute');
             const asmSelect = document.getElementById('formAsm');
             const salesRefSelect = document.getElementById('formSalesRef');
-            if(formRouteSelect) formRouteSelect.innerHTML = routes.filter(r => r.name !== 'ALL').map(r => `<option value="${r.name}">${r.name}</option>`).join('');
-            if(asmSelect) asmSelect.innerHTML = `<option value="">Unassigned</option>` + employees.filter(e => e.role === 'ASM').map(e => `<option value="${e.name}">${e.name}</option>`).join('');
-            if(salesRefSelect) salesRefSelect.innerHTML = `<option value="">Unassigned</option>` + employees.filter(e => e.role === 'Sales Ref').map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+
+            if (formRouteSelect) {
+                formRouteSelect.innerHTML = routes
+                    .filter(r => r.name !== 'ALL')
+                    .map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+            }
+
+            if (asmSelect) {
+                const asms = employees.filter(e => e.role === 'ASM');
+                asmSelect.innerHTML = `<option value="">Unassigned</option>` + 
+                    asms.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+            }
+
+            if (salesRefSelect) {
+                const salesRefs = employees.filter(e => e.role === 'Sales Ref');
+                salesRefSelect.innerHTML = `<option value="">Unassigned</option>` + 
+                    salesRefs.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+            }
         }
 
         function openMyMapModal() {
             const container = document.getElementById('mapIframeContainer');
             const routeObj = routes.find(r => r.name === activeRoute);
+
             if (routeObj && routeObj.mapUrl) {
                 container.innerHTML = `<iframe src="${routeObj.mapUrl}" class="w-full h-full border-0"></iframe>`;
             } else {
-                const searchQuery = activeRoute === 'ALL' ? "Sri Lanka Delivery Locations" : `${activeRoute} Route Sri Lanka`;
-                container.innerHTML = `<iframe src="https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed" class="w-full h-full border-0"></iframe>`;
+                const activeList = activeRoute === 'ALL' ? locations : locations.filter(l => l.route === activeRoute);
+                let searchQuery = activeRoute === 'ALL' ? "Sri Lanka Delivery Locations" : `${activeRoute} Route Sri Lanka`;
+                
+                if (activeList.length > 0 && activeRoute !== 'ALL') {
+                    searchQuery = activeList[0].address;
+                }
+
+                const embedFallbackUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+                
+                container.innerHTML = `
+                    <div class="absolute inset-0 z-0">
+                        <iframe src="${embedFallbackUrl}" class="w-full h-full border-0"></iframe>
+                    </div>
+                    <div class="absolute bottom-4 left-4 right-4 z-10 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md p-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-center shadow-lg">
+                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Showing map preview for <span class="text-emerald-600">${activeRoute}</span></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Tip: You can link a custom Google My Maps embed link when adding or editing routes.</p>
+                    </div>
+                `;
             }
             document.getElementById('myMapModal').classList.remove('hidden');
         }
-        function closeMyMapModal() { document.getElementById('myMapModal').classList.add('hidden'); }
 
-
-        // ================= STOCK COUNTER & QA LOGIC =================
-        function toggleCalculator() {
-            const box = document.getElementById('calcBox');
-            box.classList.toggle('hidden');
-            if(!box.classList.contains('hidden')) calcClear();
-        }
-
-        function calcInput(val) { calcExpr += val; document.getElementById('calcDisplay').innerText = calcExpr; }
-        function calcClear() { calcExpr = ""; document.getElementById('calcDisplay').innerText = "0"; }
-        function calcEquals() {
-            try {
-                if (!calcExpr) return;
-                let sanitized = calcExpr.replace(/×/g, '*');
-                let res = Function('"use strict"; return (' + sanitized + ')')();
-                calcExpr = String(res);
-                document.getElementById('calcDisplay').innerText = calcExpr;
-            } catch(e) { document.getElementById('calcDisplay').innerText = "Error"; calcExpr = ""; }
-        }
-        function calcApply() {
-            calcEquals();
-            let val = parseInt(calcExpr, 10);
-            if (!isNaN(val) && val > 0) document.getElementById('quantity').value = val;
-            document.getElementById('calcBox').classList.add('hidden');
-        }
-
-        function toggleCamera() {
-            if (!isCameraActive) startCamera(); else stopCamera();
-        }
-
-        function startCamera() {
-            const camBtnText = document.getElementById('camBtnText');
-            const camBtn = document.getElementById('camBtn');
-            const readerDiv = document.getElementById('reader');
-
-            readerDiv.style.display = 'block';
-            html5QrCode = new Html5Qrcode("reader");
-
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 150 }
-            };
-
-            html5QrCode.start(
-                { facingMode: "environment" },
-                config,
-                onScanSuccess,
-                onScanError
-            ).then(() => {
-                isCameraActive = true;
-                camBtnText.textContent = "Turn Camera OFF";
-                camBtn.className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
-            }).catch(err => {
-                alert("Camera error: " + err);
-                readerDiv.style.display = 'none';
-            });
-        }
-
-        function stopCamera() {
-            const camBtnText = document.getElementById('camBtnText');
-            const camBtn = document.getElementById('camBtn');
-            const readerDiv = document.getElementById('reader');
-
-            if (html5QrCode && isCameraActive) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    isCameraActive = false;
-                    readerDiv.style.display = 'none';
-                    camBtnText.textContent = "Turn Camera ON";
-                    camBtn.className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
-                }).catch(err => console.log(err));
-            }
-        }
-
-        function onScanSuccess(decodedText) {
-            document.getElementById('barcode').value = decodedText;
-
-            try {
-                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = audioCtx.createOscillator();
-                osc.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
-            } catch (e) {}
-
-            stopCamera();
-            fetchItemDetails(decodedText);
-            const qtyInput = document.getElementById('quantity');
-            if(qtyInput) qtyInput.select();
-        }
-
-        function onScanError(error) {}
-
-        function fetchItemDetails(barcode) {
-            clearTimeout(debounceTimer);
-            const statusDiv = document.getElementById('status');
-            const itemCodeInput = document.getElementById('itemCode');
-            const itemNameInput = document.getElementById('itemName');
-            const addBtn = document.getElementById('addNewItemBtn');
-            const submitBtn = document.getElementById('submitBtn');
-            const qaBtn = document.getElementById('qaBtn');
-
-            if (!barcode.trim()) {
-                itemCodeInput.value = ''; itemNameInput.value = '';
-                itemCodeInput.setAttribute('readonly', 'readonly');
-                itemNameInput.setAttribute('readonly', 'readonly');
-                addBtn.disabled = true; submitBtn.disabled = true; qaBtn.disabled = true;
-                statusDiv.innerText = '';
-                return;
-            }
-
-            debounceTimer = setTimeout(() => {
-                statusDiv.className = 'text-center font-bold text-sm text-blue-500';
-                statusDiv.innerText = 'Searching item...';
-                fetch(`${API_URL}?action=getItem&barcode=${encodeURIComponent(barcode)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.found) {
-                            itemCodeInput.value = data.itemCode || '';
-                            itemNameInput.value = data.itemName || '';
-                            itemCodeInput.setAttribute('readonly', 'readonly');
-                            itemNameInput.setAttribute('readonly', 'readonly');
-                            addBtn.disabled = true; submitBtn.disabled = false; qaBtn.disabled = false;
-                            statusDiv.className = 'text-center font-bold text-sm text-emerald-600';
-                            statusDiv.innerText = 'Item found!';
-                        } else {
-                            itemCodeInput.value = ''; itemNameInput.value = '';
-                            itemCodeInput.removeAttribute('readonly');
-                            itemNameInput.removeAttribute('readonly');
-                            addBtn.disabled = false; submitBtn.disabled = true; qaBtn.disabled = true;
-                            statusDiv.className = 'text-center font-bold text-sm text-amber-500';
-                            statusDiv.innerText = 'New barcode detected! Enter Item Code & Name.';
-                        }
-                    }).catch(() => { statusDiv.innerText = ''; });
-            }, 300);
-        }
-
-        function addNewItemToSheet() {
-            const barcode = document.getElementById('barcode').value.trim();
-            const itemCode = document.getElementById('itemCode').value.trim();
-            const itemName = document.getElementById('itemName').value.trim();
-            const statusDiv = document.getElementById('status');
-
-            if (!barcode || !itemName) { alert("Barcode and Item Name are required."); return; }
-            statusDiv.className = 'text-center font-bold text-sm text-blue-500';
-            statusDiv.innerText = 'Saving new item...';
-
-            fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify({ action: 'addNewItem', barcode, itemCode, itemName })
-            }).then(res => res.json()).then(res => {
-                if(res.status === "success") {
-                    statusDiv.className = 'text-center font-bold text-sm text-emerald-600';
-                    statusDiv.innerText = 'New item saved!';
-                    fetchItemDetails(barcode);
-                }
-            });
-        }
-
-        function submitStockData() {
-            const barcode = document.getElementById('barcode').value;
-            const quantity = document.getElementById('quantity').value;
-            const itemCode = document.getElementById('itemCode').value;
-            const itemName = document.getElementById('itemName').value;
-            const scannerName = document.getElementById('scannerName').value || 'NA';
-            const position = document.getElementById('position').value || 'NA';
-            const statusDiv = document.getElementById('status');
-
-            if (!barcode || !quantity) { alert("Barcode and Quantity required."); return; }
-            statusDiv.className = 'text-center font-bold text-sm text-blue-500';
-            statusDiv.innerText = 'Submitting stock...';
-
-            fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'updateStock', barcode, quantity, itemCode, itemName, scannerName, position })
-            }).then(() => {
-                statusDiv.className = 'text-center font-bold text-sm text-emerald-600';
-                statusDiv.innerText = 'Stock updated successfully!';
-                document.getElementById('barcode').value = '';
-                document.getElementById('itemCode').value = '';
-                document.getElementById('itemName').value = '';
-                document.getElementById('quantity').value = '';
-                document.getElementById('submitBtn').disabled = true;
-                document.getElementById('addNewItemBtn').disabled = true;
-                document.getElementById('qaBtn').disabled = true;
-            });
-        }
-
-        function openReportModal() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('modalStartDate').value = today;
-            document.getElementById('modalEndDate').value = today;
-            document.getElementById('reportResult').innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">Select date range and click Generate.</p>';
-            document.getElementById('downloadReportBtn').disabled = true;
-            document.getElementById('reportModal').classList.remove('hidden');
-        }
-        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
-
-        function fetchSummaryReport() {
-            const startDate = document.getElementById('modalStartDate').value;
-            const endDate = document.getElementById('modalEndDate').value;
-            const reportResultDiv = document.getElementById('reportResult');
-            reportResultDiv.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs mt-6">Generating report...</p>';
-
-            fetch(`${API_URL}?action=getSummaryReport&startDate=${startDate}&endDate=${endDate}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "success" && data.report) {
-                        lastReportData = data.report;
-                        if(data.report.length === 0) { reportResultDiv.innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">No records found.</p>'; return; }
-                        document.getElementById('downloadReportBtn').disabled = false;
-                        reportResultDiv.innerHTML = `
-                            <table class="w-full text-xs text-left border-collapse">
-                                <thead><tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800"><th class="p-2">Item Code</th><th class="p-2">Name</th><th class="p-2 text-right">Added</th><th class="p-2 text-right">Defects</th></tr></thead>
-                                <tbody>${data.report.map(r => `<tr class="border-b border-slate-100 dark:border-slate-800/60"><td class="p-2 font-mono">${r.itemCode}</td><td class="p-2">${r.itemName}</td><td class="p-2 text-right font-bold text-emerald-600">${r.totalStockAdded}</td><td class="p-2 text-right font-bold text-rose-500">${r.totalDefects}</td></tr>`).join('')}</tbody>
-                            </table>`;
-                    }
-                });
-        }
-
-        function downloadCSVReport() {
-            if (!lastReportData || lastReportData.length === 0) return;
-            let csv = "Item Code,Item Name,Stock Added,QA Defects\r\n" + lastReportData.map(r => `"${r.itemCode}","${r.itemName}",${r.totalStockAdded},${r.totalDefects}`).join("\r\n");
-            let link = document.createElement("a");
-            link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-            link.download = `Stock_Report_${new Date().toISOString().slice(0,10)}.csv`;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
-
-        function openQADefectModal() {
-            document.getElementById('qaItemCode').value = document.getElementById('itemCode').value || "N/A";
-            document.getElementById('qaItemName').value = document.getElementById('itemName').value || "N/A";
-            const catSelect = document.getElementById('qaCategory');
-            catSelect.innerHTML = '<option value="">Loading...</option>';
-            document.getElementById('qaDefectModal').classList.remove('hidden');
-
-            fetch(`${API_URL}?action=getDefectCategories`)
-                .then(res => res.json())
-                .then(data => {
-                    if(data.categories) catSelect.innerHTML = data.categories.map(c => `<option value="${c}">${c}</option>`).join('');
-                });
-        }
-        function closeQADefectModal() { document.getElementById('qaDefectModal').classList.add('hidden'); }
-
-        function handleQADefectSubmit(e) {
-            e.preventDefault();
-            const payload = {
-                action: 'saveQADefect',
-                itemCode: document.getElementById('qaItemCode').value,
-                itemName: document.getElementById('qaItemName').value,
-                category: document.getElementById('qaCategory').value,
-                severity: document.getElementById('qaSeverity').value,
-                quantity: document.getElementById('qaQuantity').value,
-                notes: document.getElementById('qaNotes').value,
-                scannerName: document.getElementById('scannerName').value || 'NA',
-                position: document.getElementById('position').value || 'NA'
-            };
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-                .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); });
+        function closeMyMapModal() {
+            document.getElementById('myMapModal').classList.add('hidden');
         }
     </script>
 </body>
