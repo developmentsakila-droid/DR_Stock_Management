@@ -296,7 +296,7 @@
                 </div>
             </div> -->
 
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-3 shadow-xl space-y-4">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1">
                     <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
                 </h3>
@@ -320,15 +320,15 @@
               <div id="reader"></div>
             </section>
 
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-3 shadow-xl space-y-4">
-                <div class="grid grid-cols-2 gap-4">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Barcode *</label>
-                        <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
+                        <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-semibold text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Item Code</label>
-                        <input type="text" id="itemCode" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-500 cursor-not-allowed">
+                        <input type="text" id="itemCode" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl font-semibold text-sm text-slate-500 cursor-not-allowed">
                     </div>
                 </div>
 
@@ -390,7 +390,7 @@
                     <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Summary Report</h4>
                     <p class="text-xs text-slate-500 dark:text-slate-400">Generate and export inventory stock additions & defects CSV</p>
                 </div>
-                <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
+                <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-1xl shadow-md transition shrink-0">
                     Open Report
                 </button>
             </section>
