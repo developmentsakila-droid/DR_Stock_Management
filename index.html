@@ -407,23 +407,24 @@
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
             </div>
 
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                         <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet Registry (Vehicle_Details)
                     </h4>
-                    <button onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <button onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-xs shadow-md transition flex items-center gap-1.5">
                         <i class="fa-solid fa-plus"></i> Add Vehicle
                     </button>
                 </div>
+                 </section>
                 <p class="text-xs text-slate-500">Track Vehicle No, Absolute Owner, Make, Model, Insurance, Revenue Licence, Fitness, Emission Test, and Service Dates synced with Google Sheets.</p>
                 
-                <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"></div>
-                <div id="vehicleEmptyState" class="hidden p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
+                <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
+                <div id="vehicleEmptyState" class="hidden p-6 text-center border border-dashed border-slate-400 dark:border-slate-600 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
                     <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
                     <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicle records found in 'Vehicle_Details'.</p>
                 </div>
-            </section>
+           
         </div>
 
         <!-- ================= TAB 4: DELIVERY SCHEDULE ================= -->
