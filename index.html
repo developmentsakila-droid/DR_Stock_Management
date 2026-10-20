@@ -902,7 +902,7 @@ grid.innerHTML = vehicles.map(v => {
     const srv = formatAndCheckDate(v['Service Date']);
     
     return `
-    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-3">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-sm space-y-1">
         <div class="flex items-start justify-between">
             <div>
                 <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/50">${v.Make || 'Make'} ${v.Model || ''}</span>
@@ -919,11 +919,14 @@ grid.innerHTML = vehicles.map(v => {
                 <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${emi.text}</span></p>
             </div>
             <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
-        </div>
-        <div class="flex items-center justify-end gap-2 pt-1">
+       
+         <div class="flex items-center justify-end gap-2 pt-1">
             <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
             <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
         </div>
+        
+        </div>
+       
     </div>
 `;
 }).join('');
