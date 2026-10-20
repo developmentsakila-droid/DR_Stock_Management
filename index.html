@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dreamron Warehouse - Management Portal</title>
+    <title>Warehouse - Management Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -18,86 +18,38 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .btn-nav-mix {
             background: linear-gradient(135deg, #059669 0%, #1e293b 100%);
-            border: 1px solid #34d399;
-            color: #ffffff;
-            transition: all 0.25s ease-in-out;
+            border: 1px solid #34d399; color: #ffffff; transition: all 0.25s ease-in-out;
         }
         .btn-nav-mix:hover {
             background: linear-gradient(135deg, #10b981 0%, #0f172a 100%);
-            box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.35);
-            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.35); transform: translateY(-1px);
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-        }
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .dark .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); }
         .scanner-card {
-            background-color: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            background-color: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 1.5rem;
+            padding: 1.25rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 1rem;
         }
-        .dark .scanner-card {
-            background-color: rgba(15, 23, 42, 0.9);
-            border-color: #1e293b;
-        }
+        .dark .scanner-card { background-color: rgba(15, 23, 42, 0.9); border-color: #1e293b; }
         .btn-camera {
-            width: 100%;
-            padding-top: 0.875rem;
-            padding-bottom: 0.875rem;
-            background-color: #056396;
-            color: #ffffff;
-            font-weight: 800;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(5, 99, 150, 0.25);
-            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            width: 100%; padding-top: 0.875rem; padding-bottom: 0.875rem; background-color: #056396;
+            color: #ffffff; font-weight: 800; border-radius: 1rem; font-size: 0.875rem; display: flex;
+            align-items: center; justify-content: center; gap: 0.5rem; border: none; cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(5, 99, 150, 0.25); transition: background-color 0.15s ease-in-out;
         }
-        .btn-camera:hover {
-            background-color: #044b70;
-        }
-        #reader {
-            width: 100%;
-            min-height: 220px;
-            overflow: hidden;
-            border-radius: 1rem;
-            display: none;
-        }
-        .dashboard-card {
-            transition: all 0.25s ease-in-out;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
+        .btn-camera:hover { background-color: #044b70; }
+        #reader { width: 100%; min-height: 240px; overflow: hidden; border-radius: 1rem; display: none; }
+        .dashboard-card { transition: all 0.25s ease-in-out; }
+        .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
@@ -131,19 +83,16 @@
                         </p>
                     </div>
                 </div>
-                
-                <!-- Mobile Theme Toggle -->
                 <button onclick="toggleTheme()" class="sm:hidden p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm">
                     <i class="fa-solid fa-sun text-base" id="themeIconMobile"></i>
                 </button>
             </div>
 
-            <!-- Quick Utilities & Theme -->
             <div class="flex items-center gap-2 flex-wrap justify-center">
                 <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                     <i class="fa-solid fa-house"></i> Dashboard
                 </button>
-                <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition hover:bg-slate-50">
+                <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition">
                     <i class="fa-solid fa-sun text-base" id="themeIcon"></i> Theme
                 </button>
             </div>
@@ -152,7 +101,7 @@
 
     <main class="max-w-6xl mx-auto px-4 pt-6">
 
-        <!-- ================= DASHBOARD HOME PAGE ================= -->
+        <!-- ================= DASHBOARD HOME ================= -->
         <div id="sectionDashboard" class="space-y-6">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div class="space-y-2 text-center sm:text-left">
@@ -165,7 +114,6 @@
             <h3 class="font-extrabold text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Navigation Modules</h3>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Delivery Finder Card -->
                 <div onclick="switchTab('delivery')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold border border-emerald-500/20">
                         <i class="fa-solid fa-map-location-dot"></i>
@@ -179,7 +127,6 @@
                     </div>
                 </div>
 
-                <!-- Stock Count Card -->
                 <div onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
                         <i class="fa-solid fa-barcode"></i>
@@ -193,7 +140,6 @@
                     </div>
                 </div>
 
-                <!-- Vehicle Card -->
                 <div onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20">
                         <i class="fa-solid fa-truck"></i>
@@ -207,7 +153,6 @@
                     </div>
                 </div>
 
-                <!-- Delivery Schedule Card -->
                 <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
                         <i class="fa-solid fa-calendar-days"></i>
@@ -226,22 +171,19 @@
         <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
         <div id="sectionDelivery" class="space-y-6 hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Location Finder</h3>
             </div>
 
-            <!-- Delivery Action Bar -->
             <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
-                </div>
+                <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
+                    <button onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
                         <i class="fa-solid fa-users text-emerald-600"></i> Team
                     </button>
-                    <button onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
+                    <button onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
                         <i class="fa-solid fa-folder-plus text-emerald-600"></i> Add Route
                     </button>
                     <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/25 transition">
@@ -250,8 +192,7 @@
                 </div>
             </div>
 
-            <!-- Search & Filters Container -->
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-4">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-lg"></i>
@@ -284,10 +225,8 @@
 
                 <div>
                     <div class="flex items-center justify-between mb-2 px-1">
-                        <label class="block text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                            Select Delivery Route / Region
-                        </label>
-                        <button onclick="openAddRouteModal()" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
+                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase">Select Delivery Route / Region</label>
+                        <button onclick="openAddRouteModal()" class="text-xs text-emerald-600 hover:underline font-bold flex items-center gap-1">
                             <i class="fa-solid fa-plus text-[10px]"></i> New Route
                         </button>
                     </div>
@@ -296,7 +235,7 @@
 
                 <div class="bg-gradient-to-r from-emerald-50 via-teal-50/50 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-inner">
                     <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0 border border-emerald-500/20">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl shrink-0 border border-emerald-500/20">
                             <i class="fa-solid fa-map-location-dot"></i>
                         </div>
                         <div>
@@ -304,7 +243,6 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Navigate all delivery points in selected route via Google Maps</p>
                         </div>
                     </div>
-
                     <div class="flex items-center gap-2 shrink-0">
                         <button onclick="openMyMapModal()" class="px-3.5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
                             <i class="fa-solid fa-map text-emerald-500"></i> My Maps
@@ -320,11 +258,11 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 px-1">
                 <p class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400" id="resultCount">Showing 0 locations</p>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="toggleAllDetails()" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                    <button onclick="toggleAllDetails()" class="text-xs font-extrabold text-emerald-600 hover:underline bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
                         <i class="fa-solid fa-eye" id="globalToggleIcon"></i>
                         <span id="globalToggleText">Show All Details</span>
                     </button>
-                    <button onclick="fetchAllData()" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                    <button onclick="fetchAllData()" class="text-xs font-bold text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
                         <i class="fa-solid fa-rotate-right text-emerald-500"></i> Refresh
                     </button>
                 </div>
@@ -337,37 +275,39 @@
                     <i class="fa-solid fa-map-pin"></i>
                 </div>
                 <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">No Locations Found</h3>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto font-medium">No delivery points match your current filter or search criteria.</p>
-                <button onclick="resetAllFilters()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md transition">
-                    Clear Filters
-                </button>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-sm mx-auto font-medium">No delivery points match your current filter or search criteria.</p>
+                <button onclick="resetAllFilters()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md transition">Clear Filters</button>
             </div>
         </div>
 
         <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
         <div id="sectionStock" class="space-y-6 hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Stock Counter & QA Inspection</h3>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl flex items-start gap-3 text-xs text-blue-800 dark:text-blue-200">
+                <i class="fa-solid fa-circle-info text-base mt-0.5 shrink-0 text-blue-500"></i>
+                <div>
+                    <span class="font-bold">Camera Tip:</span> If camera scanning does not start due to browser iframe security restrictions, please open this Web App URL directly in a new browser tab.
+                </div>
             </div>
 
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
                 </h3>
-
-                <div class="top-info">
-                    <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
-                            <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Warehouse Position</label>
-                            <input type="text" id="position" placeholder="e.g. Stock Auditor" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                        </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
+                        <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Warehouse Position</label>
+                        <input type="text" id="position" placeholder="e.g. Stock Auditor" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
                     </div>
                 </div>
             </section>
@@ -381,20 +321,20 @@
             </section>
 
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
-                <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Barcode *</label>
                         <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
                     </div>
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Item Code</label>
-                        <input type="text" id="itemCode" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                        <input type="text" id="itemCode" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl font-mono text-sm text-slate-500 cursor-not-allowed">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Item Name</label>
-                    <input type="text" id="itemName" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                    <input type="text" id="itemName" readonly placeholder="Auto-fetches" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-semibold text-slate-500 cursor-not-allowed">
                 </div>
 
                 <div>
@@ -433,7 +373,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                    <button type="button" id="submitBtn" onclick="submitStockData()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition disabled:opacity-50" disabled>
+                    <button type="button" id="submitBtn" onclick="submitStockData()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50" disabled>
                         <i class="fa-solid fa-check"></i> Submit Stock
                     </button>
                     <button type="button" id="addNewItemBtn" onclick="addNewItemToSheet()" class="py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition disabled:opacity-50" disabled>
@@ -450,7 +390,7 @@
                     <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Summary Report</h4>
                     <p class="text-xs text-slate-500 dark:text-slate-400">Generate and export inventory stock additions & defects CSV</p>
                 </div>
-                <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
+                <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
                     Open Report
                 </button>
             </section>
@@ -458,10 +398,10 @@
             <div id="status" class="text-center font-bold text-sm"></div>
         </div>
 
-        <!-- ================= TAB 3: VEHICLE MANAGEMENT ================= -->
+        <!-- ================= TAB 3: VEHICLE MANAGEMENT (Vehicle_Details) ================= -->
         <div id="sectionVehicle" class="space-y-6 hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
@@ -470,17 +410,18 @@
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet & Assignment Registry
+                        <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet Registry (Vehicle_Details)
                     </h4>
-                    <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
+                    <button onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
                         <i class="fa-solid fa-plus"></i> Add Vehicle
                     </button>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Manage assigned transport vehicles, drivers, and loading status.</p>
+                <p class="text-xs text-slate-500">Track Vehicle No, Absolute Owner, Make, Model, Insurance, Revenue Licence, Fitness, Emission Test, and Service Dates synced with Google Sheets.</p>
                 
-                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
+                <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"></div>
+                <div id="vehicleEmptyState" class="hidden p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
                     <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicles registered yet or ready for display.</p>
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicle records found in 'Vehicle_Details'.</p>
                 </div>
             </section>
         </div>
@@ -488,7 +429,7 @@
         <!-- ================= TAB 4: DELIVERY SCHEDULE ================= -->
         <div id="sectionSchedule" class="space-y-6 hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Schedule</h3>
@@ -503,8 +444,7 @@
                         <i class="fa-solid fa-plus"></i> New Schedule
                     </button>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Organize and track upcoming delivery dates and dispatch order sheets.</p>
-                
+                <p class="text-xs text-slate-500">Organize and track upcoming delivery dates and dispatch order sheets.</p>
                 <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
                     <i class="fa-solid fa-calendar-days text-3xl text-slate-400 mb-2"></i>
                     <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No schedules created for this date range.</p>
@@ -590,6 +530,73 @@
                 <div class="pt-3 flex gap-3">
                     <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
                     <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add / Edit Vehicle -->
+    <div id="vehicleModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-slate-900 dark:text-slate-100">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+                <h3 id="vehicleModalTitle" class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-truck text-amber-500"></i> Add Vehicle</h3>
+                <button onclick="closeVehicleModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="vehicleForm" onsubmit="handleVehicleFormSubmit(event)" class="space-y-3">
+                <input type="hidden" id="vehicleFormId">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Vehicle No *</label>
+                        <input type="text" id="formVehicleNo" required placeholder="e.g. WP-CAB-1234" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Absolute Owner *</label>
+                        <input type="text" id="formAbsoluteOwner" required placeholder="Owner name" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Make *</label>
+                        <input type="text" id="formMake" required placeholder="e.g. Isuzu / Dimo" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Model *</label>
+                        <input type="text" id="formModel" required placeholder="e.g. ELF / Batta" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Last Update</label>
+                        <input type="date" id="formLastUpdate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Revenue Licence</label>
+                        <input type="date" id="formRevenueLicence" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Insurance Expiry</label>
+                        <input type="date" id="formInsurance" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Fitness Expiry</label>
+                        <input type="date" id="formFitness" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Emission Test</label>
+                        <input type="date" id="formEmissionTest" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-extrabold uppercase mb-1">Service Date</label>
+                        <input type="date" id="formServiceDate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="pt-3 flex gap-3">
+                    <button type="button" onclick="closeVehicleModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
+                    <button type="submit" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Save Vehicle</button>
                 </div>
             </form>
         </div>
@@ -730,11 +737,12 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzh-XAW9q3SUCZboU4TS9Z00UWdx9Vn30Xc5EQ20YcMt0sEtqgzv3Y5rftfBVQ5tvxh/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzaIWc8uAX1fB09xifLotijxbcS66oQYMZUCBO1g3J5H5FoJXASIiVASH6Rm2T0PpM/exec";
 
         let locations = [];
         let routes = [{ name: "ALL", mapUrl: "" }];
         let employees = [];
+        let vehicles = [];
 
         let activeRoute = "ALL";
         let activeType = "ALL";
@@ -769,39 +777,33 @@
         function initTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
-                const themeIcon = document.getElementById('themeIcon');
-                const themeIconMobile = document.getElementById('themeIconMobile');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
+                document.getElementById('themeIcon')?.setAttribute('class', 'fa-solid fa-moon text-base');
+                document.getElementById('themeIconMobile')?.setAttribute('class', 'fa-solid fa-moon text-base');
             } else {
                 document.documentElement.classList.remove('dark');
-                const themeIcon = document.getElementById('themeIcon');
-                const themeIconMobile = document.getElementById('themeIconMobile');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
+                document.getElementById('themeIcon')?.setAttribute('class', 'fa-solid fa-sun text-base');
+                document.getElementById('themeIconMobile')?.setAttribute('class', 'fa-solid fa-sun text-base');
             }
         }
 
         function toggleTheme() {
-            const themeIcon = document.getElementById('themeIcon');
-            const themeIconMobile = document.getElementById('themeIconMobile');
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.theme = 'light';
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-sun text-base';
+                document.getElementById('themeIcon')?.setAttribute('class', 'fa-solid fa-sun text-base');
+                document.getElementById('themeIconMobile')?.setAttribute('class', 'fa-solid fa-sun text-base');
             } else {
                 document.documentElement.classList.add('dark');
                 localStorage.theme = 'dark';
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-base';
-                if (themeIconMobile) themeIconMobile.className = 'fa-solid fa-moon text-base';
+                document.getElementById('themeIcon')?.setAttribute('class', 'fa-solid fa-moon text-base');
+                document.getElementById('themeIconMobile')?.setAttribute('class', 'fa-solid fa-moon text-base');
             }
         }
 
         async function postToApi(action, data, requirePassword = true) {
             let password = "";
             if (requirePassword) {
-                password = prompt("Please enter the administrator password to proceed:");
+                password = prompt("Please enter the administrator password (default: gps@123):");
                 if (password === null) return { status: "cancelled" };
             }
 
@@ -828,7 +830,7 @@
                 return;
             }
 
-            showLoading(true, "Loading Portal Data...");
+            showLoading(true, "Loading.........");
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
@@ -836,14 +838,155 @@
                 locations = data.locations || [];
                 routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
                 employees = data.employees || [];
+                vehicles = data.vehicles || [];
 
                 renderRouteTabs();
                 renderEmployeeDropdowns();
+                renderVehicleGrid();
                 applyFilters();
             } catch (error) {
                 console.error("Error loading data from Google Sheets:", error);
             } finally {
                 showLoading(false);
+            }
+        }
+
+        // ================= VEHICLE MANAGEMENT LOGIC =================
+        function renderVehicleGrid() {
+            const grid = document.getElementById('vehicleGrid');
+const empty = document.getElementById('vehicleEmptyState');
+if (!grid) return;
+
+if (vehicles.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+}
+
+// Helper function to format date and check if it's within 14 days or expired
+function formatAndCheckDate(dateStr) {
+    if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
+    
+    const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
+    const targetDate = new Date(cleanString);
+    if (isNaN(targetDate.getTime())) return { text: dateStr, isUrgent: false };
+    
+    // Format display string as "2027 March 30"
+    const year = targetDate.getFullYear();
+    const month = targetDate.toLocaleString('en-US', { month: 'long' });
+    const day = targetDate.getDate();
+    const formattedText = `${year} ${month} ${day}`;
+    
+    // Calculate difference in days between today and target date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time part for accurate day comparison
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = targetDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Urgent if expired (diffDays < 0) or within 14 days (diffDays <= 14)
+    const isUrgent = diffDays <= 14;
+    
+    return { text: formattedText, isUrgent };
+}
+
+empty.classList.add('hidden');
+grid.innerHTML = vehicles.map(v => {
+    // Check urgency for key expiration dates
+    const rev = formatAndCheckDate(v['Revenue Licence']);
+    const ins = formatAndCheckDate(v['Insurance']);
+    const fit = formatAndCheckDate(v['Fitness']);
+    const emi = formatAndCheckDate(v['Emission Test']);
+    const srv = formatAndCheckDate(v['Service Date']);
+    
+    return `
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-3">
+        <div class="flex items-start justify-between">
+            <div>
+                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/50">${v.Make || 'Make'} ${v.Model || ''}</span>
+                <h4 class="font-black text-base text-slate-900 dark:text-white mt-1">${v['Vehicle No'] || ''}</h4>
+            </div>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60">Active</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200/60 text-xs space-y-1.5">
+            <p class="font-bold text-slate-800 dark:text-slate-200"><i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Owner: ${v['Absolute Owner'] || 'N/A'}</p>
+            <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                <p><strong>Revenue Lic:</strong> <span class="${rev.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${rev.text}</span></p>
+                <p><strong>Insurance:</strong> <span class="${ins.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${ins.text}</span></p>
+                <p><strong>Fitness:</strong> <span class="${fit.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${fit.text}</span></p>
+                <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${emi.text}</span></p>
+            </div>
+            <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-1">
+            <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+        </div>
+    </div>
+`;
+}).join('');
+        }
+
+        function openAddVehicleModal() {
+            document.getElementById('vehicleModalTitle').innerHTML = `<i class="fa-solid fa-truck text-amber-500"></i> Add Vehicle`;
+            document.getElementById('vehicleForm').reset();
+            document.getElementById('vehicleFormId').value = '';
+            document.getElementById('formLastUpdate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('vehicleModal').classList.remove('hidden');
+        }
+
+        function openEditVehicleModal(id) {
+            const v = vehicles.find(item => String(item.id) === String(id));
+            if (!v) return;
+            document.getElementById('vehicleModalTitle').innerHTML = `<i class="fa-solid fa-pen text-amber-500"></i> Edit Vehicle`;
+            document.getElementById('vehicleFormId').value = v.id;
+            document.getElementById('formVehicleNo').value = v['Vehicle No'] || '';
+            document.getElementById('formAbsoluteOwner').value = v['Absolute Owner'] || '';
+            document.getElementById('formMake').value = v.Make || '';
+            document.getElementById('formModel').value = v.Model || '';
+            document.getElementById('formLastUpdate').value = v['Last Update'] || '';
+            document.getElementById('formRevenueLicence').value = v['Revenue Licence'] || '';
+            document.getElementById('formInsurance').value = v['Insurance'] || '';
+            document.getElementById('formFitness').value = v['Fitness'] || '';
+            document.getElementById('formEmissionTest').value = v['Emission Test'] || '';
+            document.getElementById('formServiceDate').value = v['Service Date'] || '';
+            document.getElementById('vehicleModal').classList.remove('hidden');
+        }
+
+        function closeVehicleModal() { document.getElementById('vehicleModal').classList.add('hidden'); }
+
+        async function handleVehicleFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('vehicleFormId').value || `veh-${Date.now()}`;
+            const vehicleObj = {
+                id,
+                "Vehicle No": document.getElementById('formVehicleNo').value.trim(),
+                "Absolute Owner": document.getElementById('formAbsoluteOwner').value.trim(),
+                "Make": document.getElementById('formMake').value.trim(),
+                "Model": document.getElementById('formModel').value.trim(),
+                "Last Update": document.getElementById('formLastUpdate').value,
+                "Revenue Licence": document.getElementById('formRevenueLicence').value,
+                "Insurance": document.getElementById('formInsurance').value,
+                "Fitness": document.getElementById('formFitness').value,
+                "Emission Test": document.getElementById('formEmissionTest').value,
+                "Service Date": document.getElementById('formServiceDate').value
+            };
+            showLoading(true);
+            try {
+                await postToApi("saveVehicle", vehicleObj);
+                closeVehicleModal();
+                await fetchAllData();
+            } catch (err) { showLoading(false); }
+        }
+
+        async function deleteVehicle(id) {
+            if (confirm("Delete this vehicle record?")) {
+                showLoading(true);
+                try {
+                    await postToApi("deleteVehicle", { id });
+                    await fetchAllData();
+                } catch (err) { showLoading(false); }
             }
         }
 
@@ -853,10 +996,7 @@
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800";
             });
-            const activeBtn = document.getElementById(`typeBtn-${type}`);
-            if (activeBtn) {
-                activeBtn.className = "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md";
-            }
+            document.getElementById(`typeBtn-${type}`)?.setAttribute('class', "type-btn py-2.5 px-3 rounded-2xl font-bold text-xs text-center border transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-emerald-500 shadow-md");
             applyFilters();
         }
 
@@ -877,22 +1017,14 @@
                 const matchesSearch = query === '' || combinedSearchStr.includes(query);
                 return matchesRoute && matchesType && matchesSearch;
             });
-
             renderGrid(filtered);
         }
 
-        function clearSearchInput() {
-            document.getElementById('searchInput').value = '';
-            applyFilters();
-        }
-
+        function clearSearchInput() { document.getElementById('searchInput').value = ''; applyFilters(); }
         function resetAllFilters() {
             document.getElementById('searchInput').value = '';
-            activeRoute = 'ALL';
-            activeType = 'ALL';
-            setCustomerTypeFilter('ALL');
-            renderRouteTabs();
-            applyFilters();
+            activeRoute = 'ALL'; activeType = 'ALL';
+            setCustomerTypeFilter('ALL'); renderRouteTabs(); applyFilters();
         }
 
         function renderRouteTabs() {
@@ -901,7 +1033,7 @@
                 const isActive = r.name === activeRoute;
                 const count = r.name === 'ALL' ? locations.length : locations.filter(l => l.route === r.name).length;
                 return `
-                    <button onclick="selectRoute('${r.name}')" class="px-3.5 py-2 rounded-2xl font-bold text-xs flex items-center gap-1.5 border transition ${isActive ? 'bg-slate-900 text-white border-slate-900 dark:bg-emerald-600 dark:text-white shadow-md' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}">
+                    <button onclick="selectRoute('${r.name}')" class="px-3.5 py-2 rounded-2xl font-bold text-xs flex items-center gap-1.5 border transition ${isActive ? 'bg-slate-900 text-white border-slate-900 dark:bg-emerald-600 shadow-md' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}">
                         <span>${r.name === 'ALL' ? 'All Routes' : r.name}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-900'}">${count}</span>
                     </button>
@@ -916,9 +1048,7 @@
             document.getElementById('resultCount').textContent = `Showing ${data.length} location${data.length === 1 ? '' : 's'}`;
 
             if (data.length === 0) {
-                grid.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
+                grid.innerHTML = ''; empty.classList.remove('hidden'); return;
             }
 
             empty.classList.add('hidden');
@@ -949,7 +1079,7 @@
                                 <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200/60">
                                     <div>
                                         <p class="text-[10px] font-extrabold text-slate-400 uppercase">Phone</p>
-                                        <a href="tel:${item.phone}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || ''}</a>
+                                        <a href="tel:${item.phone}" class="font-bold text-emerald-600 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || ''}</a>
                                     </div>
                                     <div>
                                         <p class="text-[10px] font-extrabold text-slate-400 uppercase">GPS Coords</p>
@@ -968,13 +1098,13 @@
                             </div>
                         </div>
                         <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-                            <button onclick="toggleCard('${item.id}')" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 flex items-center gap-1.5 transition">
+                            <button onclick="toggleCard('${item.id}')" class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 transition">
                                 <i class="fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]"></i>
                                 <span>${isExpanded ? 'Hide Details' : 'View Details'}</span>
                             </button>
                             <div class="flex items-center gap-1.5">
                                 <button onclick="openEditModal('${item.id}')" title="Edit" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-550 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                                 <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</a>
                             </div>
                         </div>
@@ -984,8 +1114,7 @@
         }
 
         function toggleCard(id) {
-            if (expandedCards.has(id)) expandedCards.delete(id);
-            else expandedCards.add(id);
+            if (expandedCards.has(id)) expandedCards.delete(id); else expandedCards.add(id);
             applyFilters();
         }
 
@@ -1026,7 +1155,7 @@
             window.open(mapUrl, '_blank');
         }
 
-        // ================= MODAL HANDLERS =================
+        // ================= MODAL & CRUD HANDLERS =================
         function openAddModal() {
             document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-600"></i> Add Delivery Location`;
             document.getElementById('customerForm').reset();
@@ -1170,8 +1299,7 @@
         }
         function closeMyMapModal() { document.getElementById('myMapModal').classList.add('hidden'); }
 
-
-        // ================= STOCK COUNTER & QA LOGIC =================
+        // ================= ROBUST CAMERA & STOCK SCANNER LOGIC =================
         function toggleCalculator() {
             const box = document.getElementById('calcBox');
             box.classList.toggle('hidden');
@@ -1206,26 +1334,34 @@
             const readerDiv = document.getElementById('reader');
 
             readerDiv.style.display = 'block';
-            html5QrCode = new Html5Qrcode("reader");
+            
+            try {
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
 
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 150 }
-            };
+                const config = { fps: 10, qrbox: { width: 250, height: 150 } };
 
-            html5QrCode.start(
-                { facingMode: "environment" },
-                config,
-                onScanSuccess,
-                onScanError
-            ).then(() => {
-                isCameraActive = true;
-                camBtnText.textContent = "Turn Camera OFF";
-                camBtn.className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
-            }).catch(err => {
-                alert("Camera error: " + err);
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanError
+                ).then(() => {
+                    isCameraActive = true;
+                    camBtnText.textContent = "Turn Camera OFF";
+                    camBtn.className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
+                }).catch(err => {
+                    console.error("Camera start error:", err);
+                    alert("Camera access error: " + err + "\n\nTip: Please ensure camera permissions are allowed in your browser settings or open the web app directly in a new tab.");
+                    readerDiv.style.display = 'none';
+                    isCameraActive = false;
+                });
+            } catch (e) {
+                console.error("Camera initialization exception:", e);
                 readerDiv.style.display = 'none';
-            });
+                isCameraActive = false;
+            }
         }
 
         function stopCamera() {
@@ -1235,18 +1371,25 @@
 
             if (html5QrCode && isCameraActive) {
                 html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
+                    return html5QrCode.clear();
+                }).then(() => {
                     isCameraActive = false;
                     readerDiv.style.display = 'none';
                     camBtnText.textContent = "Turn Camera ON";
                     camBtn.className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition";
-                }).catch(err => console.log(err));
+                }).catch(err => {
+                    console.error("Failed to stop scanner cleanly:", err);
+                    isCameraActive = false;
+                    readerDiv.style.display = 'none';
+                });
+            } else {
+                isCameraActive = false;
+                readerDiv.style.display = 'none';
             }
         }
 
         function onScanSuccess(decodedText) {
             document.getElementById('barcode').value = decodedText;
-
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = audioCtx.createOscillator();
@@ -1257,8 +1400,7 @@
 
             stopCamera();
             fetchItemDetails(decodedText);
-            const qtyInput = document.getElementById('quantity');
-            if(qtyInput) qtyInput.select();
+            document.getElementById('quantity')?.select();
         }
 
         function onScanError(error) {}
