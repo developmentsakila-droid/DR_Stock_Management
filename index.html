@@ -75,7 +75,7 @@
                     <div>
                         <h1 class="font-black text-base sm:text-lg leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                             Warehouse Management
-                            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.0 V</span>
+                            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.0</span>
                         </h1>
                         <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
@@ -88,21 +88,13 @@
                 </button>
             </div>
 
-
- 
- 
             <div class="flex items-center gap-2 flex-wrap justify-center">
-              <!--  <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-                    <i class="fa-solid fa-house"></i> Dashboard
-                </button> -->
                 <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition">
                     <i class="fa-solid fa-sun text-base" id="themeIcon"></i> Theme
                 </button>
-                
                  <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
-   <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
- </button>
- 
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
             </div>
         </div>
     </header>
@@ -115,7 +107,6 @@
                 <div class="space-y-2 text-center sm:text-left">
                     <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
                     <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Welcome to Warehouse Portal</h2>
-                   <!-- <p class="text-emerald-100 text-xs sm:text-sm font-medium max-w-lg">Manage dispatch locations, track stock counts with barcode scanners, assign vehicles, and coordinate delivery schedules seamlessly.</p>  -->
                 </div>
             </div>
 
@@ -130,9 +121,9 @@
                         <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Finder</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Search customer locations, routes, and live GPS maps.</p>
                     </div>
-                    <div class="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 gap-1 pt-2">
+                    <!-- <div class="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 gap-1 pt-2">
                         <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
+                    </div>  -->
                 </div>
 
                 <div onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
@@ -142,9 +133,8 @@
                     <div class="space-y-1">
                         <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Stock Count & QA</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Scan barcodes, log inventory additions, and track QA defects.</p>
-                    </div>
-                    <div class="flex items-center text-xs font-bold text-blue-600 dark:text-blue-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    
+       
                     </div>
                 </div>
 
@@ -156,9 +146,7 @@
                         <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Manage delivery trucks, drivers, and capacity logs.</p>
                     </div>
-                    <div class="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
+                
                 </div>
 
               <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
@@ -169,24 +157,13 @@
                         <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule</h4>
                         <p class="text-xs text-slate-500 dark:text-slate-400">View daily dispatch itineraries and route calendars.</p>
                     </div>
-                    <div class="flex items-center text-xs font-bold text-purple-600 dark:text-purple-400 gap-1 pt-2">
-                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
+                    
                 </div>
-                
-                
             </div>
         </div>
 
         <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
         <div id="sectionDelivery" class="space-y-6 hidden">
-           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Location Finder</h3>
-            </div>  -->
-
             <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
                 <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
                 <div class="flex items-center gap-2 flex-wrap">
@@ -292,20 +269,6 @@
 
         <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
         <div id="sectionStock" class="space-y-3 hidden">
-           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Stock Counter & QA Inspection</h3>
-            </div> -->
-
-          <!--  <div class="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl flex items-start gap-3 text-xs text-blue-800 dark:text-blue-200">
-                <i class="fa-solid fa-circle-info text-base mt-0.5 shrink-0 text-blue-500"></i>
-                <div>
-                    <span class="font-bold">Camera Tip:</span> If camera scanning does not start due to browser iframe security restrictions, please open this Web App URL directly in a new browser tab.
-                </div>
-            </div> -->
-
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-2 shadow-xl space-y-2">
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1">
                     <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
@@ -410,13 +373,6 @@
 
         <!-- ================= TAB 3: VEHICLE MANAGEMENT (Vehicle_Details) ================= -->
         <div id="sectionVehicle" class="space-y-6 hidden">
-           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
-            </div> -->
-
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
@@ -426,34 +382,31 @@
                         <i class="fa-solid fa-plus"></i> Add Vehicle
                     </button>
                 </div>
-                 </section>
-                <p class="text-xs text-slate-500">Track Vehicle No, Absolute Owner, Make, Model, Insurance, Revenue Licence, Fitness, Emission Test, and Service Dates synced with Google Sheets.</p>
-                
-                <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
-                <div id="vehicleEmptyState" class="hidden p-6 text-center border border-dashed border-slate-400 dark:border-slate-600 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
-                    <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicle records found in 'Vehicle_Details'.</p>
-                </div>
-           
+            </section>
+            <p class="text-xs text-slate-500">Track Vehicle No, Absolute Owner, Make, Model, Insurance, Revenue Licence, Fitness, Emission Test, and Service Dates synced with Google Sheets.</p>
+            
+            <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
+            <div id="vehicleEmptyState" class="hidden p-6 text-center border border-dashed border-slate-400 dark:border-slate-600 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
+                <i class="fa-solid fa-truck text-3xl text-slate-400 mb-2"></i>
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No vehicle records found in 'Vehicle_Details'.</p>
+            </div>
         </div>
-
-        
         
         <!-- ================= TAB 4: DELIVERY SCHEDULE REPORT ================= -->
         <div id="sectionSchedule" class="space-y-3 hidden">
-
-
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
                         <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-check text-purple-500"></i> Delivery Schedule
+                            <i class="fa-solid fa-calendar-check text-purple-500"></i> Delivery Schedule (Monday to Sunday)
                         </h4>
-                       
+                        <p id="weekDateRangeLabel" class="text-xs text-slate-500 font-medium">Select a date to load Monday – Sunday range</p>
                     </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-24 text-center">
-                        <button onclick="fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value)" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                        <!-- Date Picker to select any date and auto-compute Mon-Sun week -->
+                        <input type="date" id="scheduleDateInput" onchange="onScheduleDateChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                        <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-16 text-center">
+                        <button onclick="fetchDeliveryScheduleReport()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
                             <i class="fa-solid fa-rotate"></i> Load Week
                         </button>
                     </div>
@@ -468,32 +421,6 @@
                 </div>
             </section>
         </div>
-
-        
-      <!--  <div id="sectionSchedule" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </button>
-                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Schedule</h3>
-            </div>
-
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check text-purple-500"></i> Dispatch Itineraries
-                    </h4>
-                    <button class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-md transition">
-                        <i class="fa-solid fa-plus"></i> New Schedule
-                    </button>
-                </div>
-                <p class="text-xs text-slate-500">Organize and track upcoming delivery dates and dispatch order sheets.</p>
-                <div class="p-8 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50">
-                    <i class="fa-solid fa-calendar-days text-3xl text-slate-400 mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No schedules created for this date range.</p>
-                </div>
-            </section>
-        </div>  -->
     </main>
 
     <!-- ================= MODALS ================= -->
@@ -778,9 +705,6 @@
         </div>
     </div>
 
-
-
-    
     <!-- JavaScript Application Logic -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzaIWc8uAX1fB09xifLotijxbcS66oQYMZUCBO1g3J5H5FoJXASIiVASH6Rm2T0PpM/exec";
@@ -800,13 +724,12 @@
         let debounceTimer;
         let calcExpr = "";
         let lastReportData = [];
-
         let lastScheduleData = [];
-
 
         document.addEventListener("DOMContentLoaded", () => {
             initTheme();
             fetchAllData();
+            initScheduleDateDefaults();
         });
 
         function showLoading(show, text = "Syncing with Google Sheets...") {
@@ -903,81 +826,71 @@
         // ================= VEHICLE MANAGEMENT LOGIC =================
         function renderVehicleGrid() {
             const grid = document.getElementById('vehicleGrid');
-const empty = document.getElementById('vehicleEmptyState');
-if (!grid) return;
+            const empty = document.getElementById('vehicleEmptyState');
+            if (!grid) return;
 
-if (vehicles.length === 0) {
-    grid.innerHTML = '';
-    empty.classList.remove('hidden');
-    return;
-}
+            if (vehicles.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
 
-// Helper function to format date and check if it's within 14 days or expired
-function formatAndCheckDate(dateStr) {
-    if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
-    
-    const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
-    const targetDate = new Date(cleanString);
-    if (isNaN(targetDate.getTime())) return { text: dateStr, isUrgent: false };
-    
-    // Format display string as "2027 March 30"
-    const year = targetDate.getFullYear();
-    const month = targetDate.toLocaleString('en-US', { month: 'long' });
-    const day = targetDate.getDate();
-    const formattedText = `${year} ${month} ${day}`;
-    
-    // Calculate difference in days between today and target date
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part for accurate day comparison
-    targetDate.setHours(0, 0, 0, 0);
-    
-    const diffTime = targetDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    // Urgent if expired (diffDays < 0) or within 14 days (diffDays <= 14)
-    const isUrgent = diffDays <= 14;
-    
-    return { text: formattedText, isUrgent };
-}
+            function formatAndCheckDate(dateStr) {
+                if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
+                const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
+                const targetDate = new Date(cleanString);
+                if (isNaN(targetDate.getTime())) return { text: dateStr, isUrgent: false };
+                
+                const year = targetDate.getFullYear();
+                const month = targetDate.toLocaleString('en-US', { month: 'long' });
+                const day = targetDate.getDate();
+                const formattedText = `${year} ${month} ${day}`;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                targetDate.setHours(0, 0, 0, 0);
+                
+                const diffTime = targetDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const isUrgent = diffDays <= 14;
+                
+                return { text: formattedText, isUrgent };
+            }
 
-empty.classList.add('hidden');
-grid.innerHTML = vehicles.map(v => {
-    // Check urgency for key expiration dates
-    const rev = formatAndCheckDate(v['Revenue Licence']);
-    const ins = formatAndCheckDate(v['Insurance']);
-    const fit = formatAndCheckDate(v['Fitness']);
-    const emi = formatAndCheckDate(v['Emission Test']);
-    const srv = formatAndCheckDate(v['Service Date']);
-    
-    return `
-    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-sm space-y-1">
-        <div class="flex items-start justify-between">
-            <div>
-                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/50">${v.Make || 'Make'} ${v.Model || ''}</span>
-                <h4 class="font-black text-base text-slate-900 dark:text-white mt-1">${v['Vehicle No'] || ''}</h4>
-            </div>
-            <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60">Active</span>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200/60 text-xs space-y-1.5">
-            <p class="font-bold text-slate-800 dark:text-slate-200"><i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Owner: ${v['Absolute Owner'] || 'N/A'}</p>
-            <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400">
-                <p><strong>Revenue Lic:</strong> <span class="${rev.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${rev.text}</span></p>
-                <p><strong>Insurance:</strong> <span class="${ins.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${ins.text}</span></p>
-                <p><strong>Fitness:</strong> <span class="${fit.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${fit.text}</span></p>
-                <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${emi.text}</span></p>
-            </div>
-            <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
-       
-         <div class="flex items-center justify-end gap-2 pt-1">
-            <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-            <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
-        </div>
-        
-        </div>
-       
-    </div>
-`;
-}).join('');
+            empty.classList.add('hidden');
+            grid.innerHTML = vehicles.map(v => {
+                const rev = formatAndCheckDate(v['Revenue Licence']);
+                const ins = formatAndCheckDate(v['Insurance']);
+                const fit = formatAndCheckDate(v['Fitness']);
+                const emi = formatAndCheckDate(v['Emission Test']);
+                const srv = formatAndCheckDate(v['Service Date']);
+                
+                return `
+                <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-sm space-y-1">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/50">${v.Make || 'Make'} ${v.Model || ''}</span>
+                            <h4 class="font-black text-base text-slate-900 dark:text-white mt-1">${v['Vehicle No'] || ''}</h4>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60">Active</span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200/60 text-xs space-y-1.5">
+                        <p class="font-bold text-slate-800 dark:text-slate-200"><i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Owner: ${v['Absolute Owner'] || 'N/A'}</p>
+                        <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                            <p><strong>Revenue Lic:</strong> <span class="${rev.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${rev.text}</span></p>
+                            <p><strong>Insurance:</strong> <span class="${ins.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${ins.text}</span></p>
+                            <p><strong>Fitness:</strong> <span class="${fit.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${fit.text}</span></p>
+                            <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${emi.text}</span></p>
+                        </div>
+                        <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
+                   
+                        <div class="flex items-center justify-end gap-2 pt-1">
+                            <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
+                            <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function openAddVehicleModal() {
@@ -1160,8 +1073,7 @@ grid.innerHTML = vehicles.map(v => {
                                 <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</a>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
@@ -1627,15 +1539,53 @@ grid.innerHTML = vehicles.map(v => {
                 .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); });
         }
 
+        // ================= DELIVERY SCHEDULE & DATE-TO-WEEK LOGIC =================
+        function getISOWeekNumber(d) {
+            var target = new Date(d.valueOf());
+            var dayNr = (d.getDay() + 6) % 7;
+            target.setDate(target.getDate() - dayNr + 3);
+            var firstThursday = target.valueOf();
+            target.setMonth(0, 1);
+            if (target.getDay() !== 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+            }
+            return 1 + Math.ceil((firstThursday - target) / 604800000);
+        }
 
-    // ******************************************************************************************************************************************************************************
+        function getMondayAndSunday(d) {
+            var date = new Date(d);
+            var day = date.getDay();
+            var diffToMonday = date.getDate() - day + (day === 0 ? -6 : 1);
+            var monday = new Date(date.setDate(diffToMonday));
+            var sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            return { monday, sunday };
+        }
 
+        function initScheduleDateDefaults() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('scheduleDateInput');
+            if (dateInput) {
+                dateInput.value = todayStr;
+                onScheduleDateChange(todayStr);
+            }
+        }
 
-document.addEventListener("DOMContentLoaded", () => {
-            fetchDeliveryScheduleReport("43"); // Auto-load Week 43 on startup
-        });
+        function onScheduleDateChange(dateVal) {
+            if (!dateVal) return;
+            var d = new Date(dateVal);
+            var weekNo = getISOWeekNumber(d);
+            var range = getMondayAndSunday(d);
 
-        // Date and Time formatter to yyyy / mm / dd HH:MM
+            document.getElementById('reportWeekNo').value = weekNo;
+            
+            var mStr = range.monday.toISOString().split('T')[0].replace(/-/g, '/');
+            var sStr = range.sunday.toISOString().split('T')[0].replace(/-/g, '/');
+            document.getElementById('weekDateRangeLabel').innerHTML = `Week <strong>${weekNo}</strong> Range: <span class="text-purple-600 font-bold">${mStr} (Mon)</span> to <span class="text-purple-600 font-bold">${sStr} (Sun)</span>`;
+
+            fetchDeliveryScheduleReport(weekNo);
+        }
+
         function formatCustomDateTime(dateString) {
             if (!dateString) return "-";
             var cleanStr = String(dateString).replace(/ *\([^)]*\)/g, "").trim();
@@ -1645,30 +1595,24 @@ document.addEventListener("DOMContentLoaded", () => {
             var yyyy = d.getFullYear();
             var mm = String(d.getMonth() + 1).padStart(2, '0');
             var dd = String(d.getDate()).padStart(2, '0');
-            var hh = String(d.getHours()).padStart(2, '0');
-            var min = String(d.getMinutes()).padStart(2, '0');
-
-            return yyyy + '/' + mm + '/' + dd ;
+            return yyyy + '/' + mm + '/' + dd;
         }
 
-  function formatCustomTime(dateStringtim) {
-      if (!dateStringtim) return "-";
-      var cleanStr = String(dateStringtim).replace(/ *\([^)]*\)/g, "").trim();
-      var d = new Date(cleanStr);
-      if (isNaN(d.getTime())) return dateStringtim;
-      
-      var yyyy = d.getFullYear();
-      var mm = String(d.getMonth() + 1).padStart(2, '0');
-      var dd = String(d.getDate()).padStart(2, '0');
-      var hh = String(d.getHours()).padStart(2, '0');
-      var min = String(d.getMinutes()).padStart(2, '0');
-      
-      return hh + ':' + min;
-  }
+        function formatCustomTime(dateStringtim) {
+            if (!dateStringtim) return "-";
+            var cleanStr = String(dateStringtim).replace(/ *\([^)]*\)/g, "").trim();
+            var d = new Date(cleanStr);
+            if (isNaN(d.getTime())) return dateStringtim;
+            
+            var hh = String(d.getHours()).padStart(2, '0');
+            var min = String(d.getMinutes()).padStart(2, '0');
+            return hh + ':' + min;
+        }
 
-        function fetchDeliveryScheduleReport(weekNo = "43") {
+        function fetchDeliveryScheduleReport(weekNo) {
+            if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
             const container = document.getElementById('scheduleReportResult');
-            container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
+            container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule (Monday to Sunday)...</p>';
 
             fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
                 .then(res => res.json())
@@ -1678,7 +1622,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
 
                         if (data.schedule.length === 0) {
-                            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo}.</p>`;
+                            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo} (Monday to Sunday).</p>`;
                             document.getElementById('downloadScheduleCsvBtn').disabled = true;
                             return;
                         }
@@ -1726,10 +1670,6 @@ document.addEventListener("DOMContentLoaded", () => {
             link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
-
-
-
-        
     </script>
 </body>
 </html>
