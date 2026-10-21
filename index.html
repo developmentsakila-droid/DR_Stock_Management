@@ -88,13 +88,21 @@
                 </button>
             </div>
 
+
+ 
+ 
             <div class="flex items-center gap-2 flex-wrap justify-center">
-                <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
+              <!--  <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-xl text-xs font-extrabold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
                     <i class="fa-solid fa-house"></i> Dashboard
-                </button>
+                </button> -->
                 <button onclick="toggleTheme()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 shadow-sm transition">
                     <i class="fa-solid fa-sun text-base" id="themeIcon"></i> Theme
                 </button>
+                
+                 <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
+   <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+ </button>
+ 
             </div>
         </div>
     </header>
@@ -153,7 +161,7 @@
                     </div>
                 </div>
 
-                <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+              <div onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
                         <i class="fa-solid fa-calendar-days"></i>
                     </div>
@@ -165,17 +173,19 @@
                         <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </div>
+                
+                
             </div>
         </div>
 
         <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
         <div id="sectionDelivery" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Location Finder</h3>
-            </div>
+            </div>  -->
 
             <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
                 <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
@@ -281,13 +291,13 @@
         </div>
 
         <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
-        <div id="sectionStock" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div id="sectionStock" class="space-y-3 hidden">
+           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Stock Counter & QA Inspection</h3>
-            </div>
+            </div> -->
 
           <!--  <div class="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl flex items-start gap-3 text-xs text-blue-800 dark:text-blue-200">
                 <i class="fa-solid fa-circle-info text-base mt-0.5 shrink-0 text-blue-500"></i>
@@ -296,11 +306,11 @@
                 </div>
             </div> -->
 
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-2 shadow-xl space-y-2">
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1">
                     <i class="fa-solid fa-user-gear text-emerald-600"></i> Auditor / Scanner Profile
                 </h3>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-1">
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Scanner / Auditor Name</label>
                         <input type="text" id="scannerName" placeholder="e.g. Sakila" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
@@ -320,8 +330,8 @@
               <div id="reader"></div>
             </section>
 
-            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
-                <div class="grid grid-cols-2 gap-2">
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-2 shadow-xl space-y-2">
+                <div class="grid grid-cols-2 gap-1">
                     <div>
                         <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Barcode *</label>
                         <input type="text" id="barcode" oninput="fetchItemDetails(this.value)" placeholder="Scan or type barcode" class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl font-semibold text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" required>
@@ -400,12 +410,12 @@
 
         <!-- ================= TAB 3: VEHICLE MANAGEMENT (Vehicle_Details) ================= -->
         <div id="sectionVehicle" class="space-y-6 hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+           <!-- <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
                 </button>
                 <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Vehicle Management</h3>
-            </div>
+            </div> -->
 
             <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">
@@ -427,8 +437,43 @@
            
         </div>
 
-        <!-- ================= TAB 4: DELIVERY SCHEDULE ================= -->
+        
+        
+        <!-- ================= TAB 4: DELIVERY SCHEDULE REPORT ================= -->
         <div id="sectionSchedule" class="space-y-6 hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Delivery Schedule Report (Week 43)</h3>
+                <span id="activeWeekBadge" class="text-[10px] font-black bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-2.5 py-0.5 rounded-full">Active: 2026 / 10 / 20 13:00</span>
+            </div>
+
+            <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-check text-purple-500"></i> Delivery_Data Auto-Loader
+                        </h4>
+                       
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-24 text-center">
+                        <button onclick="fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value)" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate"></i> Load Week
+                        </button>
+                    </div>
+                </div>
+
+                <div id="scheduleReportResult" class="overflow-x-auto pt-2">
+                    <p class="text-center text-slate-400 text-xs py-8">Fetching current week schedule...</p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <button id="downloadScheduleCsvBtn" onclick="downloadScheduleCSV()" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm" disabled>Download Schedule CSV</button>
+                </div>
+            </section>
+        </div>
+
+        
+      <!--  <div id="sectionSchedule" class="space-y-6 hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <button onclick="switchTab('dashboard')" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
@@ -451,7 +496,7 @@
                     <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No schedules created for this date range.</p>
                 </div>
             </section>
-        </div>
+        </div>  -->
     </main>
 
     <!-- ================= MODALS ================= -->
@@ -736,6 +781,9 @@
         </div>
     </div>
 
+
+
+    
     <!-- JavaScript Application Logic -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzaIWc8uAX1fB09xifLotijxbcS66oQYMZUCBO1g3J5H5FoJXASIiVASH6Rm2T0PpM/exec";
@@ -755,6 +803,9 @@
         let debounceTimer;
         let calcExpr = "";
         let lastReportData = [];
+
+        let lastScheduleData = [];
+
 
         document.addEventListener("DOMContentLoaded", () => {
             initTheme();
@@ -1578,6 +1629,110 @@ grid.innerHTML = vehicles.map(v => {
             fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
                 .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); });
         }
+
+
+    // ******************************************************************************************************************************************************************************
+
+
+document.addEventListener("DOMContentLoaded", () => {
+            fetchDeliveryScheduleReport("43"); // Auto-load Week 43 on startup
+        });
+
+        // Date and Time formatter to yyyy / mm / dd HH:MM
+        function formatCustomDateTime(dateString) {
+            if (!dateString) return "-";
+            var cleanStr = String(dateString).replace(/ *\([^)]*\)/g, "").trim();
+            var d = new Date(cleanStr);
+            if (isNaN(d.getTime())) return dateString;
+
+            var yyyy = d.getFullYear();
+            var mm = String(d.getMonth() + 1).padStart(2, '0');
+            var dd = String(d.getDate()).padStart(2, '0');
+            var hh = String(d.getHours()).padStart(2, '0');
+            var min = String(d.getMinutes()).padStart(2, '0');
+
+            return yyyy + ' / ' + mm + ' / ' + dd ;
+        }
+
+  function formatCustomTime(dateStringtim) {
+      if (!dateStringtim) return "-";
+      var cleanStr = String(dateStringtim).replace(/ *\([^)]*\)/g, "").trim();
+      var d = new Date(cleanStr);
+      if (isNaN(d.getTime())) return dateStringtim;
+      
+      var yyyy = d.getFullYear();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      var hh = String(d.getHours()).padStart(2, '0');
+      var min = String(d.getMinutes()).padStart(2, '0');
+      
+      return hh + ':' + min;
+  }
+
+        function fetchDeliveryScheduleReport(weekNo = "43") {
+            const container = document.getElementById('scheduleReportResult');
+            container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
+
+            fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success" && data.schedule) {
+                        lastScheduleData = data.schedule;
+                        document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
+
+                        if (data.schedule.length === 0) {
+                            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo}.</p>`;
+                            document.getElementById('downloadScheduleCsvBtn').disabled = true;
+                            return;
+                        }
+                        document.getElementById('downloadScheduleCsvBtn').disabled = false;
+                        container.innerHTML = `
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                                        <th class="p-2.5">Date</th>
+                                        <th class="p-2.5">Week</th>
+                                        <th class="p-2.5">Route Name</th>
+                                        <th class="p-2.5">Driver</th>
+                                        <th class="p-2.5">Helper</th>
+                                        <th class="p-2.5">Time</th>
+                                        <th class="p-2.5">Lorry</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.schedule.map(r => `
+                                        <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                                            <td class="p-2.5 font-medium">${formatCustomDateTime(r.Date)}</td>
+                                            <td class="p-2.5 font-bold text-purple-600">${r['Week No'] || '-'}</td>
+                                            <td class="p-2.5 font-bold">${r['Route Name'] || '-'}</td>
+                                            <td class="p-2.5">${r.Driver || '-'}</td>
+                                            <td class="p-2.5">${r.Helper || '-'}</td>
+                                            <td class="p-2.5 font-mono">${formatCustomTime(r.Time)}</td>
+                                            <td class="p-2.5 font-mono font-bold text-emerald-600">${r.Lorry || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>`;
+                    }
+                })
+                .catch(err => {
+                    container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`;
+                });
+        }
+
+        function downloadScheduleCSV() {
+            if (!lastScheduleData || lastScheduleData.length === 0) return;
+            const headers = Object.keys(lastScheduleData[0]);
+            let csv = headers.join(",") + "\r\n" + lastScheduleData.map(row => headers.map(h => `"${row[h] || ''}"`).join(",")).join("\r\n");
+            let link = document.createElement("a");
+            link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
+            link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+
+
+        
     </script>
 </body>
 </html>
