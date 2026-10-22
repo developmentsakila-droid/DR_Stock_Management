@@ -2004,7 +2004,7 @@
                             <td class="p-2.5">${r.Action || '-'}</td>
                             <td class="p-2.5 font-semibold text-emerald-600 dark:text-emerald-400">${r.responsibility || '-'}</td>
                             <td class="p-2.5">
-                                <select onchange="handleActionStatusChange(${index}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${r.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
+                                <select onchange="handleActionStatusChange(${index}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${r.status === 'Completed' ? 'bg-emerald-550 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
                                     <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                     <option value="In Progress" ${r.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                                     <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
