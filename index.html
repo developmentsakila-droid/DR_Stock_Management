@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
@@ -205,17 +204,15 @@
             </div>
         </div>
         
-        
-        
         <div id="card-action-report" onclick="switchTab('actionReport')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold border border-indigo-500/20">
-        <i class="fa-solid fa-clipboard-list"></i>
-    </div>
-    <div class="space-y-1">
-        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Action Report</h4>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Track warehouse tasks, frequencies (Frequence), and unlock dates (Task Unloack).</p>
-    </div>
-</div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold border border-indigo-500/20">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="space-y-1">
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Action Report</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Track warehouse tasks, frequencies (Frequence), and unlock dates (Task Unloack).</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1034,12 +1031,9 @@
             employees = data.employees || [];
             vehicles = data.vehicles || [];
             loginRecords = data.loginData || [];
+            warehouseActions = data.warehouseActions || [];
 
-
-
-warehouseActions = data.warehouseActions || [];
-renderActionReport(warehouseActions);
-
+            renderActionReport(warehouseActions);
 
             if (loggedInUser) {
                 applyAccessControl();
@@ -1966,81 +1960,95 @@ renderActionReport(warehouseActions);
         link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
-    
 
 
-// Inside fetchAllData() after response:*********************************************************************
-
-
-// Inside applyAccessControl():
-// Include 'action report' keyword check if needed:
-
-
-
-// Action Report Rendering & Filtering
-function applyActionFilters() {
-    const query = document.getElementById('actionSearchInput').value.toLowerCase().trim();
-    const filtered = warehouseActions.filter(item => {
-        const rowStr = `${item.Date} ${item.Task} ${item.Action} ${item.responsibility} ${item.status} ${item.Frequence} ${item['Task Unloack']}`.toLowerCase();
-        return query === '' || rowStr.includes(query);
-    });
-    renderActionReport(filtered);
-}
-
-function renderActionReport(data) {
-    const container = document.getElementById('actionReportResult');
-    if (!container) return;
-
-    if (data.length === 0) {
-        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No action records found in 'Warehouse_actions'.</p>`;
-        document.getElementById('downloadActionCsvBtn').disabled = true;
-        return;
+    // ================= ACTION REPORT LOGIC =================
+    function applyActionFilters() {
+        const query = document.getElementById('actionSearchInput').value.toLowerCase().trim();
+        const filtered = warehouseActions.filter(item => {
+            const rowStr = `${item.Date} ${item.Task} ${item.Action} ${item.responsibility} ${item.status} ${item.Frequence} ${item['Task Unloack']}`.toLowerCase();
+            return query === '' || rowStr.includes(query);
+        });
+        renderActionReport(filtered);
     }
 
-    document.getElementById('downloadActionCsvBtn').disabled = false;
-    container.innerHTML = `
-        <table class="w-full text-xs text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                    <th class="p-2.5">Date</th>
-                    <th class="p-2.5">Task</th>
-                    <th class="p-2.5">Action</th>
-                    <th class="p-2.5">Responsibility</th>
-                    <th class="p-2.5">Status</th>
-                    <th class="p-2.5">Frequence</th>
-                    <th class="p-2.5">Task Unloack</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${data.map(r => `
-                    <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                        <td class="p-2.5 font-medium">${formatCustomDateTime(r.Date)}</td>
-                        <td class="p-2.5 font-bold">${r.Task || '-'}</td>
-                        <td class="p-2.5">${r.Action || '-'}</td>
-                        <td class="p-2.5 font-semibold text-emerald-600 dark:text-emerald-400">${r.responsibility || '-'}</td>
-                        <td class="p-2.5">
-                            <span class="px-2 py-1 rounded-full text-[10px] font-extrabold ${r.status === 'Completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
-                                ${r.status || 'Pending'}
-                            </span>
-                        </td>
-                        <td class="p-2.5 font-mono">${r.Frequence || '-'}</td>
-                        <td class="p-2.5 font-mono text-purple-600 dark:text-purple-400 font-bold">${r['Task Unloack'] || '-'}</td>
+    function renderActionReport(data) {
+        const container = document.getElementById('actionReportResult');
+        if (!container) return;
+
+        if (data.length === 0) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No action records found in 'Warehouse_actions'.</p>`;
+            document.getElementById('downloadActionCsvBtn').disabled = true;
+            return;
+        }
+
+        document.getElementById('downloadActionCsvBtn').disabled = false;
+        container.innerHTML = `
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                        <th class="p-2.5">Date</th>
+                        <th class="p-2.5">Task</th>
+                        <th class="p-2.5">Action</th>
+                        <th class="p-2.5">Responsibility</th>
+                        <th class="p-2.5">Status</th>
+                        <th class="p-2.5">Frequence</th>
+                        <th class="p-2.5">Task Unloack</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>`;
-}
+                </thead>
+                <tbody>
+                    ${data.map((r, index) => `
+                        <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                            <td class="p-2.5 font-medium">${formatCustomDateTime(r.Date)}</td>
+                            <td class="p-2.5 font-bold">${r.Task || '-'}</td>
+                            <td class="p-2.5">${r.Action || '-'}</td>
+                            <td class="p-2.5 font-semibold text-emerald-600 dark:text-emerald-400">${r.responsibility || '-'}</td>
+                            <td class="p-2.5">
+                                <select onchange="handleActionStatusChange(${index}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${r.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
+                                    <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="In Progress" ${r.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                            <td class="p-2.5 font-mono">${r.Frequence || '-'}</td>
+                            <td class="p-2.5 font-mono text-purple-600 dark:text-purple-400 font-bold">${r['Task Unloack'] || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
+    }
 
-function downloadActionCSV() {
-    if (!warehouseActions || warehouseActions.length === 0) return;
-    const headers = ["Date", "Task", "Action", "responsibility", "status", "Frequence", "Task Unloack"];
-    let csv = headers.join(",") + "\r\n" + warehouseActions.map(row => headers.map(h => `"${row[h] || ''}"`).join(",")).join("\r\n");
-    let link = document.createElement("a");
-    link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-    link.download = `Warehouse_Action_Report_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-}
+    function handleActionStatusChange(index, newStatus) {
+        warehouseActions[index].status = newStatus;
 
+        if (newStatus === 'Completed') {
+            const freq = (warehouseActions[index].Frequence || '').toLowerCase();
+            const baseDate = new Date();
+            let addDays = 1;
+
+            if (freq.includes('week')) addDays = 7;
+            else if (freq.includes('month')) addDays = 30;
+            else if (freq.includes('year')) addDays = 365;
+
+            baseDate.setDate(baseDate.getDate() + addDays);
+            const nextUnlockStr = baseDate.toISOString().split('T')[0];
+
+            warehouseActions[index]['Task Unloack'] = nextUnlockStr;
+            warehouseActions[index].status = 'Pending'; // Reset to pending for the next frequency cycle
+        }
+
+        renderActionReport(warehouseActions);
+    }
+
+    function downloadActionCSV() {
+        if (!warehouseActions || warehouseActions.length === 0) return;
+        const headers = ["Date", "Task", "Action", "responsibility", "status", "Frequence", "Task Unloack"];
+        let csv = headers.join(",") + "\r\n" + warehouseActions.map(row => headers.map(h => `"${row[h] || ''}"`).join(",")).join("\r\n");
+        let link = document.createElement("a");
+        link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
+        link.download = `Warehouse_Action_Report_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
 </script>
 
 </body>
