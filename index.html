@@ -116,7 +116,7 @@
                 <div>
                     <h1 class="font-black text-base sm:text-lg leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                         Warehouse Management
-                        <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.0</span>
+                        
                     </h1>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
@@ -124,7 +124,9 @@
                     </p>
                 </div>
             </div>
-           
+            <button onclick="switchTab('dashboard')" class="hidden sm:flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold bg-emerald-550 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border-0 border-emerald-700 dark:border-emerald-600 shadow-sm transition">
+     <i class="fa-solid fa-arrow-left"></i> Dashboard
+ </button>
         </div>
         
         <!-- Right Side: Theme Toggle & Logout Button -->
@@ -140,18 +142,17 @@
     </div>
 </header>
 
- <button onclick="switchTab('dashboard')" class="sm:flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold bg-emerald-550 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border-0 border-emerald-700 dark:border-emerald-600 shadow-sm transition">
-     <i class="fa-solid fa-arrow-left"></i> Dashboard
- </button>
+
 
 <main class="max-w-6xl mx-auto px-4 pt-6">
 
     <!-- ================= DASHBOARD HOME ================= -->
-    <div id="sectionDashboard" class="space-y-6">
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div id="sectionDashboard" class="space-y-4">
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-4 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="space-y-2 text-center sm:text-left">
                 <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
                 <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
+                <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 5.0</span>
             </div>
         </div>
 
