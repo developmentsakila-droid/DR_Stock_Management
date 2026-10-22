@@ -143,13 +143,13 @@
    
 
 </div>
-
-</header>
- <div class="flex items-Left gap-2.5">
-    <button onclick="switchTab('dashboard')" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition">
+<div class="flex items-Left gap-2.5">
+    <button onclick="switchTab('dashboard')" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border-0 border-emerald-200 dark:border-emerald-900/50 shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition">
         <i class="fa-solid fa-arrow-left"></i> Dashboard
     </button>
     </div>
+</header>
+ 
 <main class="max-w-6xl mx-auto px-4 pt-6">
 
 <!-- ================= DASHBOARD HOME ================= -->
@@ -158,7 +158,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 3.0</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.0</span>
         </div>
     </div>
 
@@ -1076,7 +1076,7 @@
                
                     <div class="flex items-center justify-end gap-2 pt-1">
                         <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`;
@@ -1274,7 +1274,7 @@
                         </button>
                         <div class="flex items-center gap-1.5">
                             <button onclick="openEditModal('${item.id}')" title="Edit" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-550 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</a>
                         </div>
                     </div>
