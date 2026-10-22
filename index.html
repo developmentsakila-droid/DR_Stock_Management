@@ -185,12 +185,12 @@
         </div>
 
         <div id="card-vehicle" onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20">
-                <i class="fa-solid fa-truck"></i>
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20" id="cardVehicleIconContainer">
+                <i class="fa-solid fa-truck" id="cardVehicleIcon"></i>
             </div>
             <div class="space-y-1">
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Manage delivery trucks, drivers, and capacity logs.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400" id="cardVehicleDesc">Manage delivery trucks, drivers, and capacity logs.</p>
             </div>
         </div>
 
@@ -1053,41 +1053,41 @@
 
 
     // ================= VEHICLE MANAGEMENT LOGIC =================
+    function formatAndCheckDate(dateStr) {
+        if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
+        const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
+        const targetDate = new Date(cleanString);
+        if (isNaN(targetDate.getTime())) return { text: dateStr, isUrgent: false };
+        
+        const year = targetDate.getFullYear();
+        const month = targetDate.toLocaleString('en-US', { month: 'long' });
+        const day = targetDate.getDate();
+        const formattedText = `${year} ${month} ${day}`;
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        const diffTime = targetDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const isUrgent = diffDays <= 21; // 3 weeks threshold
+        
+        return { text: formattedText, isUrgent };
+    }
+
     function renderVehicleGrid() {
         const grid = document.getElementById('vehicleGrid');
         const empty = document.getElementById('vehicleEmptyState');
         if (!grid) return;
 
+        let hasAnyUrgentVehicle = false;
 
         if (vehicles.length === 0) {
             grid.innerHTML = '';
             empty.classList.remove('hidden');
+            updateDashboardVehicleCard(false);
             return;
         }
-
-
-        function formatAndCheckDate(dateStr) {
-            if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
-            const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
-            const targetDate = new Date(cleanString);
-            if (isNaN(targetDate.getTime())) return { text: dateStr, isUrgent: false };
-            
-            const year = targetDate.getFullYear();
-            const month = targetDate.toLocaleString('en-US', { month: 'long' });
-            const day = targetDate.getDate();
-            const formattedText = `${year} ${month} ${day}`;
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            targetDate.setHours(0, 0, 0, 0);
-            
-            const diffTime = targetDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const isUrgent = diffDays <= 14;
-            
-            return { text: formattedText, isUrgent };
-        }
-
 
         empty.classList.add('hidden');
         grid.innerHTML = vehicles.map(v => {
@@ -1097,32 +1097,72 @@
             const emi = formatAndCheckDate(v['Emission Test']);
             const srv = formatAndCheckDate(v['Service Date']);
             
+            // Check if Revenue Licence or Insurance is within 3 weeks
+            const isRevenueOrInsuranceUrgent = rev.isUrgent || ins.isUrgent;
+            if (isRevenueOrInsuranceUrgent) {
+                hasAnyUrgentVehicle = true;
+            }
+
+            // Dynamic card background styling based on urgency
+            const cardBgClass = isRevenueOrInsuranceUrgent 
+                ? 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-300 dark:border-rose-900 shadow-rose-500/10' 
+                : 'glass-card dark:bg-slate-900 border-slate-200 dark:border-slate-800';
+            
             return `
-            <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-sm space-y-1">
+            <div class="${cardBgClass} border rounded-1xl p-2 shadow-sm space-y-1 transition-all">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/50">${v.Make || 'Make'} ${v.Model || ''}</span>
+                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${isRevenueOrInsuranceUrgent ? 'bg-rose-200 text-rose-800 dark:bg-rose-900 dark:text-rose-200' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'} border border-amber-200/50">
+                            ${v.Make || 'Make'} ${v.Model || ''}
+                        </span>
                         <h4 class="font-black text-base text-slate-900 dark:text-white mt-1">${v['Vehicle No'] || ''}</h4>
                     </div>
-                    <span class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60">Active</span>
+                    <span class="text-xs font-bold px-2.5 py-1.5 rounded-xl ${isRevenueOrInsuranceUrgent ? 'bg-rose-600 text-white animate-pulse' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60'}">
+                        ${isRevenueOrInsuranceUrgent ? 'URGENT RENEWAL' : 'Active'}
+                    </span>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200/60 text-xs space-y-1.5">
+                <div class="bg-white/70 dark:bg-slate-950/80 p-3 rounded-2xl border border-slate-200/60 text-xs space-y-1.5">
                     <p class="font-bold text-slate-800 dark:text-slate-200"><i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i> Owner: ${v['Absolute Owner'] || 'N/A'}</p>
                     <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] text-slate-600 dark:text-slate-400">
-                        <p><strong>Revenue Lic:</strong> <span class="${rev.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${rev.text}</span></p>
-                        <p><strong>Insurance:</strong> <span class="${ins.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${ins.text}</span></p>
-                        <p><strong>Fitness:</strong> <span class="${fit.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${fit.text}</span></p>
-                        <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold animate-pulse' : ''}">${emi.text}</span></p>
+                        <p><strong>Revenue Lic:</strong> <span class="${rev.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold' : ''}">${rev.text}</span></p>
+                        <p><strong>Insurance:</strong> <span class="${ins.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold' : ''}">${ins.text}</span></p>
+                        <p><strong>Fitness:</strong> <span class="${fit.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold' : ''}">${fit.text}</span></p>
+                        <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold' : ''}">${emi.text}</span></p>
                     </div>
-                    <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
+                    <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
                
                     <div class="flex items-center justify-end gap-2 pt-1">
                         <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`;
         }).join('');
+
+        updateDashboardVehicleCard(hasAnyUrgentVehicle);
+    }
+
+    function updateDashboardVehicleCard(isUrgent) {
+        const cardEl = document.getElementById('card-vehicle');
+        const iconContainer = document.getElementById('cardVehicleIconContainer');
+        const descEl = document.getElementById('cardVehicleDesc');
+        if (!cardEl) return;
+
+        if (isUrgent) {
+            cardEl.className = "dashboard-card bg-rose-50/90 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-900 rounded-3xl p-6 cursor-pointer shadow-xl shadow-rose-500/20 flex flex-col justify-between space-y-4 animate-pulse";
+            if(iconContainer) iconContainer.className = "w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl font-bold shadow-md shadow-rose-500/30";
+            if(descEl) {
+                descEl.className = "text-xs text-rose-600 dark:text-rose-300 font-bold";
+                descEl.textContent = "🚨 URGENT: Revenue/Insurance expiring soon!";
+            }
+        } else {
+            cardEl.className = "dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4";
+            if(iconContainer) iconContainer.className = "w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20";
+            if(descEl) {
+                descEl.className = "text-xs text-slate-500 dark:text-slate-400";
+                descEl.textContent = "Manage delivery trucks, drivers, and capacity logs.";
+            }
+        }
     }
 
 
