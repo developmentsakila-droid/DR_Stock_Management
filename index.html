@@ -989,7 +989,7 @@
     async function postToApi(action, data, requirePassword = true) {
         let password = "";
         if (requirePassword) {
-            password = prompt("Please enter the administrator password (default: gps@123):");
+            password = prompt("Please enter the administrator password:");
             if (password === null) return { status: "cancelled" };
         }
 
