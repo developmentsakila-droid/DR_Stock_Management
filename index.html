@@ -87,7 +87,7 @@
 
         <div id="loginError" class="text-xs font-bold text-rose-500 text-center hidden">Invalid username or password.</div>
 
-        <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-emerald-600/30 transition">
+        <button type="submit" id="loginBtn" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-emerald-600/30 transition">
             Sign In to Portal
         </button>
     </form>
@@ -157,7 +157,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.0</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.2</span>
         </div>
     </div>
 
@@ -582,7 +582,7 @@
 
         <div class="pt-3 flex gap-3">
             <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
-            <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
+            <button type="submit" id="saveLocationBtn" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
         </div>
     </form>
 </div>
@@ -651,7 +651,7 @@
             </div>
             <div class="pt-3 flex gap-3">
                 <button type="button" onclick="closeVehicleModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
-                <button type="submit" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Save Vehicle</button>
+                <button type="submit" id="saveVehicleBtn" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Save Vehicle</button>
             </div>
         </form>
     </div>
@@ -676,7 +676,7 @@
             </div>
             <div class="pt-3 flex gap-3">
                 <button type="button" onclick="closeRouteModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
-                <button type="submit" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Add Route</button>
+                <button type="submit" id="addRouteBtn" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Add Route</button>
             </div>
         </form>
     </div>
@@ -700,7 +700,7 @@
                 <input type="text" id="empNameInput" required placeholder="Full Name" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
                 <input type="tel" id="empPhoneInput" required placeholder="Phone" class="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
             </div>
-            <button type="submit" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 text-white font-extrabold text-xs rounded-xl">+ Add Employee</button>
+            <button type="submit" id="addEmpBtn" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 text-white font-extrabold text-xs rounded-xl">+ Add Employee</button>
         </form>
         <div class="space-y-2.5" id="employeeList"></div>
     </div>
@@ -789,7 +789,7 @@
             </div>
             <div class="pt-3 flex gap-3">
                 <button type="button" onclick="closeQADefectModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
-                <button type="submit" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Submit Defect</button>
+                <button type="submit" id="qaSubmitBtn" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl shadow-md text-xs">Submit Defect</button>
             </div>
         </form>
     </div>
@@ -834,6 +834,21 @@
         initScheduleDateDefaults();
     });
 
+    // Helper to immediately disable button and show loading state
+    function setButtonLoading(btnEl, isLoading, defaultHtml) {
+        if (!btnEl) return;
+        if (isLoading) {
+            btnEl.disabled = true;
+            btnEl.dataset.originalHtml = btnEl.innerHTML;
+            btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Loading...`;
+            btnEl.classList.add('opacity-75', 'cursor-not-allowed');
+        } else {
+            btnEl.disabled = false;
+            btnEl.innerHTML = btnEl.dataset.originalHtml || defaultHtml;
+            btnEl.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
 
     function checkExistingSession() {
         const savedUser = localStorage.getItem('warehouse_user');
@@ -857,8 +872,9 @@
         const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
         const pInput = document.getElementById('loginPass').value.trim();
         const errDiv = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
 
-
+        setButtonLoading(loginBtn, true, "Sign In to Portal");
         showLoading(true, "Authenticating...");
         try {
             if (loginRecords.length === 0) {
@@ -892,6 +908,7 @@
             errDiv.textContent = "Connection error. Please try again.";
             errDiv.classList.remove('hidden');
         } finally {
+            setButtonLoading(loginBtn, false, "Sign In to Portal");
             showLoading(false);
         }
     }
@@ -929,7 +946,7 @@
     }
 
 
-    function showLoading(show, text = "Syncing with Google Sheets...") {
+    function showLoading(show, text = "Saving.....") {
         document.getElementById('loadingText').textContent = text;
         document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
     }
@@ -1014,43 +1031,69 @@
     }
 
 
-    async function fetchAllData() {
-        if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-            console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
-            return;
-        }
-
-
-        showLoading(true, "Loading.........");
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            locations = data.locations || [];
-            routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
-            employees = data.employees || [];
-            vehicles = data.vehicles || [];
-            loginRecords = data.loginData || [];
-            warehouseActions = data.warehouseActions || [];
-
-            renderActionReport(warehouseActions);
-
-            if (loggedInUser) {
-                applyAccessControl();
+   async function fetchAllData(forceRefresh = false) {
+    if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+        console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+        return;
+    }
+    
+    // 1. INSTANT LOAD: Try loading from localStorage first for immediate rendering
+    if (!forceRefresh) {
+        const cachedData = localStorage.getItem('warehouse_portal_cache');
+        if (cachedData) {
+            try {
+                const data = JSON.parse(cachedData);
+                loadDataIntoMemory(data);
+            } catch (e) {
+                console.warn("Cache parse error", e);
             }
-
-
-            renderRouteTabs();
-            renderEmployeeDropdowns();
-            renderVehicleGrid();
-            applyFilters();
-        } catch (error) {
-            console.error("Error loading data from Google Sheets:", error);
-        } finally {
-            showLoading(false);
         }
     }
+    
+    // Show loading indicator only if we don't have cached data yet
+    const hasExistingData = locations.length > 0 || vehicles.length > 0;
+    if (!hasExistingData) {
+        showLoading(true, "Loading...");
+    }
+    
+    try {
+        // 2. BACKGROUND FETCH: Get fresh data from Google Sheets
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        // Save to localStorage for next time
+        localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+        
+        // Load fresh data into memory and re-render
+        loadDataIntoMemory(data);
+        
+    } catch (error) {
+        console.error("Error loading data from Google Sheets:", error);
+    } finally {
+        showLoading(false);
+    }
+}
 
+// Helper function to assign data and update UI
+function loadDataIntoMemory(data) {
+    locations = data.locations || [];
+    routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
+    employees = data.employees || [];
+    vehicles = data.vehicles || [];
+    loginRecords = data.loginData || [];
+    warehouseActions = data.warehouseActions || [];
+    
+    renderActionReport(warehouseActions);
+    
+    if (loggedInUser) {
+        applyAccessControl();
+    }
+    
+    renderRouteTabs();
+    renderEmployeeDropdowns();
+    renderVehicleGrid();
+    applyFilters();
+}
 
     // ================= VEHICLE MANAGEMENT LOGIC =================
     function formatAndCheckDate(dateStr) {
@@ -1133,7 +1176,7 @@
                
                     <div class="flex items-center justify-end gap-2 pt-1">
                         <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`;
@@ -1199,6 +1242,9 @@
 
     async function handleVehicleFormSubmit(e) {
         e.preventDefault();
+        const saveBtn = document.getElementById('saveVehicleBtn');
+        setButtonLoading(saveBtn, true, "Save Vehicle");
+
         const id = document.getElementById('vehicleFormId').value || `veh-${Date.now()}`;
         const vehicleObj = {
             id,
@@ -1218,7 +1264,11 @@
             await postToApi("saveVehicle", vehicleObj);
             closeVehicleModal();
             await fetchAllData();
-        } catch (err) { showLoading(false); }
+        } catch (err) { 
+            showLoading(false); 
+        } finally {
+            setButtonLoading(saveBtn, false, "Save Vehicle");
+        }
     }
 
 
@@ -1445,6 +1495,9 @@
 
     async function handleLocationFormSubmit(e) {
         e.preventDefault();
+        const saveLocBtn = document.getElementById('saveLocationBtn');
+        setButtonLoading(saveLocBtn, true, "Save Location");
+
         const id = document.getElementById('formId').value || `loc-${Date.now()}`;
         const newLoc = {
             id, type: document.getElementById('formType').value,
@@ -1463,7 +1516,11 @@
             await postToApi("saveLocation", newLoc);
             closeModal();
             await fetchAllData();
-        } catch (err) { showLoading(false); }
+        } catch (err) { 
+            showLoading(false); 
+        } finally {
+            setButtonLoading(saveLocBtn, false, "Save Location");
+        }
     }
 
 
@@ -1484,6 +1541,9 @@
 
     async function handleRouteFormSubmit(e) {
         e.preventDefault();
+        const addRouteBtn = document.getElementById('addRouteBtn');
+        setButtonLoading(addRouteBtn, true, "Add Route");
+
         const name = document.getElementById('newRouteInput').value.trim();
         const mapUrl = document.getElementById('newRouteMapUrl').value.trim();
         if (name) {
@@ -1492,7 +1552,11 @@
                 await postToApi("saveRoute", { name, mapUrl });
                 closeRouteModal();
                 await fetchAllData();
-            } catch (err) { showLoading(false); }
+            } catch (err) { 
+                showLoading(false); 
+            } finally {
+                setButtonLoading(addRouteBtn, false, "Add Route");
+            }
         }
     }
 
@@ -1503,6 +1567,9 @@
 
     async function handleAddEmployee(e) {
         e.preventDefault();
+        const addEmpBtn = document.getElementById('addEmpBtn');
+        setButtonLoading(addEmpBtn, true, "+ Add Employee");
+
         const role = document.getElementById('empRoleInput').value;
         const name = document.getElementById('empNameInput').value.trim();
         const phone = document.getElementById('empPhoneInput').value.trim();
@@ -1515,7 +1582,11 @@
                 document.getElementById('empPhoneInput').value = '';
                 await fetchAllData();
                 renderEmployeeList();
-            } catch (err) { showLoading(false); }
+            } catch (err) { 
+                showLoading(false); 
+            } finally {
+                setButtonLoading(addEmpBtn, false, "+ Add Employee");
+            }
         }
     }
 
@@ -1694,13 +1765,20 @@
 
 
     function addNewItemToSheet() {
+        const addNewItemBtn = document.getElementById('addNewItemBtn');
+        setButtonLoading(addNewItemBtn, true, '<i class="fa-solid fa-plus"></i> Add New Item');
+
         const barcode = document.getElementById('barcode').value.trim();
         const itemCode = document.getElementById('itemCode').value.trim();
         const itemName = document.getElementById('itemName').value.trim();
         const statusDiv = document.getElementById('status');
 
 
-        if (!barcode || !itemName) { alert("Barcode and Item Name are required."); return; }
+        if (!barcode || !itemName) { 
+            alert("Barcode and Item Name are required."); 
+            setButtonLoading(addNewItemBtn, false, '<i class="fa-solid fa-plus"></i> Add New Item');
+            return; 
+        }
         statusDiv.className = 'text-center font-bold text-sm text-blue-500';
         statusDiv.innerText = 'Saving new item...';
 
@@ -1715,11 +1793,16 @@
                 statusDiv.innerText = 'New item saved!';
                 fetchItemDetails(barcode);
             }
+        }).finally(() => {
+            setButtonLoading(addNewItemBtn, false, '<i class="fa-solid fa-plus"></i> Add New Item');
         });
     }
 
 
     function submitStockData() {
+        const submitBtn = document.getElementById('submitBtn');
+        setButtonLoading(submitBtn, true, '<i class="fa-solid fa-check"></i> Submit Stock');
+
         const barcode = document.getElementById('barcode').value;
         const quantity = document.getElementById('quantity').value;
         const itemCode = document.getElementById('itemCode').value;
@@ -1729,7 +1812,11 @@
         const statusDiv = document.getElementById('status');
 
 
-        if (!barcode || !quantity) { alert("Barcode and Quantity required."); return; }
+        if (!barcode || !quantity) { 
+            alert("Barcode and Quantity required."); 
+            setButtonLoading(submitBtn, false, '<i class="fa-solid fa-check"></i> Submit Stock');
+            return; 
+        }
         statusDiv.className = 'text-center font-bold text-sm text-blue-500';
         statusDiv.innerText = 'Submitting stock...';
 
@@ -1748,6 +1835,8 @@
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('addNewItemBtn').disabled = true;
             document.getElementById('qaBtn').disabled = true;
+        }).finally(() => {
+            setButtonLoading(submitBtn, false, '<i class="fa-solid fa-check"></i> Submit Stock');
         });
     }
 
@@ -1816,6 +1905,9 @@
 
     function handleQADefectSubmit(e) {
         e.preventDefault();
+        const qaSubmitBtn = document.getElementById('qaSubmitBtn');
+        setButtonLoading(qaSubmitBtn, true, "Submit Defect");
+
         const payload = {
             action: 'saveQADefect',
             itemCode: document.getElementById('qaItemCode').value,
@@ -1828,7 +1920,8 @@
             position: document.getElementById('position').value || 'NA'
         };
         fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-            .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); });
+            .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); })
+            .finally(() => { setButtonLoading(qaSubmitBtn, false, "Submit Defect"); });
     }
 
 
@@ -2049,7 +2142,7 @@
                             <td class="p-2.5">${r.Action || '-'}</td>
                             <td class="p-2.5 font-semibold text-emerald-600 dark:text-emerald-400">${r.responsibility || '-'}</td>
                             <td class="p-2.5">
-                                <select onchange="handleActionStatusChange(${index}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${r.status === 'Completed' ? 'bg-emerald-550 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
+                                <select onchange="handleActionStatusChange(${index}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${r.status === 'Completed' ? 'bg-emerald-550 text-emerald-700 border-emerald-300' : 'bg-amber-650 text-amber-700 border-amber-300'}">
                                     <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                     <option value="In Progress" ${r.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                                     <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
