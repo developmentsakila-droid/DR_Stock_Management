@@ -1079,30 +1079,42 @@ function loadDataIntoMemory(data) {
     loginRecords = data.loginData || [];
     warehouseActions = data.warehouseActions || [];
     
-    // 1. Collect Set of Plan Nos that have an End Date (already completed/closed)
+    // 1. Map Plan No ('No') to Route Name from Delivery_Data & Check End Date
+    const planRouteMap = {};
     const completedPlans = new Set();
     const deliveryDataRecords = data.deliveryDataRecords || [];
+    
     deliveryDataRecords.forEach(row => {
         let pNo = String(row['No'] || '').trim();
+        let rName = String(row['Route Name'] || '').trim();
         let endDate = String(row['End Date'] || '').trim();
-        if (pNo && endDate && endDate !== '' && endDate !== 'N/A' && endDate !== 'undefined') {
-            completedPlans.add(pNo);
+        
+        if (pNo) {
+            if (rName) {
+                planRouteMap[pNo] = rName;
+            }
+            if (endDate && endDate !== '' && endDate !== 'N/A' && endDate !== 'undefined') {
+                completedPlans.add(pNo);
+            }
         }
     });
     
-    // 2. Cache delivery plans locally, filtering out completed ones
+    // 2. Cache delivery plans locally, filtering out completed ones and assigning Route Names
     deliveryPlanData = data.deliveryPlan || [];
     cachedDeliveryPlans = {};
+    
     deliveryPlanData.forEach(item => {
         let pNo = String(item['Plan No'] || item['planNo'] || '').trim();
-        // Only cache if Plan No exists AND has NO End Date in Delivery_Data
         if (pNo && !completedPlans.has(pNo)) {
             if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
             cachedDeliveryPlans[pNo].push(item);
+            
+            // Assign route name from Delivery_Data map (fallback to item's route if present)
+            cachedDeliveryPlans[pNo].routeName = planRouteMap[pNo] || item['Route Name'] || 'Unassigned Route';
         }
     });
     
-    // 3. Sort remaining active Plan Nos Z-A (Highest / Newest Plan No first)
+    // 3. Sort active Plan Nos Z-A (Highest / Newest Plan No first)
     availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
     
     const planSelect = document.getElementById('planNoSelect');
@@ -1128,6 +1140,7 @@ function loadDataIntoMemory(data) {
     renderEmployeeDropdowns();
     renderVehicleGrid();
     applyFilters();
+
 }
     // ================= LIGHTNING-FAST DELIVERY PLAN MODULE =================
     function onPlanNoChange(planNo) {
@@ -1139,7 +1152,7 @@ function loadDataIntoMemory(data) {
 
         const items = cachedDeliveryPlans[planNo] || [];
         if (items.length === 0) {
-            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan #${planNo}.</p>`;
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
             return;
         }
 
@@ -1147,8 +1160,28 @@ function loadDataIntoMemory(data) {
     }
 
     function renderDeliveryPlanTable(planNo, items) {
-        const container = document.getElementById('deliveryPlanResult');
-        container.innerHTML = `
+        
+        
+    const container = document.getElementById('deliveryPlanResult');
+    if (!planNo) {
+        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
+        return;
+    }
+    
+    const routeName = items.routeName || 'Unassigned Route';
+    
+    if (items.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
+        return;
+    }
+    
+    container.innerHTML = `
+            <div class="mb-4 flex items-center justify-between bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900 p-1.5 rounded-2xl">
+                <span class="text-xs font-bold px-1.5 py-1.5 bg-amber-500 text-slate-950 rounded-xl shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-route text-slate-950"></i>: ${routeName}
+                </span>
+                <span class="text-xs font-bold px-3 py-1 bg-teal-600 text-white rounded-xl shadow-sm">Plan : ${planNo} (${items.length} Invoices)</span>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left border-collapse">
                     <thead>
@@ -1164,12 +1197,12 @@ function loadDataIntoMemory(data) {
                     <tbody>
                         ${items.map((item, idx) => `
                             <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                                <td class="p-2.5 font-bold font-bold">${item['Invoice No'] || '-'}</td>
+                                <td class="p-2.5 font-bold">${item['Invoice No'] || '-'}</td>
                                 <td class="p-2.5 font-bold text-slate-400">${item['Customer Name'] || '-'}</td>
                                 <td class="p-2.5 text-slate-300">${item['Address'] || '-'}</td>
                                 <td class="p-2 text-right font-mono font-semibold">${item['Invoice Value'] || '0'}</td>
                                 <td class="p-2.5">
-                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-450 dark:bg-slate-900 border-slate-300'}">
+                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-100 dark:bg-slate-900 border-slate-300'}">
                                         <option value="" ${!item['Delivered'] ? 'selected' : ''}>Pending</option>
                                         <option value="Yes" ${item['Delivered'] === 'Yes' ? 'selected' : ''}>Complete</option>
                                         <option value="No" ${item['Delivered'] === 'No' ? 'selected' : ''}>Not Delivered</option>
@@ -1188,6 +1221,8 @@ function loadDataIntoMemory(data) {
                     </tbody>
                 </table>
             </div>`;
+        
+        
     }
 
     async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
