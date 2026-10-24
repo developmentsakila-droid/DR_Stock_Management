@@ -1108,7 +1108,7 @@ function loadDataIntoMemory(data) {
     const planSelect = document.getElementById('planNoSelect');
     if (planSelect) {
         const currentVal = planSelect.value;
-        planSelect.innerHTML = `<option value="">-- Select Plan --</option>` + availablePlanNos.map(p => `<option value="${p}">Plan #${p}</option>`).join('');
+        planSelect.innerHTML = `<option value="">-- Select Plan --</option>` + availablePlanNos.map(p => `<option value="${p}">Plan : ${p}</option>`).join('');
         if (currentVal && cachedDeliveryPlans[currentVal]) {
             planSelect.value = currentVal;
             onPlanNoChange(currentVal);
