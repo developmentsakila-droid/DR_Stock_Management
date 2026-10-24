@@ -57,7 +57,6 @@
 <body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
 
 <!-- ================= LOGIN OVERLAY ================= -->
-
 <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6">
         <div class="text-center space-y-2">
@@ -68,35 +67,33 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Harumi Holdings (PVT) LTD</p>
         </div>
 
-    <form onsubmit="handleLogin(event)" class="space-y-4">
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Username</label>
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
-                <input type="text" id="loginUser" required placeholder="Enter username (e.g. sakila)" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Username</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" id="loginUser" required placeholder="Enter username (e.g. sakila)" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                </div>
             </div>
-        </div>
 
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Password</label>
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                <input type="password" id="loginPass" required placeholder="Enter password" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" id="loginPass" required placeholder="Enter password" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                </div>
             </div>
-        </div>
 
-        <div id="loginError" class="text-xs font-bold text-rose-500 text-center hidden">Invalid username or password.</div>
+            <div id="loginError" class="text-xs font-bold text-rose-500 text-center hidden">Invalid username or password.</div>
 
-        <button type="submit" id="loginBtn" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-emerald-600/30 transition">
-            Sign In to Portal
-        </button>
-    </form>
-</div>
-
+            <button type="submit" id="loginBtn" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-emerald-600/30 transition">
+                Sign In to Portal
+            </button>
+        </form>
+    </div>
 </div>
 
 <!-- Global Loading Overlay -->
-
 <div id="loadingOverlay" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center hidden">
     <div class="glass-card dark:bg-slate-900/90 p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-3 border border-slate-200 dark:border-slate-800">
         <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl animate-bounce">
@@ -107,7 +104,6 @@
 </div>
 
 <!-- Header Navigation -->
-
 <header class="sticky top-0 z-30 glass-card dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
         <!-- Left Side: Logo, Title & Greeting -->
@@ -126,26 +122,20 @@
             </div>
         </div>
 
-    <!-- Right Side: Dashboard Button, Theme Toggle & Logout Button -->
-    <div class="flex items-right gap-2.5">
-     
-        <button onclick="toggleTheme()" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-2 flex items-center justify-center gap-1.5 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition">
-            <i class="fa-solid fa-sun text-base" id="themeIcon"></i>
-            <span class="hidden sm:inline"></span>
-        </button>
-        <button onclick="logout()" class="w-9 h-9 sm:w-auto sm:px-3.5 sm:py-2 flex items-center justify-center gap-1.5 text-xs font-extrabold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 shadow-sm transition">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="hidden sm:inline"></span>
-        </button>
+        <!-- Right Side: Theme Toggle & Logout Button -->
+        <div class="flex items-center gap-2.5">
+            <button onclick="toggleTheme()" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-2 flex items-center justify-center gap-1.5 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition">
+                <i class="fa-solid fa-sun text-base" id="themeIcon"></i>
+            </button>
+            <button onclick="logout()" class="w-9 h-9 sm:w-auto sm:px-3.5 sm:py-2 flex items-center justify-center gap-1.5 text-xs font-extrabold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 shadow-sm transition">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
     </div>
-    
-   
-
-</div>
-<div class="flex items-Left gap-2.5">
-    <button onclick="switchTab('dashboard')" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border-0 border-emerald-200 dark:border-emerald-900/50 shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition">
-        <i class="fa-solid fa-arrow-left"></i> Dashboard
-    </button>
+    <div class="max-w-6xl mx-auto px-4 pb-2">
+        <button onclick="switchTab('dashboard')" id="backToDashBtn" class="hidden items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 shadow-sm hover:bg-emerald-100 transition">
+            <i class="fa-solid fa-arrow-left"></i> Dashboard
+        </button>
     </div>
 </header>
  
@@ -173,6 +163,16 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400">Search customer locations, routes, and live GPS maps.</p>
             </div>
         </div>
+        
+            <div id="card-delivery-plan" onclick="switchTab('deliveryPlan')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+       <div class="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xl font-bold border border-orange-500/20">
+    <i class="fa-solid fa-location-arrow"></i>
+</div>
+        <div class="space-y-1">
+            <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Plan</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Select delivery plan, change plan, and update status online.</p>
+        </div>
+    </div>
 
         <div id="card-stock" onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
@@ -194,7 +194,7 @@
             </div>
         </div>
 
-      <div id="card-schedule" onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+        <div id="card-schedule" onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
                 <i class="fa-solid fa-calendar-days"></i>
             </div>
@@ -210,9 +210,11 @@
             </div>
             <div class="space-y-1">
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Action Report</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Track warehouse tasks, frequencies (Frequence), and unlock dates (Task Unloack).</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Track warehouse tasks, frequencies, and unlock dates.</p>
             </div>
         </div>
+
+    
     </div>
 </div>
 
@@ -303,7 +305,7 @@
                 <i class="fa-solid fa-eye" id="globalToggleIcon"></i>
                 <span id="globalToggleText">Show All Details</span>
             </button>
-            <button onclick="fetchAllData()" class="text-xs font-bold text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+            <button onclick="fetchAllData(true)" class="text-xs font-bold text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition">
                 <i class="fa-solid fa-rotate-right text-emerald-500"></i> Refresh
             </button>
         </div>
@@ -319,6 +321,33 @@
         <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-sm mx-auto font-medium">No delivery points match your current filter or search criteria.</p>
         <button onclick="resetAllFilters()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md transition">Clear Filters</button>
     </div>
+</div>
+
+<!-- ================= TAB: DELIVERY PLAN ================= -->
+<div id="sectionDeliveryPlan" class="space-y-4 hidden">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-location-arrow text-teal-500"></i> Delivery Plan Management
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Select Plan No to view and update Delivery Unload or Not.</p>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                <label class="text-xs font-bold text-slate-500 uppercase">Select Plan No:</label>
+                <select id="planNoSelect" onchange="onPlanNoChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white">
+                    <option value="">-- Select Plan --</option>
+                </select>
+                <button onclick="fetchAllData(true)" class="px-4 py-2 bg-teal-900 hover:bg-teal-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate"></i> Refresh Plan Data
+                </button>
+            </div>
+        </div>
+
+        <div id="deliveryPlanResult" class="overflow-x-auto pt-2">
+            <p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>
+        </div>
+    </section>
 </div>
 
 <!-- ================= TAB 2: STOCK COUNTER & QA ================= -->
@@ -483,11 +512,11 @@
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-clipboard-list text-indigo-500"></i> Warehouse Action Report
                 </h4>
-                <p class="text-xs text-slate-500 font-medium">Source: 'Warehouse_actions' (Date, Task, Action, Responsibility, Status, Frequence, Task Unloack)</p>
+                <p class="text-xs text-slate-500 font-medium">Source: 'Warehouse_actions' (Date, Task, Action, Responsibility, Status, Frequence, Task Unlock)</p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
                 <input type="text" id="actionSearchInput" oninput="applyActionFilters()" placeholder="Search task, responsibility, status..." class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
-                <button onclick="fetchAllData()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                <button onclick="fetchAllData(true)" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
                     <i class="fa-solid fa-rotate"></i> Refresh
                 </button>
             </div>
@@ -508,7 +537,6 @@
 <!-- ================= MODALS ================= -->
 
 <!-- Modal: Add / Edit Location -->
-
 <div id="locationModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl text-slate-900 dark:text-slate-100">
         <div class="sticky top-0 glass-card dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between z-10">
@@ -520,77 +548,75 @@
             </button>
         </div>
 
-    <form id="customerForm" onsubmit="handleLocationFormSubmit(event)" class="p-6 space-y-4">
-        <input type="hidden" id="formId">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form id="customerForm" onsubmit="handleLocationFormSubmit(event)" class="p-6 space-y-4">
+            <input type="hidden" id="formId">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer Category *</label>
+                    <select id="formType" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
+                        <option value="Direct Customer">Direct Customer</option>
+                        <option value="Agency Dreamron">Agency Dreamron</option>
+                        <option value="Agency Evon">Agency Evon</option>
+                        <option value="Modern Trade">Modern Trade</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Route / Region *</label>
+                    <select id="formRoute" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></select>
+                </div>
+            </div>
+
             <div>
-                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer Category *</label>
-                <select id="formType" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
-                    <option value="Direct Customer">Direct Customer</option>
-                    <option value="Agency Dreamron">Agency Dreamron</option>
-                    <option value="Agency Evon">Agency Evon</option>
-                    <option value="Modern Trade">Modern Trade</option>
-                </select>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer / Agency Name *</label>
+                <input type="text" id="formName" required placeholder="e.g. Maharagama Pharmacy" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
             </div>
+
             <div>
-                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Route / Region *</label>
-                <select id="formRoute" required class="w-full px-3.5 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></select>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Phone Number *</label>
+                <input type="tel" id="formPhone" required placeholder="e.g. 077 xxx xxxx" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
             </div>
-        </div>
 
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Customer / Agency Name *</label>
-            <input type="text" id="formName" required placeholder="e.g. Maharagama Pharmacy" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
-        </div>
-
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Phone Number *</label>
-            <input type="tel" id="formPhone" required placeholder="e.g. 077 xxx xxxx" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
-        </div>
-
-        <div class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-            <label class="text-xs font-extrabold text-emerald-600 uppercase flex items-center gap-1.5">
-                <i class="fa-solid fa-crosshairs text-emerald-500"></i> GPS Coordinates *
-            </label>
-            <input type="text" id="formCoordsCombined" oninput="handleCombinedCoordsInput(this.value)" placeholder="Paste format: 6.84579, 79.92597" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
-            <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="formLat" required placeholder="Latitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
-                <input type="text" id="formLng" required placeholder="Longitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+            <div class="bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                <label class="text-xs font-extrabold text-emerald-600 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-crosshairs text-emerald-500"></i> GPS Coordinates *
+                </label>
+                <input type="text" id="formCoordsCombined" oninput="handleCombinedCoordsInput(this.value)" placeholder="Paste format: 6.84579, 79.92597" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="formLat" required placeholder="Latitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+                    <input type="text" id="formLng" required placeholder="Longitude" oninput="syncCombinedCoords()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+                </div>
             </div>
-        </div>
 
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Full Address *</label>
-            <textarea id="formAddress" required rows="2" placeholder="Street Address" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></textarea>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80">
             <div>
-                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">ASM</label>
-                <select id="formAsm" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Full Address *</label>
+                <textarea id="formAddress" required rows="2" placeholder="Street Address" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm"></textarea>
             </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80">
+                <div>
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">ASM</label>
+                    <select id="formAsm" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Sales Ref</label>
+                    <select id="formSalesRef" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                </div>
+            </div>
+
             <div>
-                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Sales Ref</label>
-                <select id="formSalesRef" class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></select>
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Driver Notes</label>
+                <input type="text" id="formNotes" placeholder="Landmarks / instructions" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
             </div>
-        </div>
 
-        <div>
-            <label class="block text-[11px] font-extrabold text-slate-400 uppercase mb-1">Driver Notes</label>
-            <input type="text" id="formNotes" placeholder="Landmarks / instructions" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm">
-        </div>
-
-        <div class="pt-3 flex gap-3">
-            <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
-            <button type="submit" id="saveLocationBtn" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
-        </div>
-    </form>
-</div>
-
+            <div class="pt-3 flex gap-3">
+                <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 dark:border-slate-800 rounded-2xl font-bold text-xs">Cancel</button>
+                <button type="submit" id="saveLocationBtn" class="w-1/2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-lg text-xs">Save Location</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Modal: Add / Edit Vehicle -->
-
 <div id="vehicleModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-slate-900 dark:text-slate-100">
         <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
@@ -658,7 +684,6 @@
 </div>
 
 <!-- Modal: Add Route -->
-
 <div id="routeModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl p-6">
         <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
@@ -683,7 +708,6 @@
 </div>
 
 <!-- Modal: Employee Management -->
-
 <div id="employeeModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6">
         <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
@@ -707,7 +731,6 @@
 </div>
 
 <!-- Modal: Interactive My Maps Viewer -->
-
 <div id="myMapModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
@@ -719,7 +742,6 @@
 </div>
 
 <!-- Modal: Summary Report -->
-
 <div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
@@ -746,7 +768,6 @@
 </div>
 
 <!-- Modal: QA Defect Logging -->
-
 <div id="qaDefectModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl p-6">
         <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
@@ -796,27 +817,25 @@
 </div>
 
 <!-- JavaScript Application Logic -->
-
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzaIWc8uAX1fB09xifLotijxbcS66oQYMZUCBO1g3J5H5FoJXASIiVASH6Rm2T0PpM/exec";
-
 
     let locations = [];
     let routes = [{ name: "ALL", mapUrl: "" }];
     let employees = [];
     let vehicles = [];
     let loginRecords = [];
-
+    let deliveryPlanData = [];
+    let cachedDeliveryPlans = {};
+    let availablePlanNos = [];
 
     let loggedInUser = null;
     let userPermissions = [];
-
 
     let activeRoute = "ALL";
     let activeType = "ALL";
     let expandedCards = new Set();
     let allExpanded = false;
-
 
     let html5QrCode = null;
     let isCameraActive = false;
@@ -824,7 +843,6 @@
     let calcExpr = "";
     let lastReportData = [];
     let lastScheduleData = [];
-
     let warehouseActions = [];
     
     document.addEventListener("DOMContentLoaded", () => {
@@ -834,7 +852,6 @@
         initScheduleDateDefaults();
     });
 
-    // Helper to immediately disable button and show loading state
     function setButtonLoading(btnEl, isLoading, defaultHtml) {
         if (!btnEl) return;
         if (isLoading) {
@@ -848,7 +865,6 @@
             btnEl.classList.remove('opacity-75', 'cursor-not-allowed');
         }
     }
-
 
     function checkExistingSession() {
         const savedUser = localStorage.getItem('warehouse_user');
@@ -866,7 +882,6 @@
         }
     }
 
-
     async function handleLogin(e) {
         e.preventDefault();
         const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
@@ -883,12 +898,10 @@
                 loginRecords = data.loginData || [];
             }
 
-
             const matchedUser = loginRecords.find(item => 
                 String(item.user_name || item.username || "").trim().toLowerCase() === uInput && 
                 String(item.password || "").trim() === pInput
             );
-
 
             if (matchedUser) {
                 loggedInUser = matchedUser;
@@ -913,7 +926,6 @@
         }
     }
 
-
     function logout() {
         localStorage.removeItem('warehouse_user');
         loggedInUser = null;
@@ -925,16 +937,15 @@
         switchTab('dashboard');
     }
 
-
     function applyAccessControl() {
         const modules = [
             { id: 'card-delivery', keyword: 'delivery finder' },
             { id: 'card-stock', keyword: 'stock count & qa' },
             { id: 'card-vehicle', keyword: 'vehicle management' },
             { id: 'card-schedule', keyword: 'delivery schedule' },
-            { id: 'card-action-report', keyword: 'action report' }
+            { id: 'card-action-report', keyword: 'action report' },
+            { id: 'card-delivery-plan', keyword: 'delivery plan' }
         ];
-
 
         modules.forEach(mod => {
             const cardEl = document.getElementById(mod.id);
@@ -945,12 +956,10 @@
         });
     }
 
-
     function showLoading(show, text = "Saving.....") {
         document.getElementById('loadingText').textContent = text;
         document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
     }
-
 
     function switchTab(tab) {
         if (tab !== 'dashboard') {
@@ -959,7 +968,8 @@
                 'stock': 'stock count & qa',
                 'vehicle': 'vehicle management',
                 'schedule': 'delivery schedule',
-                'actionReport': 'action report'
+                'actionReport': 'action report',
+                'deliveryPlan': 'delivery plan'
             };
             const requiredKeyword = moduleMap[tab];
             const hasAccess = userPermissions.includes('all') || userPermissions.some(p => requiredKeyword.includes(p) || p.includes(requiredKeyword));
@@ -969,15 +979,14 @@
             }
         }
 
-
-        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule','actionReport'];
+        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan'];
         sections.forEach(s => {
             const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
             if (el) el.classList.toggle('hidden', s !== tab);
         });
+        document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
 
     function initTheme() {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -988,7 +997,6 @@
             document.getElementById('themeIcon')?.setAttribute('class', 'fa-solid fa-sun text-base');
         }
     }
-
 
     function toggleTheme() {
         if (document.documentElement.classList.contains('dark')) {
@@ -1002,7 +1010,6 @@
         }
     }
 
-
     async function postToApi(action, data, requirePassword = true) {
         let password = "";
         if (requirePassword) {
@@ -1010,17 +1017,14 @@
             if (password === null) return { status: "cancelled" };
         }
 
-
         const body = new URLSearchParams();
         body.append("payload", JSON.stringify({ action, data, password }));
-
 
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: body
         });
-
 
         const result = await response.json();
         if (result.status === "error") {
@@ -1030,70 +1034,170 @@
         return result;
     }
 
-
-   async function fetchAllData(forceRefresh = false) {
-    if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-        console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
-        return;
-    }
-    
-    // 1. INSTANT LOAD: Try loading from localStorage first for immediate rendering
-    if (!forceRefresh) {
-        const cachedData = localStorage.getItem('warehouse_portal_cache');
-        if (cachedData) {
-            try {
-                const data = JSON.parse(cachedData);
-                loadDataIntoMemory(data);
-            } catch (e) {
-                console.warn("Cache parse error", e);
+    async function fetchAllData(forceRefresh = false) {
+        if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+            console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+            return;
+        }
+        
+        if (!forceRefresh) {
+            const cachedData = localStorage.getItem('warehouse_portal_cache');
+            if (cachedData) {
+                try {
+                    const data = JSON.parse(cachedData);
+                    loadDataIntoMemory(data);
+                } catch (e) {
+                    console.warn("Cache parse error", e);
+                }
             }
         }
-    }
-    
-    // Show loading indicator only if we don't have cached data yet
-    const hasExistingData = locations.length > 0 || vehicles.length > 0;
-    if (!hasExistingData) {
-        showLoading(true, "Loading...");
-    }
-    
-    try {
-        // 2. BACKGROUND FETCH: Get fresh data from Google Sheets
-        const response = await fetch(API_URL);
-        const data = await response.json();
         
-        // Save to localStorage for next time
-        localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+        const hasExistingData = locations.length > 0 || vehicles.length > 0;
+        if (!hasExistingData) {
+            showLoading(true, "Loading...");
+        }
         
-        // Load fresh data into memory and re-render
-        loadDataIntoMemory(data);
-        
-    } catch (error) {
-        console.error("Error loading data from Google Sheets:", error);
-    } finally {
-        showLoading(false);
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+            loadDataIntoMemory(data);
+            
+        } catch (error) {
+            console.error("Error loading data from Google Sheets:", error);
+        } finally {
+            showLoading(false);
+        }
     }
-}
 
-// Helper function to assign data and update UI
-function loadDataIntoMemory(data) {
-    locations = data.locations || [];
-    routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
-    employees = data.employees || [];
-    vehicles = data.vehicles || [];
-    loginRecords = data.loginData || [];
-    warehouseActions = data.warehouseActions || [];
-    
-    renderActionReport(warehouseActions);
-    
-    if (loggedInUser) {
-        applyAccessControl();
+    function loadDataIntoMemory(data) {
+        locations = data.locations || [];
+        routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
+        employees = data.employees || [];
+        vehicles = data.vehicles || [];
+        loginRecords = data.loginData || [];
+        warehouseActions = data.warehouseActions || [];
+        
+        // Cache delivery plans locally for instant loading & switching
+        // Cache delivery plans locally for instant loading & switching
+            deliveryPlanData = data.deliveryPlan || [];
+            cachedDeliveryPlans = {};
+            deliveryPlanData.forEach(item => {
+                let pNo = String(item['Plan No']).trim();
+                if (pNo) {
+                    if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
+                    cachedDeliveryPlans[pNo].push(item);
+                }
+            });
+            
+            // Sorted Z to A (Highest / Newest Plan No first)
+            availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
+            
+            const planSelect = document.getElementById('planNoSelect');
+            if (planSelect) {
+                const currentVal = planSelect.value;
+                planSelect.innerHTML = `<option value="">-- Select Plan --</option>` + availablePlanNos.map(p => `<option value="${p}">Plan : ${p}</option>`).join('');
+                if (currentVal) {
+                    planSelect.value = currentVal;
+                    onPlanNoChange(currentVal);
+                }
+            }
+        
+        renderActionReport(warehouseActions);
+        
+        if (loggedInUser) {
+            applyAccessControl();
+        }
+        
+        renderRouteTabs();
+        renderEmployeeDropdowns();
+        renderVehicleGrid();
+        applyFilters();
     }
-    
-    renderRouteTabs();
-    renderEmployeeDropdowns();
-    renderVehicleGrid();
-    applyFilters();
-}
+
+    // ================= LIGHTNING-FAST DELIVERY PLAN MODULE =================
+    function onPlanNoChange(planNo) {
+        const container = document.getElementById('deliveryPlanResult');
+        if (!planNo) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
+            return;
+        }
+
+        const items = cachedDeliveryPlans[planNo] || [];
+        if (items.length === 0) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan #${planNo}.</p>`;
+            return;
+        }
+
+        renderDeliveryPlanTable(planNo, items);
+    }
+
+    function renderDeliveryPlanTable(planNo, items) {
+        const container = document.getElementById('deliveryPlanResult');
+        container.innerHTML = `
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                            <th class="p-2.5">Invoice No</th>
+                            <th class="p-2.5">Customer Name</th>
+                            <th class="p-2.5">Address</th>
+                            <th class="p-2.5 text-right">Inv Value</th>
+                            <th class="p-2.5">Delivered Status</th>
+                            <th class="p-2.5">Return / Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map((item, idx) => `
+                            <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                                <td class="p-2.5 font-bold font-bold">${item['Invoice No'] || '-'}</td>
+                                <td class="p-2.5 font-bold text-slate-400">${item['Customer Name'] || '-'}</td>
+                                <td class="p-2.5 text-slate-300">${item['Address'] || '-'}</td>
+                                <td class="p-2 text-right font-mono font-semibold">${item['Invoice Value'] || '0'}</td>
+                                <td class="p-2.5">
+                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-450 dark:bg-slate-900 border-slate-300'}">
+                                        <option value="" ${!item['Delivered'] ? 'selected' : ''}>Pending</option>
+                                        <option value="Yes" ${item['Delivered'] === 'Yes' ? 'selected' : ''}>Complete</option>
+                                        <option value="No" ${item['Delivered'] === 'No' ? 'selected' : ''}>Not Delivered</option>
+                                    </select>
+                                </td>
+                                <td class="p-2.5 space-y-1">
+                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Market Retun', this.value, '${planNo}', ${idx})" class="px-2 py-1 rounded-xl text-[11px] font-bold border bg-slate-50 dark:bg-slate-900 border-slate-300">
+                                        <option value="" ${!item['Market Retun'] ? 'selected' : ''}>No Return</option>
+                                        <option value="Full Return" ${item['Market Retun'] === 'Full Return' ? 'selected' : ''}>Full Return</option>
+                                        <option value="Part Return" ${item['Market Retun'] === 'Part Return' ? 'selected' : ''}>Part Return</option>
+                                    </select>
+                                    <input type="text" value="${item['If Undelivered Reason'] || ''}" placeholder="Undelivered reason..." onchange="updateDeliveryStatus('${item['ID']}', 'If Undelivered Reason', this.value, '${planNo}', ${idx})" class="w-full px-2 py-1 rounded-lg text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+    }
+
+    async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
+        if (cachedDeliveryPlans[planNo] && cachedDeliveryPlans[planNo][itemIndex]) {
+            cachedDeliveryPlans[planNo][itemIndex][field] = value;
+        }
+
+        try {
+            const body = new URLSearchParams();
+            body.append("payload", JSON.stringify({
+                action: "updateDeliveryPlanStatus",
+                data: { id, field, value }
+            }));
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+        } catch (err) {
+            console.error("Background sync error:", err);
+        }
+    }
 
     // ================= VEHICLE MANAGEMENT LOGIC =================
     function formatAndCheckDate(dateStr) {
@@ -1113,7 +1217,7 @@ function loadDataIntoMemory(data) {
         
         const diffTime = targetDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const isUrgent = diffDays <= 21; // 3 weeks threshold
+        const isUrgent = diffDays <= 21;
         
         return { text: formattedText, isUrgent };
     }
@@ -1140,13 +1244,11 @@ function loadDataIntoMemory(data) {
             const emi = formatAndCheckDate(v['Emission Test']);
             const srv = formatAndCheckDate(v['Service Date']);
             
-            // Check if Revenue Licence or Insurance is within 3 weeks
             const isRevenueOrInsuranceUrgent = rev.isUrgent || ins.isUrgent;
             if (isRevenueOrInsuranceUrgent) {
                 hasAnyUrgentVehicle = true;
             }
 
-            // Dynamic card background styling based on urgency
             const cardBgClass = isRevenueOrInsuranceUrgent 
                 ? 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-300 dark:border-rose-900 shadow-rose-500/10' 
                 : 'glass-card dark:bg-slate-900 border-slate-200 dark:border-slate-800';
@@ -1208,7 +1310,6 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function openAddVehicleModal() {
         document.getElementById('vehicleModalTitle').innerHTML = `<i class="fa-solid fa-truck text-amber-500"></i> Add Vehicle`;
         document.getElementById('vehicleForm').reset();
@@ -1216,7 +1317,6 @@ function loadDataIntoMemory(data) {
         document.getElementById('formLastUpdate').value = new Date().toISOString().split('T')[0];
         document.getElementById('vehicleModal').classList.remove('hidden');
     }
-
 
     function openEditVehicleModal(id) {
         const v = vehicles.find(item => String(item.id) === String(id));
@@ -1236,9 +1336,7 @@ function loadDataIntoMemory(data) {
         document.getElementById('vehicleModal').classList.remove('hidden');
     }
 
-
     function closeVehicleModal() { document.getElementById('vehicleModal').classList.add('hidden'); }
-
 
     async function handleVehicleFormSubmit(e) {
         e.preventDefault();
@@ -1263,7 +1361,7 @@ function loadDataIntoMemory(data) {
         try {
             await postToApi("saveVehicle", vehicleObj);
             closeVehicleModal();
-            await fetchAllData();
+            await fetchAllData(true);
         } catch (err) { 
             showLoading(false); 
         } finally {
@@ -1271,17 +1369,15 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     async function deleteVehicle(id) {
         if (confirm("Delete this vehicle record?")) {
             showLoading(true);
             try {
                 await postToApi("deleteVehicle", { id });
-                await fetchAllData();
+                await fetchAllData(true);
             } catch (err) { showLoading(false); }
         }
     }
-
 
     // ================= DELIVERY FINDER LOGIC =================
     function setCustomerTypeFilter(type) {
@@ -1293,18 +1389,15 @@ function loadDataIntoMemory(data) {
         applyFilters();
     }
 
-
     function selectRoute(routeName) {
         activeRoute = routeName;
         renderRouteTabs();
         applyFilters();
     }
 
-
     function applyFilters() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
         document.getElementById('clearSearch').classList.toggle('hidden', query === '');
-
 
         const filtered = locations.filter(loc => {
             const matchesRoute = activeRoute === 'ALL' || loc.route === activeRoute;
@@ -1316,14 +1409,12 @@ function loadDataIntoMemory(data) {
         renderGrid(filtered);
     }
 
-
     function clearSearchInput() { document.getElementById('searchInput').value = ''; applyFilters(); }
     function resetAllFilters() {
         document.getElementById('searchInput').value = '';
         activeRoute = 'ALL'; activeType = 'ALL';
         setCustomerTypeFilter('ALL'); renderRouteTabs(); applyFilters();
     }
-
 
     function renderRouteTabs() {
         const container = document.getElementById('routeTabs');
@@ -1340,17 +1431,14 @@ function loadDataIntoMemory(data) {
         document.getElementById('fullRouteTitle').textContent = activeRoute === 'ALL' ? 'Full Route GPS Navigation' : `${activeRoute} Route Navigation`;
     }
 
-
     function renderGrid(data) {
         const grid = document.getElementById('customerGrid');
         const empty = document.getElementById('emptyState');
         document.getElementById('resultCount').textContent = `Showing ${data.length} location${data.length === 1 ? '' : 's'}`;
 
-
         if (data.length === 0) {
             grid.innerHTML = ''; empty.classList.remove('hidden'); return;
         }
-
 
         empty.classList.add('hidden');
         grid.innerHTML = data.map(item => {
@@ -1359,7 +1447,6 @@ function loadDataIntoMemory(data) {
             let badgeClass = "bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/50";
             if(item.type && item.type.includes("Agency")) badgeClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/50";
             if(item.type === "Modern Trade") badgeClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/50";
-
 
             return `
                 <div class="glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
@@ -1414,12 +1501,10 @@ function loadDataIntoMemory(data) {
         }).join('');
     }
 
-
     function toggleCard(id) {
         if (expandedCards.has(id)) expandedCards.delete(id); else expandedCards.add(id);
         applyFilters();
     }
-
 
     function toggleAllDetails() {
         allExpanded = !allExpanded;
@@ -1428,7 +1513,6 @@ function loadDataIntoMemory(data) {
         if (!allExpanded) expandedCards.clear();
         applyFilters();
     }
-
 
     function handleCombinedCoordsInput(val) {
         if (!val.trim()) return;
@@ -1442,13 +1526,11 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function syncCombinedCoords() {
         const lat = document.getElementById('formLat').value.trim();
         const lng = document.getElementById('formLng').value.trim();
         if (lat && lng) document.getElementById('formCoordsCombined').value = `${lat}, ${lng}`;
     }
-
 
     function launchFullRouteMap() {
         const activeList = activeRoute === 'ALL' ? locations : locations.filter(l => l.route === activeRoute);
@@ -1461,14 +1543,12 @@ function loadDataIntoMemory(data) {
         window.open(mapUrl, '_blank');
     }
 
-
     function openAddModal() {
         document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-600"></i> Add Delivery Location`;
         document.getElementById('customerForm').reset();
         document.getElementById('formId').value = '';
         document.getElementById('locationModal').classList.remove('hidden');
     }
-
 
     function openEditModal(id) {
         const loc = locations.find(l => String(l.id) === String(id));
@@ -1489,9 +1569,7 @@ function loadDataIntoMemory(data) {
         document.getElementById('locationModal').classList.remove('hidden');
     }
 
-
     function closeModal() { document.getElementById('locationModal').classList.add('hidden'); }
-
 
     async function handleLocationFormSubmit(e) {
         e.preventDefault();
@@ -1515,7 +1593,7 @@ function loadDataIntoMemory(data) {
         try {
             await postToApi("saveLocation", newLoc);
             closeModal();
-            await fetchAllData();
+            await fetchAllData(true);
         } catch (err) { 
             showLoading(false); 
         } finally {
@@ -1523,21 +1601,18 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     async function deleteLocation(id) {
         if (confirm("Delete this delivery location?")) {
             showLoading(true);
             try {
                 await postToApi("deleteLocation", { id });
-                await fetchAllData();
+                await fetchAllData(true);
             } catch (err) { showLoading(false); }
         }
     }
 
-
     function openAddRouteModal() { document.getElementById('routeModal').classList.remove('hidden'); }
     function closeRouteModal() { document.getElementById('routeModal').classList.add('hidden'); }
-
 
     async function handleRouteFormSubmit(e) {
         e.preventDefault();
@@ -1551,7 +1626,7 @@ function loadDataIntoMemory(data) {
             try {
                 await postToApi("saveRoute", { name, mapUrl });
                 closeRouteModal();
-                await fetchAllData();
+                await fetchAllData(true);
             } catch (err) { 
                 showLoading(false); 
             } finally {
@@ -1560,10 +1635,8 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function openEmployeeModal() { renderEmployeeList(); document.getElementById('employeeModal').classList.remove('hidden'); }
     function closeEmployeeModal() { document.getElementById('employeeModal').classList.add('hidden'); }
-
 
     async function handleAddEmployee(e) {
         e.preventDefault();
@@ -1580,7 +1653,7 @@ function loadDataIntoMemory(data) {
                 await postToApi("saveEmployee", newEmp);
                 document.getElementById('empNameInput').value = '';
                 document.getElementById('empPhoneInput').value = '';
-                await fetchAllData();
+                await fetchAllData(true);
                 renderEmployeeList();
             } catch (err) { 
                 showLoading(false); 
@@ -1590,16 +1663,14 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     async function deleteEmployee(id) {
         showLoading(true);
         try {
             await postToApi("deleteEmployee", { id });
-            await fetchAllData();
+            await fetchAllData(true);
             renderEmployeeList();
         } catch (err) { showLoading(false); }
     }
-
 
     function renderEmployeeList() {
         const container = document.getElementById('employeeList');
@@ -1614,7 +1685,6 @@ function loadDataIntoMemory(data) {
         `).join('');
     }
 
-
     function renderEmployeeDropdowns() {
         const formRouteSelect = document.getElementById('formRoute');
         const asmSelect = document.getElementById('formAsm');
@@ -1623,7 +1693,6 @@ function loadDataIntoMemory(data) {
         if(asmSelect) asmSelect.innerHTML = `<option value="">Unassigned</option>` + employees.filter(e => e.role === 'ASM').map(e => `<option value="${e.name}">${e.name}</option>`).join('');
         if(salesRefSelect) salesRefSelect.innerHTML = `<option value="">Unassigned</option>` + employees.filter(e => e.role === 'Sales Ref').map(e => `<option value="${e.name}">${e.name}</option>`).join('');
     }
-
 
     function openMyMapModal() {
         const container = document.getElementById('mapIframeContainer');
@@ -1637,7 +1706,6 @@ function loadDataIntoMemory(data) {
         document.getElementById('myMapModal').classList.remove('hidden');
     }
     function closeMyMapModal() { document.getElementById('myMapModal').classList.add('hidden'); }
-
 
     // ================= SCANNER & CALCULATOR LOGIC =================
     function toggleCalculator() {
@@ -1663,9 +1731,7 @@ function loadDataIntoMemory(data) {
         document.getElementById('calcBox').classList.add('hidden');
     }
 
-
     function toggleCamera() { if (!isCameraActive) startCamera(); else stopCamera(); }
-
 
     function startCamera() {
         const camBtnText = document.getElementById('camBtnText');
@@ -1689,7 +1755,6 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function stopCamera() {
         const camBtnText = document.getElementById('camBtnText');
         const camBtn = document.getElementById('camBtn');
@@ -1707,7 +1772,6 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function onScanSuccess(decodedText) {
         document.getElementById('barcode').value = decodedText;
         stopCamera();
@@ -1715,7 +1779,6 @@ function loadDataIntoMemory(data) {
         document.getElementById('quantity')?.select();
     }
     function onScanError(error) {}
-
 
     function fetchItemDetails(barcode) {
         clearTimeout(debounceTimer);
@@ -1726,7 +1789,6 @@ function loadDataIntoMemory(data) {
         const submitBtn = document.getElementById('submitBtn');
         const qaBtn = document.getElementById('qaBtn');
 
-
         if (!barcode.trim()) {
             itemCodeInput.value = ''; itemNameInput.value = '';
             itemCodeInput.setAttribute('readonly', 'readonly');
@@ -1735,7 +1797,6 @@ function loadDataIntoMemory(data) {
             statusDiv.innerText = '';
             return;
         }
-
 
         debounceTimer = setTimeout(() => {
             statusDiv.className = 'text-center font-bold text-sm text-blue-500';
@@ -1763,7 +1824,6 @@ function loadDataIntoMemory(data) {
         }, 300);
     }
 
-
     function addNewItemToSheet() {
         const addNewItemBtn = document.getElementById('addNewItemBtn');
         setButtonLoading(addNewItemBtn, true, '<i class="fa-solid fa-plus"></i> Add New Item');
@@ -1773,7 +1833,6 @@ function loadDataIntoMemory(data) {
         const itemName = document.getElementById('itemName').value.trim();
         const statusDiv = document.getElementById('status');
 
-
         if (!barcode || !itemName) { 
             alert("Barcode and Item Name are required."); 
             setButtonLoading(addNewItemBtn, false, '<i class="fa-solid fa-plus"></i> Add New Item');
@@ -1781,7 +1840,6 @@ function loadDataIntoMemory(data) {
         }
         statusDiv.className = 'text-center font-bold text-sm text-blue-500';
         statusDiv.innerText = 'Saving new item...';
-
 
         fetch(API_URL, {
             method: 'POST',
@@ -1798,7 +1856,6 @@ function loadDataIntoMemory(data) {
         });
     }
 
-
     function submitStockData() {
         const submitBtn = document.getElementById('submitBtn');
         setButtonLoading(submitBtn, true, '<i class="fa-solid fa-check"></i> Submit Stock');
@@ -1811,7 +1868,6 @@ function loadDataIntoMemory(data) {
         const position = document.getElementById('position').value || 'NA';
         const statusDiv = document.getElementById('status');
 
-
         if (!barcode || !quantity) { 
             alert("Barcode and Quantity required."); 
             setButtonLoading(submitBtn, false, '<i class="fa-solid fa-check"></i> Submit Stock');
@@ -1819,7 +1875,6 @@ function loadDataIntoMemory(data) {
         }
         statusDiv.className = 'text-center font-bold text-sm text-blue-500';
         statusDiv.innerText = 'Submitting stock...';
-
 
         fetch(API_URL, {
             method: 'POST', mode: 'no-cors',
@@ -1840,7 +1895,6 @@ function loadDataIntoMemory(data) {
         });
     }
 
-
     function openReportModal() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('modalStartDate').value = today;
@@ -1851,13 +1905,11 @@ function loadDataIntoMemory(data) {
     }
     function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
 
-
     function fetchSummaryReport() {
         const startDate = document.getElementById('modalStartDate').value;
         const endDate = document.getElementById('modalEndDate').value;
         const reportResultDiv = document.getElementById('reportResult');
         reportResultDiv.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs mt-6">Generating report...</p>';
-
 
         fetch(`${API_URL}?action=getSummaryReport&startDate=${startDate}&endDate=${endDate}`)
             .then(res => res.json())
@@ -1875,7 +1927,6 @@ function loadDataIntoMemory(data) {
             });
     }
 
-
     function downloadCSVReport() {
         if (!lastReportData || lastReportData.length === 0) return;
         let csv = "Item Code,Item Name,Stock Added,QA Defects\r\n" + lastReportData.map(r => `"${r.itemCode}","${r.itemName}",${r.totalStockAdded},${r.totalDefects}`).join("\r\n");
@@ -1885,14 +1936,12 @@ function loadDataIntoMemory(data) {
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-
     function openQADefectModal() {
         document.getElementById('qaItemCode').value = document.getElementById('itemCode').value || "N/A";
         document.getElementById('qaItemName').value = document.getElementById('itemName').value || "N/A";
         const catSelect = document.getElementById('qaCategory');
         catSelect.innerHTML = '<option value="">Loading...</option>';
         document.getElementById('qaDefectModal').classList.remove('hidden');
-
 
         fetch(`${API_URL}?action=getDefectCategories`)
             .then(res => res.json())
@@ -1901,7 +1950,6 @@ function loadDataIntoMemory(data) {
             });
     }
     function closeQADefectModal() { document.getElementById('qaDefectModal').classList.add('hidden'); }
-
 
     function handleQADefectSubmit(e) {
         e.preventDefault();
@@ -1924,7 +1972,6 @@ function loadDataIntoMemory(data) {
             .finally(() => { setButtonLoading(qaSubmitBtn, false, "Submit Defect"); });
     }
 
-
     // ================= DELIVERY SCHEDULE & DATE-TO-WEEK LOGIC =================
     function getISOWeekNumber(d) {
         var target = new Date(d.valueOf());
@@ -1938,7 +1985,6 @@ function loadDataIntoMemory(data) {
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
-
     function getMondayAndSunday(d) {
         var date = new Date(d);
         var day = date.getDay();
@@ -1949,7 +1995,6 @@ function loadDataIntoMemory(data) {
         return { monday, sunday };
     }
 
-
     function initScheduleDateDefaults() {
         const todayStr = new Date().toISOString().split('T')[0];
         const dateInput = document.getElementById('scheduleDateInput');
@@ -1959,23 +2004,19 @@ function loadDataIntoMemory(data) {
         }
     }
 
-
     function onScheduleDateChange(dateVal) {
         if (!dateVal) return;
         var d = new Date(dateVal);
         var weekNo = getISOWeekNumber(d);
         var range = getMondayAndSunday(d);
 
-
         document.getElementById('reportWeekNo').value = weekNo;
         var mStr = range.monday.toISOString().split('T')[0].replace(/-/g, '/');
         var sStr = range.sunday.toISOString().split('T')[0].replace(/-/g, '/');
         document.getElementById('weekDateRangeLabel').innerHTML = `Week <strong>${weekNo}</strong> Range: <span class="text-purple-600 font-bold">${mStr} (Mon)</span> to <span class="text-purple-600 font-bold">${sStr} (Sun)</span>`;
 
-
         fetchDeliveryScheduleReport(weekNo);
     }
-
 
     function formatCustomDateTime(dateString) {
         if (!dateString) return "-";
@@ -1985,7 +2026,6 @@ function loadDataIntoMemory(data) {
         return d.getFullYear() + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0');
     }
 
-
     function formatCustomTime(dateStringtim) {
         if (!dateStringtim) return "-";
         var cleanStr = String(dateStringtim).replace(/ *\([^)]*\)/g, "").trim();
@@ -1994,19 +2034,16 @@ function loadDataIntoMemory(data) {
         return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     }
 
-
     function getDateStatusClass(dateString) {
         if (!dateString) return "";
         var cleanStr = String(dateString).replace(/ *\([^)]*\)/g, "").trim();
         var d = new Date(cleanStr);
         if (isNaN(d.getTime())) return "";
 
-
         var year = d.getFullYear();
         var month = String(d.getMonth() + 1).padStart(2, '0');
         var day = String(d.getDate()).padStart(2, '0');
         var rowDateStr = `${year}-${month}-${day}`;
-
 
         var todayObj = new Date();
         var tYear = todayObj.getFullYear();
@@ -2014,14 +2051,12 @@ function loadDataIntoMemory(data) {
         var tDay = String(todayObj.getDate()).padStart(2, '0');
         var todayStr = `${tYear}-${tMonth}-${tDay}`;
 
-
         var yesterdayObj = new Date(todayObj);
         yesterdayObj.setDate(todayObj.getDate() + 1);
         var yYear = yesterdayObj.getFullYear();
         var yMonth = String(yesterdayObj.getMonth() + 1).padStart(2, '0');
         var yDay = String(yesterdayObj.getDate()).padStart(2, '0');
         var yesterdayStr = `${yYear}-${yMonth}-${yDay}`;
-
 
         if (rowDateStr === todayStr) {
             return "text-emerald-600 dark:text-emerald-400 font-extrabold";
@@ -2033,12 +2068,10 @@ function loadDataIntoMemory(data) {
         return "";
     }
 
-
     function fetchDeliveryScheduleReport(weekNo) {
         if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
         const container = document.getElementById('scheduleReportResult');
         container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
-
 
         fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
             .then(res => res.json())
@@ -2046,7 +2079,6 @@ function loadDataIntoMemory(data) {
                 if (data.status === "success" && data.schedule) {
                     lastScheduleData = data.schedule;
                     document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
-
 
                     if (data.schedule.length === 0) {
                         container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo}.</p>`;
@@ -2078,7 +2110,6 @@ function loadDataIntoMemory(data) {
                                         <td class="p-2.5 font-mono ${statusClass}">${formatCustomDateTime(r['End Date'])}</td>
                                         <td class="p-2.5 font-mono ${statusClass}">${formatCustomTime(r['End Time'])}</td>
                                         <td class="p-2.5 font-bold ${statusClass}">${r['GSM KM'] || '-'}</td> 
-                                        
                                     </tr>`;
                                 }).join('')}
                             </tbody>
@@ -2087,7 +2118,6 @@ function loadDataIntoMemory(data) {
             })
             .catch(() => { container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`; });
     }
-
 
     function downloadScheduleCSV() {
         if (!lastScheduleData || lastScheduleData.length === 0) return;
@@ -2098,7 +2128,6 @@ function loadDataIntoMemory(data) {
         link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
-
 
     // ================= ACTION REPORT LOGIC =================
     function applyActionFilters() {
@@ -2172,7 +2201,7 @@ function loadDataIntoMemory(data) {
             const nextUnlockStr = baseDate.toISOString().split('T')[0];
 
             warehouseActions[index]['Task Unloack'] = nextUnlockStr;
-            warehouseActions[index].status = 'Pending'; // Reset to pending for the next frequency cycle
+            warehouseActions[index].status = 'Pending';
         }
 
         renderActionReport(warehouseActions);
