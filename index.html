@@ -1071,51 +1071,64 @@
         }
     }
 
-    function loadDataIntoMemory(data) {
-        locations = data.locations || [];
-        routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
-        employees = data.employees || [];
-        vehicles = data.vehicles || [];
-        loginRecords = data.loginData || [];
-        warehouseActions = data.warehouseActions || [];
-        
-        // Cache delivery plans locally for instant loading & switching
-        // Cache delivery plans locally for instant loading & switching
-            deliveryPlanData = data.deliveryPlan || [];
-            cachedDeliveryPlans = {};
-            deliveryPlanData.forEach(item => {
-                let pNo = String(item['Plan No']).trim();
-                if (pNo) {
-                    if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
-                    cachedDeliveryPlans[pNo].push(item);
-                }
-            });
-            
-            // Sorted Z to A (Highest / Newest Plan No first)
-            availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
-            
-            const planSelect = document.getElementById('planNoSelect');
-            if (planSelect) {
-                const currentVal = planSelect.value;
-                planSelect.innerHTML = `<option value="">-- Select Plan --</option>` + availablePlanNos.map(p => `<option value="${p}">Plan : ${p}</option>`).join('');
-                if (currentVal) {
-                    planSelect.value = currentVal;
-                    onPlanNoChange(currentVal);
-                }
-            }
-        
-        renderActionReport(warehouseActions);
-        
-        if (loggedInUser) {
-            applyAccessControl();
+function loadDataIntoMemory(data) {
+    locations = data.locations || [];
+    routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
+    employees = data.employees || [];
+    vehicles = data.vehicles || [];
+    loginRecords = data.loginData || [];
+    warehouseActions = data.warehouseActions || [];
+    
+    // 1. Collect Set of Plan Nos that have an End Date (already completed/closed)
+    const completedPlans = new Set();
+    const deliveryDataRecords = data.deliveryDataRecords || [];
+    deliveryDataRecords.forEach(row => {
+        let pNo = String(row['No'] || '').trim();
+        let endDate = String(row['End Date'] || '').trim();
+        if (pNo && endDate && endDate !== '' && endDate !== 'N/A' && endDate !== 'undefined') {
+            completedPlans.add(pNo);
         }
-        
-        renderRouteTabs();
-        renderEmployeeDropdowns();
-        renderVehicleGrid();
-        applyFilters();
+    });
+    
+    // 2. Cache delivery plans locally, filtering out completed ones
+    deliveryPlanData = data.deliveryPlan || [];
+    cachedDeliveryPlans = {};
+    deliveryPlanData.forEach(item => {
+        let pNo = String(item['Plan No'] || item['planNo'] || '').trim();
+        // Only cache if Plan No exists AND has NO End Date in Delivery_Data
+        if (pNo && !completedPlans.has(pNo)) {
+            if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
+            cachedDeliveryPlans[pNo].push(item);
+        }
+    });
+    
+    // 3. Sort remaining active Plan Nos Z-A (Highest / Newest Plan No first)
+    availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
+    
+    const planSelect = document.getElementById('planNoSelect');
+    if (planSelect) {
+        const currentVal = planSelect.value;
+        planSelect.innerHTML = `<option value="">-- Select Plan --</option>` + availablePlanNos.map(p => `<option value="${p}">Plan #${p}</option>`).join('');
+        if (currentVal && cachedDeliveryPlans[currentVal]) {
+            planSelect.value = currentVal;
+            onPlanNoChange(currentVal);
+        } else {
+            planSelect.value = "";
+            document.getElementById('deliveryPlanResult').innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
+        }
     }
-
+    
+    renderActionReport(warehouseActions);
+    
+    if (loggedInUser) {
+        applyAccessControl();
+    }
+    
+    renderRouteTabs();
+    renderEmployeeDropdowns();
+    renderVehicleGrid();
+    applyFilters();
+}
     // ================= LIGHTNING-FAST DELIVERY PLAN MODULE =================
     function onPlanNoChange(planNo) {
         const container = document.getElementById('deliveryPlanResult');
