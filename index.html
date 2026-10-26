@@ -147,7 +147,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.2  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.5  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -923,34 +923,51 @@ let deviceApprovalCheckInterval = null;
         }
     }
 
-    function checkExistingSession() {
-        const savedUser = localStorage.getItem('warehouse_user');
-        if (savedUser) {
-            try {
-                loggedInUser = JSON.parse(savedUser);
-                userPermissions = loggedInUser.access ? loggedInUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('userGreeting').textContent = `${loggedInUser.user_name} (${loggedInUser.user_level})`;
-                document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${loggedInUser.user_name}!`;
-                applyAccessControl();
-            } catch(e) {
-                localStorage.removeItem('warehouse_user');
-            }
+// ================= UNIQUE DEVICE IDENTIFICATION =================
+function getUniqueDeviceId() {
+    let devId = localStorage.getItem('warehouse_device_id');
+    if (!devId) {
+        devId = 'dev-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
+        localStorage.setItem('warehouse_device_id', devId);
+    }
+    return devId;
+}
+
+function checkExistingSession() {
+    const savedUser = localStorage.getItem('warehouse_user');
+    if (savedUser) {
+        try {
+            loggedInUser = JSON.parse(savedUser);
+            userPermissions = loggedInUser.access ? loggedInUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
+            currentSessionActivityId = localStorage.getItem('warehouse_current_activity_id') || getUniqueDeviceId();
+            
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('userGreeting').textContent = `${loggedInUser.user_name} (${loggedInUser.user_level})`;
+            document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${loggedInUser.user_name}!`;
+            applyAccessControl();
+            
+            // Check approval status immediately upon page refresh or reconnect
+            checkApprovalStatusNow();
+            startDeviceApprovalPolling();
+        } catch (e) {
+            localStorage.removeItem('warehouse_user');
         }
     }
+}
 
-    async function logUserSession(user) {
+async function logUserSession(user) {
     const deviceModel = navigator.userAgent.includes('Mobile') ? (navigator.userAgent.includes('Samsung') ? 'Samsung Mobile' : 'Mobile Device') : 'Desktop / PC';
-    const activityId = `act-${Date.now()}`;
-    currentSessionActivityId = activityId;
+    const uniqueDevId = getUniqueDeviceId();
+    currentSessionActivityId = uniqueDevId;
+    localStorage.setItem('warehouse_current_activity_id', uniqueDevId);
     
     const initialApproval = (user.user_level === 'Admin' || user.user_level === 'Executive') ? 'Approved' : 'Pending';
     
     const activityRecord = {
-        id: activityId,
+        id: uniqueDevId,
         username: user.user_name || user.username,
         userLevel: user.user_level || 'User',
-        device: deviceModel,
+        device: `${deviceModel} [${uniqueDevId.substring(4, 10)}]`,
         time: new Date().toISOString().replace('T', ' ').substring(0, 19),
         status: 'Active',
         approvalStatus: initialApproval
@@ -963,58 +980,54 @@ let deviceApprovalCheckInterval = null;
             body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
         });
         
-        // Start 1-minute background device approval check
         startDeviceApprovalPolling();
     } catch (e) {
         console.warn("Failed to log activity", e);
     }
 }
 
-// ================= 1-MINUTE DEVICE APPROVAL POLLING =================
+// ================= 1-MINUTE POLLING & RECONNECT CHECK =================
 function startDeviceApprovalPolling() {
     if (deviceApprovalCheckInterval) clearInterval(deviceApprovalCheckInterval);
     
-    // Check every 60,000 ms (1 minute)
     deviceApprovalCheckInterval = setInterval(async () => {
         if (!loggedInUser || !currentSessionActivityId) return;
-        
-        try {
-            const response = await fetch(`${API_URL}?action=getLoginActivity`);
-            const data = await response.json();
-            if (data.status === "success" && data.loginActivity) {
-                const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
-                
-                if (myRecord) {
-                    const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
-                    handleApprovalStateUI(approvalStatus);
-                }
+        await checkApprovalStatusNow();
+    }, 60000);
+}
+
+async function checkApprovalStatusNow() {
+    if (!currentSessionActivityId) return;
+    try {
+        const response = await fetch(`${API_URL}?action=getLoginActivity`);
+        const data = await response.json();
+        if (data.status === "success" && data.loginActivity) {
+            const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
+            
+            if (myRecord) {
+                const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
+                handleApprovalStateUI(approvalStatus);
             }
-        } catch (e) {
-            console.warn("Background approval check failed", e);
         }
-    }, 10000);
+    } catch (e) {
+        console.warn("Background approval check failed", e);
+    }
 }
 
 function handleApprovalStateUI(status) {
     let banner = document.getElementById('approvalNoticeBanner');
     
-    if (status === 'Revoked') {
-        alert("🔒 Your device access has been REVOKED by warehouse management. You are being logged out.");
-        logout();
-        return;
-    }
-    
-    if (status === 'Pending') {
+    if (status === 'Revoked' || status === 'Pending') {
         if (!banner) {
             banner = document.createElement('div');
             banner.id = 'approvalNoticeBanner';
-            banner.className = 'fixed top-0 inset-x-0 bg-amber-600 text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse';
+            banner.className = `fixed top-0 inset-x-0 ${status === 'Revoked' ? 'bg-rose-600' : 'bg-amber-600'} text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse`;
             document.body.prepend(banner);
         }
         banner.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span>Device Access Status: <strong>PENDING</strong> by Warehouse Management.</span>
-            <button onclick="checkApprovalStatusNow()" class="bg-white text-amber-800 px-2.5 py-1 rounded-lg text-xs font-extrabold shadow-sm">Refresh Status</button>
+            <span>Device Access Status: <strong>${status.toUpperCase()}</strong> by Warehouse Management. Your session remains active without logout.</span>
+            <button onclick="checkApprovalStatusNow()" class="bg-white text-slate-900 px-2.5 py-1 rounded-lg text-xs font-extrabold shadow-sm">Refresh Status</button>
         `;
     } else {
         if (banner) banner.remove();
@@ -1328,7 +1341,7 @@ function switchTab(tab) {
         document.getElementById('loginActivityModal').classList.remove('hidden');
 
         if (!loginActivityInterval) {
-            loginActivityInterval = setInterval(fetchLatestLoginActivity, 30000);
+            loginActivityInterval = setInterval(fetchLatestLoginActivity, 3000);
         }
     }
 
