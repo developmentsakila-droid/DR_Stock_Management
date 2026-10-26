@@ -106,7 +106,6 @@
 <!-- Header Navigation -->
 <header class="sticky top-0 z-30 glass-card dark:bg-slate-950/80 border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
-        <!-- Left Side: Logo, Title & Greeting -->
         <div class="flex items-center space-x-3.5 cursor-pointer" onclick="switchTab('dashboard')">
             <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/30 shrink-0">
                 <i class="fa-solid fa-warehouse"></i>
@@ -122,7 +121,6 @@
             </div>
         </div>
 
-        <!-- Right Side: Theme Toggle & Logout Button -->
         <div class="flex items-center gap-2.5">
             <button onclick="toggleTheme()" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-2 flex items-center justify-center gap-1.5 rounded-xl text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-amber-500 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition">
                 <i class="fa-solid fa-sun text-base" id="themeIcon"></i>
@@ -147,7 +145,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 1.4  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 5.4  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -485,9 +483,6 @@
 
 <!-- ================= TAB 4: DELIVERY SCHEDULE REPORT ================= -->
 <div id="sectionSchedule" class="space-y-3 hidden">
-    
-
-
     <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-1xl p-3 shadow-xl space-y-4">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
@@ -498,16 +493,9 @@
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-                
-               
-                
-                
                 <input type="date" id="scheduleDateInput" onchange="onScheduleDateChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
                 <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-16 text-center">
-                <!--<button onclick="fetchDeliveryScheduleReport()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-rotate"></i> Load Week
-                </button>-->
-                                 <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                      <button onclick="saveAllScheduleChanges()" class="px-4 py-2 bg-green-900 hover:green-700 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5">
                          <i class="fa-solid fa-floppy-disk"></i> Save Schedule Changes
                      </button>
@@ -574,15 +562,11 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Auto-refreshing...
                     </span>
                 </div>
-                <div id="loginActivityTableContainer" class="overflow-x-auto">
-                    <!-- Dynamic table rendered via JS -->
-                </div>
+                <div id="loginActivityTableContainer" class="overflow-x-auto"></div>
             </div>
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
                 <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">User Access Permissions Manager</h4>
-                <div id="userAccessTableContainer" class="overflow-x-auto">
-                    <!-- Dynamic permissions table rendered via JS -->
-                </div>
+                <div id="userAccessTableContainer" class="overflow-x-auto"></div>
             </div>
         </div>
     </div>
@@ -885,9 +869,8 @@
     let loggedInUser = null;
     let userPermissions = [];
     let loginActivityInterval = null;
-// Global tracking for session session ID & 1-minute check interval
-let currentSessionActivityId = null;
-let deviceApprovalCheckInterval = null;
+    let currentSessionActivityId = null;
+    let deviceApprovalCheckInterval = null;
 
     let activeRoute = "ALL";
     let activeType = "ALL";
@@ -923,250 +906,234 @@ let deviceApprovalCheckInterval = null;
         }
     }
 
-// ================= UNIQUE DEVICE IDENTIFICATION =================
-function getUniqueDeviceId() {
-    let devId = localStorage.getItem('warehouse_device_id');
-    if (!devId) {
-        devId = 'dev-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
-        localStorage.setItem('warehouse_device_id', devId);
+    // ================= UNIQUE DEVICE IDENTIFICATION =================
+    function getUniqueDeviceId() {
+        let devId = localStorage.getItem('warehouse_device_id');
+        if (!devId) {
+            devId = 'dev-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
+            localStorage.setItem('warehouse_device_id', devId);
+        }
+        return devId;
     }
-    return devId;
-}
 
-async function checkExistingSession() {
-    const savedUser = localStorage.getItem('warehouse_user');
-    if (savedUser) {
+    async function checkExistingSession() {
+        const savedUser = localStorage.getItem('warehouse_user');
+        if (savedUser) {
+            try {
+                loggedInUser = JSON.parse(savedUser);
+                userPermissions = loggedInUser.access ? loggedInUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
+                currentSessionActivityId = localStorage.getItem('warehouse_current_activity_id') || getUniqueDeviceId();
+                
+                const response = await fetch(`${API_URL}?action=getLoginActivity`);
+                const data = await response.json();
+                if (data.status === "success" && data.loginActivity) {
+                    const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
+                    if (myRecord) {
+                        const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
+                        if (approvalStatus === 'Revoked') {
+                            logout();
+                            const errDiv = document.getElementById('loginError');
+                            if (errDiv) {
+                                errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
+                                errDiv.classList.remove('hidden');
+                            }
+                            return;
+                        }
+                    }
+                }
+                
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('userGreeting').textContent = `${loggedInUser.user_name} (${loggedInUser.user_level})`;
+                document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${loggedInUser.user_name}!`;
+                applyAccessControl();
+                startDeviceApprovalPolling();
+            } catch (e) {
+                localStorage.removeItem('warehouse_user');
+            }
+        }
+    }
+
+    async function logUserSession(user) {
+        const deviceModel = navigator.userAgent.includes('Mobile') ? (navigator.userAgent.includes('Samsung') ? 'Samsung Mobile' : 'Mobile Device') : 'Desktop / PC';
+        const uniqueDevId = getUniqueDeviceId();
+        currentSessionActivityId = uniqueDevId;
+        localStorage.setItem('warehouse_current_activity_id', uniqueDevId);
+        
+        const initialApproval = (user.user_level === 'Admin' || user.user_level === 'Executive') ? 'Approved' : 'Pending';
+        
+        const activityRecord = {
+            id: uniqueDevId,
+            username: user.user_name || user.username,
+            userLevel: user.user_level || 'User',
+            device: `${deviceModel} [${uniqueDevId.substring(4, 10)}]`,
+            time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            status: 'Active',
+            approvalStatus: initialApproval
+        };
+        
         try {
-            loggedInUser = JSON.parse(savedUser);
-            userPermissions = loggedInUser.access ? loggedInUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
-            currentSessionActivityId = localStorage.getItem('warehouse_current_activity_id') || getUniqueDeviceId();
-            
-            // Check approval status during data loading / reconnect
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
+            });
+            const resJson = await response.json();
+            if (resJson.approvalStatus) {
+                handleApprovalStateUI(resJson.approvalStatus);
+            }
+            startDeviceApprovalPolling();
+        } catch (e) {
+            console.warn("Failed to log activity", e);
+        }
+    }
+
+    // ================= 30S BACKGROUND POLLING =================
+    function startDeviceApprovalPolling() {
+        if (deviceApprovalCheckInterval) clearInterval(deviceApprovalCheckInterval);
+        
+        deviceApprovalCheckInterval = setInterval(async () => {
+            if (!loggedInUser || !currentSessionActivityId) return;
+            await checkApprovalStatusSilently();
+        }, 30000);
+    }
+
+    async function checkApprovalStatusSilently() {
+        if (!currentSessionActivityId) return;
+        try {
             const response = await fetch(`${API_URL}?action=getLoginActivity`);
             const data = await response.json();
             if (data.status === "success" && data.loginActivity) {
                 const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
                 if (myRecord) {
                     const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
+                    handleApprovalStateUI(approvalStatus);
+                }
+            }
+        } catch (e) {
+            console.warn("Background approval sync skipped", e);
+        }
+    }
+
+    function handleApprovalStateUI(status) {
+        let banner = document.getElementById('approvalNoticeBanner');
+        
+        if (status === 'Revoked') {
+            logout();
+            const errDiv = document.getElementById('loginError');
+            if (errDiv) {
+                errDiv.textContent = "Your device access was revoked by management.";
+                errDiv.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        if (status === 'Pending') {
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'approvalNoticeBanner';
+                banner.className = 'fixed top-0 inset-x-0 bg-amber-600 text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse';
+                document.body.prepend(banner);
+            }
+            banner.innerHTML = `
+                <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                <span>Device Access Status: <strong>PENDING</strong> by Warehouse Management.</span>
+            `;
+        } else {
+            if (banner) banner.remove();
+        }
+    }
+
+    // ================= OPTIMIZED LOGIN HANDLER =================
+    async function handleLogin(e) {
+        e.preventDefault();
+        const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
+        const pInput = document.getElementById('loginPass').value.trim();
+        const errDiv = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        setButtonLoading(loginBtn, true, "Sign In to Portal");
+        showLoading(true, "Authenticating...");
+        
+        try {
+            await fetchAllData(true);
+            
+            const matchedUser = loginRecords.find(item =>
+                String(item.user_name || item.username || "").trim().toLowerCase() === uInput &&
+                String(item.password || "").trim() === pInput
+            );
+            
+            if (matchedUser) {
+                const uniqueDevId = getUniqueDeviceId();
+                const existingRecord = loginActivityRecords.find(a => String(a.id || a.ID) === String(uniqueDevId));
+                
+                if (existingRecord) {
+                    const approvalStatus = existingRecord.approval_status || existingRecord.approvalStatus || 'Pending';
                     if (approvalStatus === 'Revoked') {
-                        logout();
-                        const errDiv = document.getElementById('loginError');
-                        if (errDiv) {
-                            errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
-                            errDiv.classList.remove('hidden');
-                        }
+                        errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
+                        errDiv.classList.remove('hidden');
+                        setButtonLoading(loginBtn, false, "Sign In to Portal");
+                        showLoading(false);
                         return;
                     }
                 }
+                
+                loggedInUser = matchedUser;
+                userPermissions = matchedUser.access ? matchedUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
+                localStorage.setItem('warehouse_user', JSON.stringify(matchedUser));
+                
+                await logUserSession(matchedUser);
+                
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('userGreeting').textContent = `${matchedUser.user_name} (${matchedUser.user_level})`;
+                document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${matchedUser.user_name}!`;
+                errDiv.classList.add('hidden');
+                applyAccessControl();
+            } else {
+                errDiv.textContent = "Invalid username or password.";
+                errDiv.classList.remove('hidden');
             }
-            
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('userGreeting').textContent = `${loggedInUser.user_name} (${loggedInUser.user_level})`;
-            document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${loggedInUser.user_name}!`;
-            applyAccessControl();
-            startDeviceApprovalPolling();
-        } catch (e) {
-            localStorage.removeItem('warehouse_user');
-        }
-    }
-}
-
-async function logUserSession(user) {
-    const deviceModel = navigator.userAgent.includes('Mobile') ? (navigator.userAgent.includes('Samsung') ? 'Samsung Mobile' : 'Mobile Device') : 'Desktop / PC';
-    const uniqueDevId = getUniqueDeviceId();
-    currentSessionActivityId = uniqueDevId;
-    localStorage.setItem('warehouse_current_activity_id', uniqueDevId);
-    
-    const initialApproval = (user.user_level === 'Admin' || user.user_level === 'Executive') ? 'Approved' : 'Pending';
-    
-    const activityRecord = {
-        id: uniqueDevId,
-        username: user.user_name || user.username,
-        userLevel: user.user_level || 'User',
-        device: `${deviceModel} [${uniqueDevId.substring(4, 10)}]`,
-        time: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        status: 'Active',
-        approvalStatus: initialApproval
-    };
-    
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
-        });
-        const resJson = await response.json();
-        if (resJson.approvalStatus) {
-            handleApprovalStateUI(resJson.approvalStatus);
-        }
-        startDeviceApprovalPolling();
-    } catch (e) {
-        console.warn("Failed to log activity", e);
-    }
-}
-
-
-
-// ================= POLLING & RECONNECT CHECK =================
-function startDeviceApprovalPolling() {
-    if (deviceApprovalCheckInterval) clearInterval(deviceApprovalCheckInterval);
-    
-    deviceApprovalCheckInterval = setInterval(async () => {
-        if (!loggedInUser || !currentSessionActivityId) return;
-        await checkApprovalStatusNow();
-    }, 60000);
-}
-
-async function checkApprovalStatusNow() {
-    if (!currentSessionActivityId) return;
-    try {
-        const response = await fetch(`${API_URL}?action=getLoginActivity`);
-        const data = await response.json();
-        if (data.status === "success" && data.loginActivity) {
-            const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
-            
-            if (myRecord) {
-                const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
-                handleApprovalStateUI(approvalStatus);
-            }
-        }
-    } catch (e) {
-        console.warn("Background approval check failed", e);
-    }
-}
-
-function handleApprovalStateUI(status) {
-    let banner = document.getElementById('approvalNoticeBanner');
-    
-    if (status === 'Revoked') {
-        // If revoked while actively using the app, clean logout without alert
-        logout();
-        const errDiv = document.getElementById('loginError');
-        if (errDiv) {
-            errDiv.textContent = "Your device access was revoked by management.";
+        } catch (err) {
+            console.error("Login error:", err);
+            errDiv.textContent = "Connection error. Please check your network.";
             errDiv.classList.remove('hidden');
+        } finally {
+            setButtonLoading(loginBtn, false, "Sign In to Portal");
+            showLoading(false);
         }
-        return;
     }
-    
-    if (status === 'Pending') {
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'approvalNoticeBanner';
-            banner.className = 'fixed top-0 inset-x-0 bg-amber-600 text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse';
-            document.body.prepend(banner);
+
+    function extractTimeInputVal(val) {
+        if (!val) return '';
+        const str = String(val).replace(/ *\([^)]*\)/g, "").trim();
+        if (str.includes('T')) {
+            const parts = str.split('T')[1];
+            if (parts) return parts.substring(0, 5);
         }
-        banner.innerHTML = `
-            <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span>Device Access Status: <strong>PENDING</strong> by Warehouse Management.</span>
-            <button onclick="checkApprovalStatusNow()" class="bg-white text-slate-900 px-2.5 py-1 rounded-xl text-xs font-extrabold shadow-sm">Refresh Status</button>
-        `;
-    } else {
-        if (banner) banner.remove();
-    }
-}
-
-
-async function checkApprovalStatusNow() {
-   // showLoading(true, "Checking status...");
-    await fetchLatestLoginActivity();
-    showLoading(false);
-    //alert("Approval status checked successfully.");
-}
-
-// ================= OPTIMIZED LOGIN HANDLER =================
-async function handleLogin(e) {
-    e.preventDefault();
-    const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
-    const pInput = document.getElementById('loginPass').value.trim();
-    const errDiv = document.getElementById('loginError');
-    const loginBtn = document.getElementById('loginBtn');
-    
-    setButtonLoading(loginBtn, true, "Sign In to Portal");
-    showLoading(true, "Authenticating & Verifying Device...");
-    
-    try {
-        // Ensure we have fresh data (login records & login activity)
-        await fetchAllData(true);
-        
-        const matchedUser = loginRecords.find(item =>
-            String(item.user_name || item.username || "").trim().toLowerCase() === uInput &&
-            String(item.password || "").trim() === pInput
-        );
-        
-        if (matchedUser) {
-            // Check if this unique device has been revoked by management
-            const uniqueDevId = getUniqueDeviceId();
-            const existingRecord = loginActivityRecords.find(a => String(a.id || a.ID) === String(uniqueDevId));
-            
-            if (existingRecord) {
-                const approvalStatus = existingRecord.approval_status || existingRecord.approvalStatus || 'Pending';
-                if (approvalStatus === 'Revoked') {
-                    errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
-                    errDiv.classList.remove('hidden');
-                    setButtonLoading(loginBtn, false, "Sign In to Portal");
-                    showLoading(false);
-                    return;
-                }
+        if (str.includes(':')) {
+            const parts = str.split(':');
+            if (parts.length >= 2) {
+                return parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
             }
-            
-            // Grant session access
-            loggedInUser = matchedUser;
-            userPermissions = matchedUser.access ? matchedUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
-            localStorage.setItem('warehouse_user', JSON.stringify(matchedUser));
-            
-            await logUserSession(matchedUser);
-            
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('userGreeting').textContent = `${matchedUser.user_name} (${matchedUser.user_level})`;
-            document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${matchedUser.user_name}!`;
-            errDiv.classList.add('hidden');
-            applyAccessControl();
-        } else {
-            errDiv.textContent = "Invalid username or password.";
-            errDiv.classList.remove('hidden');
         }
-    } catch (err) {
-        console.error("Login error:", err);
-        errDiv.textContent = "Connection error. Please check your network.";
-        errDiv.classList.remove('hidden');
-    } finally {
-        setButtonLoading(loginBtn, false, "Sign In to Portal");
-        showLoading(false);
+        return str.substring(0, 5);
     }
-}
 
-function extractTimeInputVal(val) {
-    if (!val) return '';
-    const str = String(val).replace(/ *\([^)]*\)/g, "").trim();
-    if (str.includes('T')) {
-        const parts = str.split('T')[1];
-        if (parts) return parts.substring(0, 5);
-    }
-    if (str.includes(':')) {
-        const parts = str.split(':');
-        if (parts.length >= 2) {
-            return parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
+    function extractDateInputVal(val) {
+        if (!val) return '';
+        const str = String(val).replace(/ *\([^)]*\)/g, "").trim();
+        if (str.includes('T')) {
+            return str.split('T')[0];
         }
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        return str.substring(0, 10);
     }
-    return str.substring(0, 5);
-}
 
-function extractDateInputVal(val) {
-    if (!val) return '';
-    const str = String(val).replace(/ *\([^)]*\)/g, "").trim();
-    if (str.includes('T')) {
-        return str.split('T')[0];
-    }
-    const d = new Date(str);
-    if (!isNaN(d.getTime())) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-    return str.substring(0, 10);
-}
     function logout() {
         localStorage.removeItem('warehouse_user');
         loggedInUser = null;
@@ -1203,41 +1170,41 @@ function extractDateInputVal(val) {
         document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
     }
 
-function switchTab(tab) {
-    if (tab !== 'dashboard') {
-        const moduleMap = {
-            'delivery': 'delivery finder',
-            'stock': 'stock count & qa',
-            'vehicle': 'vehicle management',
-            'schedule': 'delivery schedule',
-            'actionReport': 'action report',
-            'deliveryPlan': 'delivery plan'
-        };
-        const requiredKeyword = moduleMap[tab];
-        if (requiredKeyword) {
-            const hasAccess = userPermissions.includes('all') || userPermissions.some(p => requiredKeyword.includes(p) || p.includes(requiredKeyword));
-            if (!hasAccess) {
-                alert("Access denied to this module.");
-                return;
+    function switchTab(tab) {
+        if (tab !== 'dashboard') {
+            const moduleMap = {
+                'delivery': 'delivery finder',
+                'stock': 'stock count & qa',
+                'vehicle': 'vehicle management',
+                'schedule': 'delivery schedule',
+                'actionReport': 'action report',
+                'deliveryPlan': 'delivery plan'
+            };
+            const requiredKeyword = moduleMap[tab];
+            if (requiredKeyword) {
+                const hasAccess = userPermissions.includes('all') || userPermissions.some(p => requiredKeyword.includes(p) || p.includes(requiredKeyword));
+                if (!hasAccess) {
+                    alert("Access denied to this module.");
+                    return;
+                }
             }
         }
+        
+        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan'];
+        sections.forEach(s => {
+            const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+            if (el) el.classList.toggle('hidden', s !== tab);
+        });
+        document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
+        
+        if (tab === 'schedule') {
+            const weekNo = document.getElementById('reportWeekNo').value || "43";
+            fetchDeliveryScheduleReport(weekNo);
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
-    const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan'];
-    sections.forEach(s => {
-        const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
-        if (el) el.classList.toggle('hidden', s !== tab);
-    });
-    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
-    
-    // Automatically fetch and load the schedule report when opening the schedule tab
-    if (tab === 'schedule') {
-        const weekNo = document.getElementById('reportWeekNo').value || "43";
-        fetchDeliveryScheduleReport(weekNo);
-    }
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+
     function initTheme() {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -1284,44 +1251,43 @@ function switchTab(tab) {
         return result;
     }
 
-// ================= UNIFIED FETCH ALL DATA =================
-async function fetchAllData(forceRefresh = false) {
-    if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-        console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
-        return;
-    }
-    
-    if (!forceRefresh) {
-        const cachedData = localStorage.getItem('warehouse_portal_cache');
-        if (cachedData) {
-            try {
-                const data = JSON.parse(cachedData);
-                loadDataIntoMemory(data);
-            } catch (e) {
-                console.warn("Cache parse error", e);
+    // ================= UNIFIED FETCH ALL DATA =================
+    async function fetchAllData(forceRefresh = false) {
+        if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+            console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+            return;
+        }
+        
+        if (!forceRefresh) {
+            const cachedData = localStorage.getItem('warehouse_portal_cache');
+            if (cachedData) {
+                try {
+                    const data = JSON.parse(cachedData);
+                    loadDataIntoMemory(data);
+                } catch (e) {
+                    console.warn("Cache parse error", e);
+                }
             }
         }
-    }
-    
-    const hasExistingData = locations.length > 0 || vehicles.length > 0;
-    if (!hasExistingData) {
-        showLoading(true, "Loading system data...");
-    }
-    
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
         
-        localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
-        loadDataIntoMemory(data);
+        const hasExistingData = locations.length > 0 || vehicles.length > 0;
+        if (!hasExistingData) {
+            showLoading(true, "Loading system data...");
+        }
         
-    } catch (error) {
-        console.error("Error loading data from Google Sheets:", error);
-    } finally {
-        showLoading(false);
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+            loadDataIntoMemory(data);
+            
+        } catch (error) {
+            console.error("Error loading data from Google Sheets:", error);
+        } finally {
+            showLoading(false);
+        }
     }
-}
-
 
     function loadDataIntoMemory(data) {
         locations = data.locations || [];
@@ -1387,7 +1353,7 @@ async function fetchAllData(forceRefresh = false) {
         }
     }
 
-    // ================= LOGIN ACTIVITY & ACCESS CONTROL (Live 30s Refresh) =================
+    // ================= LOGIN ACTIVITY & ACCESS CONTROL =================
     function openLoginActivityModal() {
         fetchLatestLoginActivity();
         document.getElementById('loginActivityModal').classList.remove('hidden');
@@ -1417,122 +1383,71 @@ async function fetchAllData(forceRefresh = false) {
             console.error("Failed to fetch live login activity", e);
         }
     }
-function renderLoginActivityTables() {
-    const actContainer = document.getElementById('loginActivityTableContainer');
-    const activities = loginActivityRecords.length > 0 ? loginActivityRecords : [];
-    
-    actContainer.innerHTML = `
-        <table class="w-full text-xs text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                    <th class="p-2.5">Username</th>
-                    <th class="p-2.5">Role Level</th>
-                    <th class="p-2.5">Device</th>
-                    <th class="p-2.5">Timestamp</th>
-                    <th class="p-2.5">Approval Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${activities.map((a, idx) => {
-                    const actId = a.id || a.ID || `row-${idx + 1}`;
-                    const uname = a.active_user_name || a.activeUserName || a.username || '-';
-                    const ulevel = a.level || a.userLevel || '-';
-                    const dev = a.device || 'Mobile Device';
-                    const time = a.time || '-';
-                    const status = a.approval_status || a.approvalStatus || 'Pending';
-                    
-                    const selectBg = status === 'Approved' 
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
-                        : (status === 'Revoked' ? 'bg-rose-50 text-rose-700 border-rose-300' : 'bg-amber-50 text-amber-700 border-amber-300');
 
-                    return `
-                    <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                        <td class="p-2.5 font-bold">${uname}</td>
-                        <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">${ulevel}</span></td>
-                        <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
-                        <td class="p-2.5 text-slate-500">${formatCustomTime(time)}</td>
-                        <td class="p-2.5">
-                            <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${selectBg}">
-                                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Approved" ${status === 'Approved' ? 'selected' : ''}>Approved</option>
-                                <option value="Revoked" ${status === 'Revoked' ? 'selected' : ''}>Revoked</option>
-                            </select>
-                        </td>
-                    </tr>`;
-                }).join('')}
-            </tbody>
-        </table>`;
+    function renderLoginActivityTables() {
+        const actContainer = document.getElementById('loginActivityTableContainer');
+        const activities = loginActivityRecords.length > 0 ? loginActivityRecords : [];
         
-       /*   const accContainer = document.getElementById('userAccessTableContainer');
-  
-  if (!loginRecords || loginRecords.length === 0) {
-      accContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No user login records found. Make sure fetchAllData() loaded successfully.</p>`;
-      return;
-  }
-  
-  accContainer.innerHTML = `
-        <table class="w-full text-xs text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                    <th class="p-2.5">User</th>
-                    <th class="p-2.5">Level</th>
-                    <th class="p-2.5">Access Modules</th>
-                    <th class="p-2.5 text-right">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${loginRecords.map((u, idx) => {
-                    const userName = u.user_name || u.userName || u.username || u['User Name'] || u.Username || u.Name || '';
-                    const userLevel = u.user_level || u.userLevel || u['User Level'] || u.Role || u['Role Level'] || u.Level || '-';
-                    const accessVal = u.access || u.Access || u['Access Modules'] || '';
-                    
-                    return `
-                    <tr class="border-b border-slate-100 dark:border-slate-800/60">
-                        <td class="p-2.5 font-bold">${userName}</td>
-                        <td class="p-2.5 font-semibold text-slate-500">${userLevel}</td>
-                        <td class="p-2.5">
-                            <input type="text" id="accessInput_${idx}" value="${accessVal}" class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs">
-                        </td>
-                        <td class="p-2.5 text-right">
-                            <button onclick="saveUserAccess('${userName}', ${idx})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm">Save</button>
-                        </td>
-                    </tr>`;
-                }).join('')}
-            </tbody>
-        </table>`;*/
-}
+        actContainer.innerHTML = `
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                        <th class="p-2.5">Username</th>
+                        <th class="p-2.5">Role Level</th>
+                        <th class="p-2.5">Device</th>
+                        <th class="p-2.5">Timestamp</th>
+                        <th class="p-2.5">Approval Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${activities.map((a, idx) => {
+                        const actId = a.id || a.ID || `row-${idx + 1}`;
+                        const uname = a.active_user_name || a.activeUserName || a.username || '-';
+                        const ulevel = a.level || a.userLevel || '-';
+                        const dev = a.device || 'Mobile Device';
+                        const time = a.time || '-';
+                        const status = a.approval_status || a.approvalStatus || 'Pending';
+                        
+                        const selectBg = status === 'Approved' 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
+                            : (status === 'Revoked' ? 'bg-rose-50 text-rose-700 border-rose-300' : 'bg-amber-50 text-amber-700 border-amber-300');
 
-async function updateDeviceApprovalStatus(activityId, newStatus) {
-    showLoading(true, "Updating Approval...");
-    try {
-        const body = new URLSearchParams();
-        body.append("payload", JSON.stringify({
-            action: "updateDeviceApproval",
-            data: { id: activityId, approvalStatus: newStatus }
-        }));
-        
-        await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: body
-        });
-        await fetchLatestLoginActivity();
-    } catch (e) {
-        console.error("Failed to update approval", e);
-    } finally {
-        showLoading(false);
+                        return `
+                        <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                            <td class="p-2.5 font-bold">${uname}</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">${ulevel}</span></td>
+                            <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
+                            <td class="p-2.5 text-slate-500">${formatCustomTime(time)}</td>
+                            <td class="p-2.5">
+                                <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${selectBg}">
+                                    <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Approved" ${status === 'Approved' ? 'selected' : ''}>Approved</option>
+                                    <option value="Revoked" ${status === 'Revoked' ? 'selected' : ''}>Revoked</option>
+                                </select>
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>`;
     }
-}
-    async function saveUserAccess(username, index) {
-        const newAccess = document.getElementById(`accessInput_${index}`).value.trim();
-        showLoading(true, "Updating Access...");
+
+    async function updateDeviceApprovalStatus(activityId, newStatus) {
+        showLoading(true, "Updating Approval...");
         try {
-            await postToApi("updateLoginAccess", { username, access: newAccess });
-            alert(`Access permissions updated successfully for ${username}!`);
-            await fetchAllData(true);
-            renderLoginActivityTables();
+            const body = new URLSearchParams();
+            body.append("payload", JSON.stringify({
+                action: "updateDeviceApproval",
+                data: { id: activityId, approvalStatus: newStatus }
+            }));
+            
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            await fetchLatestLoginActivity();
         } catch (e) {
-            console.error(e);
+            console.error("Failed to update approval", e);
         } finally {
             showLoading(false);
         }
@@ -1633,7 +1548,6 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         }
     }
 
-    // ================= VEHICLE MANAGEMENT LOGIC =================
     function formatAndCheckDate(dateStr) {
         if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
         const cleanString = dateStr.replace(/ *\([^)]*\)/g, "");
@@ -1709,7 +1623,6 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
                         <p><strong>Emission:</strong> <span class="${emi.isUrgent ? 'text-rose-600 dark:text-rose-400 font-extrabold' : ''}">${emi.text}</span></p>
                     </div>
                     <p class="pt-1 text-[11px] font-bold ${srv.isUrgent ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">Service Date: ${srv.text}</p>
-               
                     <div class="flex items-center justify-end gap-2 pt-1">
                         <button onclick="openEditVehicleModal('${v.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
                         <button onclick="deleteVehicle('${v.id}')" class="px-3 py-1.5 bg-rose-550 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-trash"></i></button>
@@ -1813,7 +1726,6 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         }
     }
 
-    // ================= DELIVERY FINDER LOGIC =================
     function setCustomerTypeFilter(type) {
         activeType = type;
         document.querySelectorAll('.type-btn').forEach(btn => {
@@ -2139,16 +2051,18 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         }
         document.getElementById('myMapModal').classList.remove('hidden');
     }
+
     function closeMyMapModal() { document.getElementById('myMapModal').classList.add('hidden'); }
 
-    // ================= SCANNER & CALCULATOR LOGIC =================
     function toggleCalculator() {
         const box = document.getElementById('calcBox');
         box.classList.toggle('hidden');
         if(!box.classList.contains('hidden')) calcClear();
     }
+
     function calcInput(val) { calcExpr += val; document.getElementById('calcDisplay').innerText = calcExpr; }
     function calcClear() { calcExpr = ""; document.getElementById('calcDisplay').innerText = "0"; }
+
     function calcEquals() {
         try {
             if (!calcExpr) return;
@@ -2158,6 +2072,7 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
             document.getElementById('calcDisplay').innerText = calcExpr;
         } catch(e) { document.getElementById('calcDisplay').innerText = "Error"; calcExpr = ""; }
     }
+
     function calcApply() {
         calcEquals();
         let val = parseInt(calcExpr, 10);
@@ -2212,6 +2127,7 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         fetchItemDetails(decodedText);
         document.getElementById('quantity')?.select();
     }
+
     function onScanError(error) {}
 
     function fetchItemDetails(barcode) {
@@ -2337,6 +2253,7 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         document.getElementById('downloadReportBtn').disabled = true;
         document.getElementById('reportModal').classList.remove('hidden');
     }
+
     function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
 
     function fetchSummaryReport() {
@@ -2383,6 +2300,7 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
                 if(data.categories) catSelect.innerHTML = data.categories.map(c => `<option value="${c}">${c}</option>`).join('');
             });
     }
+
     function closeQADefectModal() { document.getElementById('qaDefectModal').classList.add('hidden'); }
 
     function handleQADefectSubmit(e) {
@@ -2406,7 +2324,6 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
             .finally(() => { setButtonLoading(qaSubmitBtn, false, "Submit Defect"); });
     }
 
-    // ================= DELIVERY SCHEDULE & DATE-TO-WEEK LOGIC =================
     function getISOWeekNumber(d) {
         var target = new Date(d.valueOf());
         var dayNr = (d.getDay() + 6) % 7;
@@ -2485,7 +2402,7 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         var tDay = String(todayObj.getDate()).padStart(2, '0');
         var todayStr = `${tYear}-${tMonth}-${tDay}`;
 
-           var yesterdayObj = new Date(todayObj);
+        var yesterdayObj = new Date(todayObj);
         yesterdayObj.setDate(todayObj.getDate() + 1);
         var yYear = yesterdayObj.getFullYear();
         var yMonth = String(yesterdayObj.getMonth() + 1).padStart(2, '0');
@@ -2501,7 +2418,6 @@ async function updateDeviceApprovalStatus(activityId, newStatus) {
         }
         return "";
     }
-
 function fetchDeliveryScheduleReport(weekNo) {
         if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
         const container = document.getElementById('scheduleReportResult');
