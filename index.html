@@ -147,7 +147,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.2  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 1.2  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -933,7 +933,7 @@ function getUniqueDeviceId() {
     return devId;
 }
 
-function checkExistingSession() {
+async function checkExistingSession() {
     const savedUser = localStorage.getItem('warehouse_user');
     if (savedUser) {
         try {
@@ -941,13 +941,29 @@ function checkExistingSession() {
             userPermissions = loggedInUser.access ? loggedInUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
             currentSessionActivityId = localStorage.getItem('warehouse_current_activity_id') || getUniqueDeviceId();
             
+            // Check approval status during data loading / reconnect
+            const response = await fetch(`${API_URL}?action=getLoginActivity`);
+            const data = await response.json();
+            if (data.status === "success" && data.loginActivity) {
+                const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
+                if (myRecord) {
+                    const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
+                    if (approvalStatus === 'Revoked') {
+                        logout();
+                        const errDiv = document.getElementById('loginError');
+                        if (errDiv) {
+                            errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
+                            errDiv.classList.remove('hidden');
+                        }
+                        return;
+                    }
+                }
+            }
+            
             document.getElementById('loginOverlay').classList.add('hidden');
             document.getElementById('userGreeting').textContent = `${loggedInUser.user_name} (${loggedInUser.user_level})`;
             document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${loggedInUser.user_name}!`;
             applyAccessControl();
-            
-            // Check approval status immediately upon page refresh or reconnect
-            checkApprovalStatusNow();
             startDeviceApprovalPolling();
         } catch (e) {
             localStorage.removeItem('warehouse_user');
@@ -974,26 +990,31 @@ async function logUserSession(user) {
     };
     
     try {
-        await fetch(API_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
         });
-        
+        const resJson = await response.json();
+        if (resJson.approvalStatus) {
+            handleApprovalStateUI(resJson.approvalStatus);
+        }
         startDeviceApprovalPolling();
     } catch (e) {
         console.warn("Failed to log activity", e);
     }
 }
 
-// ================= 1-MINUTE POLLING & RECONNECT CHECK =================
+
+
+// ================= POLLING & RECONNECT CHECK =================
 function startDeviceApprovalPolling() {
     if (deviceApprovalCheckInterval) clearInterval(deviceApprovalCheckInterval);
     
     deviceApprovalCheckInterval = setInterval(async () => {
         if (!loggedInUser || !currentSessionActivityId) return;
         await checkApprovalStatusNow();
-    }, 6000);
+    }, 60000);
 }
 
 async function checkApprovalStatusNow() {
@@ -1017,22 +1038,34 @@ async function checkApprovalStatusNow() {
 function handleApprovalStateUI(status) {
     let banner = document.getElementById('approvalNoticeBanner');
     
-    if (status === 'Revoked' || status === 'Pending') {
+    if (status === 'Revoked') {
+        // If revoked while actively using the app, clean logout without alert
+        logout();
+        const errDiv = document.getElementById('loginError');
+        if (errDiv) {
+            errDiv.textContent = "Your device access was revoked by management.";
+            errDiv.classList.remove('hidden');
+        }
+        return;
+    }
+    
+    if (status === 'Pending') {
         if (!banner) {
             banner = document.createElement('div');
             banner.id = 'approvalNoticeBanner';
-            banner.className = `fixed top-0 inset-x-0 ${status === 'Revoked' ? 'bg-rose-600' : 'bg-amber-600'} text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse`;
+            banner.className = 'fixed top-0 inset-x-0 bg-amber-600 text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse';
             document.body.prepend(banner);
         }
         banner.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span>Device Access Status: <strong>${status.toUpperCase()}</strong> by Warehouse Management. Your session remains active without logout.</span>
-            <button onclick="checkApprovalStatusNow()" class="bg-white text-slate-900 px-2.5 py-1 rounded-lg text-xs font-extrabold shadow-sm">Refresh Status</button>
+            <span>Device Access Status: <strong>PENDING</strong> by Warehouse Management.</span>
+            <button onclick="checkApprovalStatusNow()" class="bg-white text-slate-900 px-2.5 py-1 rounded-xl text-xs font-extrabold shadow-sm">Refresh Status</button>
         `;
     } else {
         if (banner) banner.remove();
     }
 }
+
 
 async function checkApprovalStatusNow() {
    // showLoading(true, "Checking status...");
@@ -1047,34 +1080,57 @@ async function checkApprovalStatusNow() {
         const pInput = document.getElementById('loginPass').value.trim();
         const errDiv = document.getElementById('loginError');
         const loginBtn = document.getElementById('loginBtn');
-
+        
         setButtonLoading(loginBtn, true, "Sign In to Portal");
-        showLoading(true, "Authenticating...");
+        showLoading(true, "Authenticating & Checking Device Access...");
         try {
             if (loginRecords.length === 0) {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 loginRecords = data.loginData || [];
+                loginActivityRecords = data.loginActivity || [];
+            } else {
+                const response = await fetch(`${API_URL}?action=getLoginActivity`);
+                const data = await response.json();
+                if (data.status === "success" && data.loginActivity) {
+                    loginActivityRecords = data.loginActivity;
+                }
             }
-
-            const matchedUser = loginRecords.find(item => 
-                String(item.user_name || item.username || "").trim().toLowerCase() === uInput && 
+            
+            const matchedUser = loginRecords.find(item =>
+                String(item.user_name || item.username || "").trim().toLowerCase() === uInput &&
                 String(item.password || "").trim() === pInput
             );
-
+            
             if (matchedUser) {
+                // Check if device is revoked before allowing login
+                const uniqueDevId = getUniqueDeviceId();
+                const existingRecord = loginActivityRecords.find(a => String(a.id || a.ID) === String(uniqueDevId));
+                
+                if (existingRecord) {
+                    const approvalStatus = existingRecord.approval_status || existingRecord.approvalStatus || 'Pending';
+                    if (approvalStatus === 'Revoked') {
+                        errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
+                        errDiv.classList.remove('hidden');
+                        setButtonLoading(loginBtn, false, "Sign In to Portal");
+                        showLoading(false);
+                        return;
+                    }
+                }
+                
                 loggedInUser = matchedUser;
                 userPermissions = matchedUser.access ? matchedUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
                 localStorage.setItem('warehouse_user', JSON.stringify(matchedUser));
                 
                 await logUserSession(matchedUser);
-
+                
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('userGreeting').textContent = `${matchedUser.user_name} (${matchedUser.user_level})`;
                 document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${matchedUser.user_name}!`;
                 errDiv.classList.add('hidden');
                 applyAccessControl();
             } else {
+                errDiv.textContent = "Invalid username or password.";
                 errDiv.classList.remove('hidden');
             }
         } catch (err) {
@@ -1085,6 +1141,7 @@ async function checkApprovalStatusNow() {
             setButtonLoading(loginBtn, false, "Sign In to Portal");
             showLoading(false);
         }
+        
     }
 function extractTimeInputVal(val) {
     if (!val) return '';
