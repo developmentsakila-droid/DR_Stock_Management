@@ -998,7 +998,13 @@ function startDeviceApprovalPolling() {
 function handleApprovalStateUI(status) {
     let banner = document.getElementById('approvalNoticeBanner');
     
-    if (status === 'Pending' || status === 'Revoked') {
+    if (status === 'Revoked') {
+        alert("🔒 Your device access has been REVOKED by warehouse management. You are being logged out.");
+        logout();
+        return;
+    }
+    
+    if (status === 'Pending') {
         if (!banner) {
             banner = document.createElement('div');
             banner.id = 'approvalNoticeBanner';
@@ -1007,7 +1013,7 @@ function handleApprovalStateUI(status) {
         }
         banner.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span>Device Access Status: <strong>${status.toUpperCase()}</strong> by Warehouse Management. Some actions may be restricted until approved.</span>
+            <span>Device Access Status: <strong>PENDING</strong> by Warehouse Management.</span>
             <button onclick="checkApprovalStatusNow()" class="bg-white text-amber-800 px-2.5 py-1 rounded-lg text-xs font-extrabold shadow-sm">Refresh Status</button>
         `;
     } else {
@@ -1363,13 +1369,17 @@ function renderLoginActivityTables() {
             </thead>
             <tbody>
                 ${activities.map((a, idx) => {
-                    const actId = a.id || a.ID || '';
+                    const actId = a.id || a.ID || `row-${idx + 1}`;
                     const uname = a.active_user_name || a.activeUserName || a.username || '-';
                     const ulevel = a.level || a.userLevel || '-';
                     const dev = a.device || 'Mobile Device';
                     const time = a.time || '-';
                     const status = a.approval_status || a.approvalStatus || 'Pending';
                     
+                    const selectBg = status === 'Approved' 
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
+                        : (status === 'Revoked' ? 'bg-rose-50 text-rose-700 border-rose-300' : 'bg-amber-50 text-amber-700 border-amber-300');
+
                     return `
                     <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
                         <td class="p-2.5 font-bold">${uname}</td>
@@ -1377,7 +1387,7 @@ function renderLoginActivityTables() {
                         <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
                         <td class="p-2.5 text-slate-500">${time}</td>
                         <td class="p-2.5">
-                            <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
+                            <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${selectBg}">
                                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="Approved" ${status === 'Approved' ? 'selected' : ''}>Approved</option>
                                 <option value="Revoked" ${status === 'Revoked' ? 'selected' : ''}>Revoked</option>
@@ -1388,7 +1398,7 @@ function renderLoginActivityTables() {
             </tbody>
         </table>`;
         
-          const accContainer = document.getElementById('userAccessTableContainer');
+       /*   const accContainer = document.getElementById('userAccessTableContainer');
   
   if (!loginRecords || loginRecords.length === 0) {
       accContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No user login records found. Make sure fetchAllData() loaded successfully.</p>`;
@@ -1424,7 +1434,7 @@ function renderLoginActivityTables() {
                     </tr>`;
                 }).join('')}
             </tbody>
-        </table>`;
+        </table>`;*/
 }
 
 async function updateDeviceApprovalStatus(activityId, newStatus) {
