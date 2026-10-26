@@ -2353,7 +2353,7 @@ function handleApprovalStateUI(status) {
             position: document.getElementById('position').value || 'NA'
         };
         fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-            .then(() => { alert("QA Defect logged successfully!"); closeQADefectModal(); })
+            .then(() => {closeQADefectModal(); })
             .finally(() => { setButtonLoading(qaSubmitBtn, false, "Submit Defect"); });
     }
 
