@@ -992,7 +992,7 @@ function startDeviceApprovalPolling() {
         } catch (e) {
             console.warn("Background approval check failed", e);
         }
-    }, 60000);
+    }, 10000);
 }
 
 function handleApprovalStateUI(status) {
