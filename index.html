@@ -885,6 +885,9 @@
     let loggedInUser = null;
     let userPermissions = [];
     let loginActivityInterval = null;
+// Global tracking for session session ID & 1-minute check interval
+let currentSessionActivityId = null;
+let deviceApprovalCheckInterval = null;
 
     let activeRoute = "ALL";
     let activeType = "ALL";
@@ -937,26 +940,87 @@
     }
 
     async function logUserSession(user) {
-        const deviceModel = navigator.userAgent.includes('Mobile') ? (navigator.userAgent.includes('Samsung') ? 'Samsung Mobile' : 'Mobile Device') : 'Desktop / PC';
-        const activityRecord = {
-            id: `act-${Date.now()}`,
-            username: user.user_name || user.username,
-            userLevel: user.user_level || 'User',
-            device: deviceModel,
-            time: new Date().toISOString().replace('T', ' ').substring(0, 19),
-            status: 'Active'
-        };
-
-        try {
-            await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
-            });
-        } catch (e) {
-            console.warn("Failed to log activity", e);
-        }
+    const deviceModel = navigator.userAgent.includes('Mobile') ? (navigator.userAgent.includes('Samsung') ? 'Samsung Mobile' : 'Mobile Device') : 'Desktop / PC';
+    const activityId = `act-${Date.now()}`;
+    currentSessionActivityId = activityId;
+    
+    const initialApproval = (user.user_level === 'Admin' || user.user_level === 'Executive') ? 'Approved' : 'Pending';
+    
+    const activityRecord = {
+        id: activityId,
+        username: user.user_name || user.username,
+        userLevel: user.user_level || 'User',
+        device: deviceModel,
+        time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        status: 'Active',
+        approvalStatus: initialApproval
+    };
+    
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'logLoginActivity', data: activityRecord })
+        });
+        
+        // Start 1-minute background device approval check
+        startDeviceApprovalPolling();
+    } catch (e) {
+        console.warn("Failed to log activity", e);
     }
+}
+
+// ================= 1-MINUTE DEVICE APPROVAL POLLING =================
+function startDeviceApprovalPolling() {
+    if (deviceApprovalCheckInterval) clearInterval(deviceApprovalCheckInterval);
+    
+    // Check every 60,000 ms (1 minute)
+    deviceApprovalCheckInterval = setInterval(async () => {
+        if (!loggedInUser || !currentSessionActivityId) return;
+        
+        try {
+            const response = await fetch(`${API_URL}?action=getLoginActivity`);
+            const data = await response.json();
+            if (data.status === "success" && data.loginActivity) {
+                const myRecord = data.loginActivity.find(a => String(a.id || a.ID) === String(currentSessionActivityId));
+                
+                if (myRecord) {
+                    const approvalStatus = myRecord.approval_status || myRecord.approvalStatus || 'Approved';
+                    handleApprovalStateUI(approvalStatus);
+                }
+            }
+        } catch (e) {
+            console.warn("Background approval check failed", e);
+        }
+    }, 60000);
+}
+
+function handleApprovalStateUI(status) {
+    let banner = document.getElementById('approvalNoticeBanner');
+    
+    if (status === 'Pending' || status === 'Revoked') {
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'approvalNoticeBanner';
+            banner.className = 'fixed top-0 inset-x-0 bg-amber-600 text-white text-xs sm:text-sm font-bold py-2.5 px-4 z-50 text-center shadow-lg flex items-center justify-center gap-3 animate-pulse';
+            document.body.prepend(banner);
+        }
+        banner.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation text-base"></i>
+            <span>Device Access Status: <strong>${status.toUpperCase()}</strong> by Warehouse Management. Some actions may be restricted until approved.</span>
+            <button onclick="checkApprovalStatusNow()" class="bg-white text-amber-800 px-2.5 py-1 rounded-lg text-xs font-extrabold shadow-sm">Refresh Status</button>
+        `;
+    } else {
+        if (banner) banner.remove();
+    }
+}
+
+async function checkApprovalStatusNow() {
+    showLoading(true, "Checking status...");
+    await fetchLatestLoginActivity();
+    showLoading(false);
+    alert("Approval status checked successfully.");
+}
 
     async function handleLogin(e) {
         e.preventDefault();
@@ -1284,11 +1348,7 @@ function switchTab(tab) {
     }
 function renderLoginActivityTables() {
     const actContainer = document.getElementById('loginActivityTableContainer');
-    
-    // Fallback activity if list is empty
-    const activities = loginActivityRecords.length > 0 ? loginActivityRecords : [
-        { active_user_name: loggedInUser?.user_name || loggedInUser?.username || 'sakila', level: loggedInUser?.user_level || loggedInUser?.userLevel || 'Executive', device: 'Active Device', time: new Date().toLocaleString(), status: 'Active' }
-    ];
+    const activities = loginActivityRecords.length > 0 ? loginActivityRecords : [];
     
     actContainer.innerHTML = `
         <table class="w-full text-xs text-left border-collapse">
@@ -1296,41 +1356,46 @@ function renderLoginActivityTables() {
                 <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
                     <th class="p-2.5">Username</th>
                     <th class="p-2.5">Role Level</th>
-                    <th class="p-2.5">Device / Phone</th>
+                    <th class="p-2.5">Device</th>
                     <th class="p-2.5">Timestamp</th>
-                    <th class="p-2.5">Status</th>
+                    <th class="p-2.5">Approval Status</th>
                 </tr>
             </thead>
             <tbody>
-           
-            
-                ${activities.map(a => {
-                    const uname = a.active_user_name || a.activeUserName || a.username || a.Username || a['User Name'] || a.user_name || a.Name || '-';
-                    const ulevel = a.level || a.userLevel || a['User Level'] || a.user_level || a.Role || a['Role Level'] || a.Level || '-';
-                    const dev = a.device || a['Device / Phone'] || a.Device || 'Mobile Device';
-                    const time = a.time || a['Time'] || a.Timestamp || '-';
-                    const status = a.status || a['Status'] || 'Active';
+                ${activities.map((a, idx) => {
+                    const actId = a.id || a.ID || '';
+                    const uname = a.active_user_name || a.activeUserName || a.username || '-';
+                    const ulevel = a.level || a.userLevel || '-';
+                    const dev = a.device || 'Mobile Device';
+                    const time = a.time || '-';
+                    const status = a.approval_status || a.approvalStatus || 'Pending';
                     
                     return `
                     <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
                         <td class="p-2.5 font-bold">${uname}</td>
-                        <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-250 text-gray-500 font-bold">${ulevel}</span></td>
-                        <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen-button text-emerald-500 mr-1"></i> ${dev}</td>
-                        <td class="p-2.5 text-slate-500">${formatCustomTime(time)}</td>
-                        <td class="p-2.5 font-bold text-emerald-600">${status}</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">${ulevel}</span></td>
+                        <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
+                        <td class="p-2.5 text-slate-500">${time}</td>
+                        <td class="p-2.5">
+                            <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-amber-50 text-amber-700 border-amber-300'}">
+                                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Approved" ${status === 'Approved' ? 'selected' : ''}>Approved</option>
+                                <option value="Revoked" ${status === 'Revoked' ? 'selected' : ''}>Revoked</option>
+                            </select>
+                        </td>
                     </tr>`;
                 }).join('')}
             </tbody>
         </table>`;
-    
-    const accContainer = document.getElementById('userAccessTableContainer');
-    
-    if (!loginRecords || loginRecords.length === 0) {
-        accContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No user login records found. Make sure fetchAllData() loaded successfully.</p>`;
-        return;
-    }
-    
-    accContainer.innerHTML = `
+        
+          const accContainer = document.getElementById('userAccessTableContainer');
+  
+  if (!loginRecords || loginRecords.length === 0) {
+      accContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No user login records found. Make sure fetchAllData() loaded successfully.</p>`;
+      return;
+  }
+  
+  accContainer.innerHTML = `
         <table class="w-full text-xs text-left border-collapse">
             <thead>
                 <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
@@ -1360,6 +1425,28 @@ function renderLoginActivityTables() {
                 }).join('')}
             </tbody>
         </table>`;
+}
+
+async function updateDeviceApprovalStatus(activityId, newStatus) {
+    showLoading(true, "Updating Approval...");
+    try {
+        const body = new URLSearchParams();
+        body.append("payload", JSON.stringify({
+            action: "updateDeviceApproval",
+            data: { id: activityId, approvalStatus: newStatus }
+        }));
+        
+        await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body
+        });
+        await fetchLatestLoginActivity();
+    } catch (e) {
+        console.error("Failed to update approval", e);
+    } finally {
+        showLoading(false);
+    }
 }
     async function saveUserAccess(username, index) {
         const newAccess = document.getElementById(`accessInput_${index}`).value.trim();
