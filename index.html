@@ -172,6 +172,16 @@
             </div>
         </div>
 
+             <div id="card-schedule" onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div class="space-y-1">
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">View daily dispatch itineraries and route calendars.</p>
+            </div>
+        </div>
+
         <div id="card-stock" onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
                 <i class="fa-solid fa-barcode"></i>
@@ -192,15 +202,7 @@
             </div>
         </div>
 
-        <div id="card-schedule" onclick="switchTab('schedule')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
-                <i class="fa-solid fa-calendar-days"></i>
-            </div>
-            <div class="space-y-1">
-                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400">View daily dispatch itineraries and route calendars.</p>
-            </div>
-        </div>
+   
         
         <div id="card-action-report" onclick="switchTab('actionReport')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold border border-indigo-500/20">
