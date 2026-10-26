@@ -147,7 +147,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 1.2  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 1.4  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -1074,75 +1074,68 @@ async function checkApprovalStatusNow() {
     //alert("Approval status checked successfully.");
 }
 
-    async function handleLogin(e) {
-        e.preventDefault();
-        const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
-        const pInput = document.getElementById('loginPass').value.trim();
-        const errDiv = document.getElementById('loginError');
-        const loginBtn = document.getElementById('loginBtn');
+// ================= OPTIMIZED LOGIN HANDLER =================
+async function handleLogin(e) {
+    e.preventDefault();
+    const uInput = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pInput = document.getElementById('loginPass').value.trim();
+    const errDiv = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    setButtonLoading(loginBtn, true, "Sign In to Portal");
+    showLoading(true, "Authenticating & Verifying Device...");
+    
+    try {
+        // Ensure we have fresh data (login records & login activity)
+        await fetchAllData(true);
         
-        setButtonLoading(loginBtn, true, "Sign In to Portal");
-        showLoading(true, "Authenticating & Checking Device Access...");
-        try {
-            if (loginRecords.length === 0) {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                loginRecords = data.loginData || [];
-                loginActivityRecords = data.loginActivity || [];
-            } else {
-                const response = await fetch(`${API_URL}?action=getLoginActivity`);
-                const data = await response.json();
-                if (data.status === "success" && data.loginActivity) {
-                    loginActivityRecords = data.loginActivity;
+        const matchedUser = loginRecords.find(item =>
+            String(item.user_name || item.username || "").trim().toLowerCase() === uInput &&
+            String(item.password || "").trim() === pInput
+        );
+        
+        if (matchedUser) {
+            // Check if this unique device has been revoked by management
+            const uniqueDevId = getUniqueDeviceId();
+            const existingRecord = loginActivityRecords.find(a => String(a.id || a.ID) === String(uniqueDevId));
+            
+            if (existingRecord) {
+                const approvalStatus = existingRecord.approval_status || existingRecord.approvalStatus || 'Pending';
+                if (approvalStatus === 'Revoked') {
+                    errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
+                    errDiv.classList.remove('hidden');
+                    setButtonLoading(loginBtn, false, "Sign In to Portal");
+                    showLoading(false);
+                    return;
                 }
             }
             
-            const matchedUser = loginRecords.find(item =>
-                String(item.user_name || item.username || "").trim().toLowerCase() === uInput &&
-                String(item.password || "").trim() === pInput
-            );
+            // Grant session access
+            loggedInUser = matchedUser;
+            userPermissions = matchedUser.access ? matchedUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
+            localStorage.setItem('warehouse_user', JSON.stringify(matchedUser));
             
-            if (matchedUser) {
-                // Check if device is revoked before allowing login
-                const uniqueDevId = getUniqueDeviceId();
-                const existingRecord = loginActivityRecords.find(a => String(a.id || a.ID) === String(uniqueDevId));
-                
-                if (existingRecord) {
-                    const approvalStatus = existingRecord.approval_status || existingRecord.approvalStatus || 'Pending';
-                    if (approvalStatus === 'Revoked') {
-                        errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
-                        errDiv.classList.remove('hidden');
-                        setButtonLoading(loginBtn, false, "Sign In to Portal");
-                        showLoading(false);
-                        return;
-                    }
-                }
-                
-                loggedInUser = matchedUser;
-                userPermissions = matchedUser.access ? matchedUser.access.split(',').map(s => s.trim().toLowerCase()) : [];
-                localStorage.setItem('warehouse_user', JSON.stringify(matchedUser));
-                
-                await logUserSession(matchedUser);
-                
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('userGreeting').textContent = `${matchedUser.user_name} (${matchedUser.user_level})`;
-                document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${matchedUser.user_name}!`;
-                errDiv.classList.add('hidden');
-                applyAccessControl();
-            } else {
-                errDiv.textContent = "Invalid username or password.";
-                errDiv.classList.remove('hidden');
-            }
-        } catch (err) {
-            console.error("Login error:", err);
-            errDiv.textContent = "Connection error. Please try again.";
+            await logUserSession(matchedUser);
+            
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('userGreeting').textContent = `${matchedUser.user_name} (${matchedUser.user_level})`;
+            document.getElementById('dashboardWelcomeTitle').textContent = `Welcome, ${matchedUser.user_name}!`;
+            errDiv.classList.add('hidden');
+            applyAccessControl();
+        } else {
+            errDiv.textContent = "Invalid username or password.";
             errDiv.classList.remove('hidden');
-        } finally {
-            setButtonLoading(loginBtn, false, "Sign In to Portal");
-            showLoading(false);
         }
-        
+    } catch (err) {
+        console.error("Login error:", err);
+        errDiv.textContent = "Connection error. Please check your network.";
+        errDiv.classList.remove('hidden');
+    } finally {
+        setButtonLoading(loginBtn, false, "Sign In to Portal");
+        showLoading(false);
     }
+}
+
 function extractTimeInputVal(val) {
     if (!val) return '';
     const str = String(val).replace(/ *\([^)]*\)/g, "").trim();
@@ -1291,42 +1284,44 @@ function switchTab(tab) {
         return result;
     }
 
-    async function fetchAllData(forceRefresh = false) {
-        if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-            console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
-            return;
-        }
-        
-        if (!forceRefresh) {
-            const cachedData = localStorage.getItem('warehouse_portal_cache');
-            if (cachedData) {
-                try {
-                    const data = JSON.parse(cachedData);
-                    loadDataIntoMemory(data);
-                } catch (e) {
-                    console.warn("Cache parse error", e);
-                }
+// ================= UNIFIED FETCH ALL DATA =================
+async function fetchAllData(forceRefresh = false) {
+    if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+        console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+        return;
+    }
+    
+    if (!forceRefresh) {
+        const cachedData = localStorage.getItem('warehouse_portal_cache');
+        if (cachedData) {
+            try {
+                const data = JSON.parse(cachedData);
+                loadDataIntoMemory(data);
+            } catch (e) {
+                console.warn("Cache parse error", e);
             }
         }
-        
-        const hasExistingData = locations.length > 0 || vehicles.length > 0;
-        if (!hasExistingData) {
-            showLoading(true, "Loading...");
-        }
-        
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
-            loadDataIntoMemory(data);
-            
-        } catch (error) {
-            console.error("Error loading data from Google Sheets:", error);
-        } finally {
-            showLoading(false);
-        }
     }
+    
+    const hasExistingData = locations.length > 0 || vehicles.length > 0;
+    if (!hasExistingData) {
+        showLoading(true, "Loading system data...");
+    }
+    
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+        loadDataIntoMemory(data);
+        
+    } catch (error) {
+        console.error("Error loading data from Google Sheets:", error);
+    } finally {
+        showLoading(false);
+    }
+}
+
 
     function loadDataIntoMemory(data) {
         locations = data.locations || [];
