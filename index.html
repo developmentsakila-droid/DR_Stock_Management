@@ -147,7 +147,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 4.8  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.2  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -1035,7 +1035,7 @@ function handleApprovalStateUI(status) {
 }
 
 async function checkApprovalStatusNow() {
-    showLoading(true, "Checking status...");
+   // showLoading(true, "Checking status...");
     await fetchLatestLoginActivity();
     showLoading(false);
     //alert("Approval status checked successfully.");
@@ -1398,7 +1398,7 @@ function renderLoginActivityTables() {
                         <td class="p-2.5 font-bold">${uname}</td>
                         <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">${ulevel}</span></td>
                         <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
-                        <td class="p-2.5 text-slate-500">${time}</td>
+                        <td class="p-2.5 text-slate-500">${formatCustomTime(time)}</td>
                         <td class="p-2.5">
                             <select onchange="updateDeviceApprovalStatus('${actId}', this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${selectBg}">
                                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
