@@ -145,7 +145,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 1.4  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.1  [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -1424,6 +1424,44 @@ function handleApprovalStateUI(status) {
                     }).join('')}
                 </tbody>
             </table>`;
+
+         const accContainer = document.getElementById('userAccessTableContainer');
+  
+  if (!loginRecords || loginRecords.length === 0) {
+      accContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No user login records found. Make sure fetchAllData() loaded successfully.</p>`;
+      return;
+  }
+  
+  accContainer.innerHTML = `
+        <table class="w-full text-xs text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                    <th class="p-2.5">User</th>
+                    <th class="p-2.5">Level</th>
+                    <th class="p-2.5">Access Modules</th>
+                    <th class="p-2.5 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${loginRecords.map((u, idx) => {
+                    const userName = u.user_name || u.userName || u.username || u['User Name'] || u.Username || u.Name || '';
+                    const userLevel = u.user_level || u.userLevel || u['User Level'] || u.Role || u['Role Level'] || u.Level || '-';
+                    const accessVal = u.access || u.Access || u['Access Modules'] || '';
+                    
+                    return `
+                    <tr class="border-b border-slate-100 dark:border-slate-800/60">
+                        <td class="p-2.5 font-bold">${userName}</td>
+                        <td class="p-2.5 font-semibold text-slate-500">${userLevel}</td>
+                        <td class="p-2.5">
+                            <input type="text" id="accessInput_${idx}" value="${accessVal}" class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs">
+                        </td>
+                        <td class="p-2.5 text-right">
+                            <button onclick="saveUserAccess('${userName}', ${idx})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm">Save</button>
+                        </td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>`;
     }
 
     async function updateDeviceApprovalStatus(activityId, newStatus) {
