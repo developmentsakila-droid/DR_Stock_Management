@@ -989,7 +989,7 @@ function startDeviceApprovalPolling() {
     deviceApprovalCheckInterval = setInterval(async () => {
         if (!loggedInUser || !currentSessionActivityId) return;
         await checkApprovalStatusSilently();
-    }, 3000);
+    }, 0);
     
     // Instant check when switching back to the browser tab/window
     window.addEventListener('focus', () => {
