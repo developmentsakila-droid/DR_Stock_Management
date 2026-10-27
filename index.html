@@ -54,7 +54,7 @@
 </style>
 
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/20 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
+<body class="bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-slate-880 dark:text-slate-100 min-h-screen pb-28 transition-colors duration-300">
 
 <!-- ================= LOGIN OVERLAY ================= -->
 <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -143,9 +143,9 @@
 <div id="sectionDashboard" class="space-y-4">
     <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-4 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
         <div class="space-y-2 text-center sm:text-left">
-            <span class="bg-white/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
+            <span class="bg-black/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.1  [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.6     [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -1067,12 +1067,12 @@ function handleApprovalStateUI(status) {
         loggedInUser = null;
         userPermissions = [];
         
-        // 3. Hide all dashboard module sections instantly
+        /* 3. Hide all dashboard module sections instantly
         const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan'];
         sections.forEach(s => {
             const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
             if (el) el.classList.add('hidden');
-        });
+        }); */
         
         // 4. Force show the login overlay & clear password field
         document.getElementById('loginOverlay').classList.remove('hidden');
@@ -1097,7 +1097,7 @@ function handleApprovalStateUI(status) {
         }
         banner.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation text-base"></i>
-            <span>Device Access Status: <strong>PENDING APPROVAL</strong> by Warehouse Management.</span>
+            <span>Device Access Status: <strong>PENDING APPROVAL</strong></span>
         `;
     } else {
         if (banner) banner.remove();
@@ -1473,13 +1473,13 @@ function handleApprovalStateUI(status) {
                         const status = a.approval_status || a.approvalStatus || 'Pending';
                         
                         const selectBg = status === 'Approved' 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
-                            : (status === 'Revoked' ? 'bg-rose-50 text-rose-700 border-rose-300' : 'bg-amber-50 text-amber-700 border-amber-300');
+                            ? 'bg-slate-850 text-emerald-700 border-emerald-700' 
+                            : (status === 'Revoked' ? 'bg-rose-550 text-rose-700 border-rose-300' : 'bg-amber-550 text-amber-700 border-amber-300');
 
                         return `
                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
                             <td class="p-2.5 font-bold">${uname}</td>
-                            <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">${ulevel}</span></td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-slate-900 text-indigo-300 font-bold">${ulevel}</span></td>
                             <td class="p-2.5 font-mono text-slate-600 dark:text-slate-300"><i class="fa-solid fa-mobile-screen text-emerald-500 mr-1"></i> ${dev}</td>
                             <td class="p-2.5 text-slate-500">${formatCustomTime(time)}</td>
                             <td class="p-2.5">
