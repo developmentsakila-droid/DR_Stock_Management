@@ -2584,8 +2584,8 @@ function fetchDeliveryScheduleReport(weekNo) {
                                     const endTimeVal = extractTimeInputVal(r['End Time']);
 
                                     return `
-                                    <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row" data-index="${idx}">
-                                        <td class="p-2.5 font-medium ${statusClass}">${formatCustomDateTime(r.Date)}</td>
+                                    <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row" data-index="${idx}">
+                                        <td class="p-2.5 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
                                         <td class="p-2.5 font-bold ${statusClass}">${r.No || '-'}</td> 
                                         <td class="p-2.5 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
                                         <td class="p-2.5 ${statusClass}">${r.Driver || '-'}</td>
