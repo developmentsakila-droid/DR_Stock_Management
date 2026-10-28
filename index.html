@@ -27,11 +27,11 @@
 <style>
     body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     .btn-nav-mix {
-        background: linear-gradient(135deg, #059669 0%, #1e293b 100%);
-        border: 1px solid #34d399; color: #ffffff; transition: all 0.25s ease-in-out;
+        background: linear-gradient(135deg, #32453f 0%, #1e293b 100%);
+        border: 1px solid #000805; color: #ffffff; transition: all 0.25s ease-in-out;
     }
     .btn-nav-mix:hover {
-        background: linear-gradient(135deg, #10b981 0%, #0f172a 100%);
+        background: linear-gradient(135deg, #48635b 0%, #0f172a 100%);
         box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.35); transform: translateY(-1px);
     }
     .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
@@ -297,13 +297,15 @@
                 </div>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-                <button onclick="openMyMapModal()" class="px-3.5 py-2.5 w-full sm:w-auto bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
-                    <i class="fa-solid fa-map text-emerald-500"></i> My Maps..
-                </button>
-                <button onclick="launchFullRouteMap()" class="btn-nav-mix px-2 py-1.5 w-full font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
+                <button onclick="launchFullRouteMap()" class="btn-nav-mix sm:w-auto px-2 py-1.5 w-full font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
                     <i class="fa-solid fa-diamond-turn-right text-base text-emerald-200"></i>
                     <span>Navigate Route</span>
                 </button>
+                
+                <button onclick="openMyMapModal()" class="px-3.5 py-2.5 w-full sm:w-auto bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 shadow-sm transition">
+                    <i class="fa-solid fa-map text-emerald-500"></i> My Maps..
+                </button>
+                
             </div>
         </div>
     </section>
