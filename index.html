@@ -2561,7 +2561,7 @@ function fetchDeliveryScheduleReport(weekNo) {
                     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
                     const isAuthorized = [""].includes(userLevel);
                    
-                   //const isAuthorized = ["executive", "manager", "admin"].includes(userLevel); //if i want to lock access
+                   //const isAuthorized = ["executive", "manager"].includes(userLevel); //if i want to lock access
 
 
                     const vehicleOptions = `<option value="">-- Select Lorry --</option>` + vehicles.map(v => {
@@ -2653,7 +2653,7 @@ function fetchDeliveryScheduleReport(weekNo) {
 
     async function saveAllScheduleChanges() {
         const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-        if (!["executive", "manager", "admin"].includes(userLevel)) {
+        if (!["executive", "manager"].includes(userLevel)) {
             alert("Permission denied. Only Executive and Manager levels are authorized to edit schedule details.");
             return;
         }
