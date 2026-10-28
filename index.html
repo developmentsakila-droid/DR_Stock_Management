@@ -243,14 +243,14 @@
         </div>
     </div>
 
-    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-2">
         <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-100">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </div>
             <input type="text" id="searchInput" oninput="applyFilters()" 
                 placeholder="Search customer name, phone number, route, coordinates, or ASM..." 
-                class="w-full pl-12 pr-10 py-3.5 bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white font-medium transition">
+                class="w-full pl-12 pr-10 py-3.5 bg-slate-50/80 dark:bg-slate-950/30 border border-slate-800 dark:border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-emerald-300 text-slate-900 dark:text-slate-900 font-bold">
             <button id="clearSearch" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
                 <i class="fa-solid fa-circle-xmark text-lg"></i>
             </button>
@@ -1897,12 +1897,12 @@ function handleApprovalStateUI(status) {
             if(item.type === "Modern Trade") badgeClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/50";
 
             return `
-                <div class="glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div class="glass-card dark:bg-slate-900 border border-slate-600/80 dark:border-slate-400 p-3 rounded-2xl shadow-sm hover:shadow-x1 transition-all duration-300 flex flex-col justify-between group">
                     <div>
                         <div class="flex items-start justify-between gap-2 mb-3">
                             <div>
                                 <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">${item.type || 'Direct Customer'}</span>
-                                <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition-colors">${item.name || ''}</h3>
+                                <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-gray-400 transition-colors">${item.name || ''}</h3>
                             </div>
                             <span class="text-xs font-bold px-2.5 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shrink-0 flex items-center gap-1 shadow-sm">
                                 <i class="fa-solid fa-route text-emerald-500"></i>${item.route || ''}
@@ -1913,7 +1913,7 @@ function handleApprovalStateUI(status) {
                             <span>${item.address || ''}</span>
                         </p>
                         <div class="${isExpanded ? 'block' : 'hidden'} space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 mb-4 text-xs animate-fadeIn">
-                            <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200/60">
+                            <div class="grid grid-cols-2 gap-2.5 bg-slate-50/80 dark:bg-slate-950/60 p-2 rounded-1xl border border-slate-900/60">
                                 <div>
                                     <p class="text-[10px] font-extrabold text-slate-400 uppercase">Phone</p>
                                     <a href="tel:${item.phone}" class="font-bold text-emerald-600 hover:underline flex items-center gap-1 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${item.phone || ''}</a>
@@ -2514,9 +2514,9 @@ function handleApprovalStateUI(status) {
         if (rowDateStr === todayStr) {
             return "text-emerald-600 dark:text-emerald-400 font-extrabold";
         } else if (rowDateStr === yesterdayStr) {
-            return "text-amber-500 dark:text-amber-400 font-extrabold";
+            return "text-amber-600 dark:text-amber-400 font-extrabold dark:bg-slate-950/40";
         } else if (rowDateStr < todayStr) {
-            return "text-slate-400 dark:text-slate-500";
+            return "text-slate-400 dark:text-slate-300";
         }
         return "";
     }
