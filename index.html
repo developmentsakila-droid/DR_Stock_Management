@@ -2614,13 +2614,13 @@ function fetchDeliveryScheduleReport(weekNo) {
                                     </td>
                                     <td class="py-1.5 px-2 ${statusClass}">
                                         ${isAuthorized ? `
-                                        <input type="text" data-field="Helper" value="${r.Helper || ''}" onchange="updateScheduleField(${idx}, 'Helper', this.value)" class="sm:w-auto schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
+                                        <input type="text" data-field="Helper" value="${r.Helper || ''}" onchange="updateScheduleField(${idx}, 'Helper', this.value)" class="sm:w-auto schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
                                         ` : `<span>${r.Helper || '-'}</span>`}
                                     </td>
                                     <td class="py-1.5 px-2 font-mono ${statusClass}">${formatCustomTime(r.Time)}</td>
                                     <td class="py-1.5 px-2">
                                         ${isAuthorized ? `
-                                        <select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">
+                                        <select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">
                                             ${rowVehicleOptions}
                                         </select>
                                         ` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
