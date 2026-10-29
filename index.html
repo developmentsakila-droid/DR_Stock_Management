@@ -117,7 +117,7 @@
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
         <div class="flex items-center space-x-3.5 cursor-pointer" onclick="switchTab('dashboard')">
             <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-700 to-teal-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/30 shrink-0">
-                <i class="fa-duotone fa-solid fa-warehouse"></i>
+                <i class="fa-solid fa-warehouse"></i>
             </div>
             <div>
                 <h1 class="font-black text-sm sm:text-base md:text-lg leading-tight tracking-tight text-slate-900 dark:text-white">
@@ -154,7 +154,7 @@
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-black/20 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Main Control Panel</span>
             <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dashboardWelcomeTitle">Welcome to Warehouse Portal</h2>
-            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.6 [Develop By: HSDP]</span>
+            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-extrabold">Enterprise 2.8 [Develop By: HSDP]</span>
         </div>
     </div>
 
@@ -571,7 +571,7 @@
             </button>
             </section>
             
-          
+   <section         
    <!-- Filter Controls Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
     <div>
@@ -630,11 +630,12 @@
         </div>
         
        
+    </section>
     
+</div>
 
 
 </main>
-
 
 <!-- ================= MODALS ================= -->
 
@@ -665,7 +666,11 @@
     </div>
 </div>
 
-        
+
+ 
+ 
+   
+    
     <!-- Cards Grid (Vehicle Management Style) -->
     <div id="deliverySummaryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
     <div id="deliverySummaryEmpty" class="hidden p-8 text-center border border-dashed border-slate-400 dark:border-slate-600 rounded-3xl bg-slate-50/50 dark:bg-slate-950/50">
@@ -783,30 +788,6 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-               <!-- <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Last Update</label>
-                    <input type="date" id="formLastUpdate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Revenue Licence</label>
-                    <input type="date" id="formRevenueLicence" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Insurance Expiry</label>
-                    <input type="date" id="formInsurance" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Fitness Expiry</label>
-                    <input type="date" id="formFitness" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-extrabold uppercase mb-1">Emission Test</label>
-                    <input type="date" id="formEmissionTest" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                </div>   -->
                 <div>
                     <label class="block text-[11px] font-extrabold uppercase mb-1">Service Date</label>
                     <input type="date" id="formServiceDate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
@@ -951,7 +932,7 @@
             </div>
         </form>
     </div>
-</div>
+</div
 
 <!-- JavaScript Application Logic -->
 <script>
@@ -1332,40 +1313,45 @@ function handleApprovalStateUI(status) {
         document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
     }
 
-    function switchTab(tab) {
-        if (tab !== 'dashboard') {
-            const moduleMap = {
-                'delivery': 'delivery finder',
-                'stock': 'stock count & qa',
-                'vehicle': 'vehicle management',
-                'schedule': 'delivery schedule',
-                'actionReport': 'action report',
-                'deliveryPlan': 'delivery plan'
-            };
-            const requiredKeyword = moduleMap[tab];
-            if (requiredKeyword) {
-                const hasAccess = userPermissions.includes('all') || userPermissions.some(p => requiredKeyword.includes(p) || p.includes(requiredKeyword));
-                if (!hasAccess) {
-                    alert("Access denied to this module.");
-                    return;
-                }
+function switchTab(tab) {
+    if (tab !== 'dashboard') {
+        const moduleMap = {
+            'delivery': 'delivery finder',
+            'stock': 'stock count & qa',
+            'vehicle': 'vehicle management',
+            'schedule': 'delivery schedule',
+            'actionReport': 'action report',
+            'deliveryPlan': 'delivery plan',
+            'deliverySummary': 'delivery summary'
+        };
+        const requiredKeyword = moduleMap[tab];
+        if (requiredKeyword) {
+            const hasAccess = userPermissions.includes('all') || userPermissions.some(p => requiredKeyword.includes(p) || p.includes(requiredKeyword));
+            if (!hasAccess) {
+                alert("Access denied to this module.");
+                return;
             }
         }
-        
-        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan'];
-        sections.forEach(s => {
-            const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
-            if (el) el.classList.toggle('hidden', s !== tab);
-        });
-        document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
-        
-        if (tab === 'schedule') {
-            const weekNo = document.getElementById('reportWeekNo').value || "43";
-            fetchDeliveryScheduleReport(weekNo);
-        }
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    
+    const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary'];
+    sections.forEach(s => {
+        const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+        if (el) el.classList.toggle('hidden', s !== tab);
+    });
+    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
+    
+    if (tab === 'schedule') {
+        const weekNo = document.getElementById('reportWeekNo').value || "43";
+        fetchDeliveryScheduleReport(weekNo);
+    } else if (tab === 'deliverySummary') {
+        initDeliverySummaryFilters();
+        applyDeliverySummaryFilters();
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 
     function initTheme() {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -2562,97 +2548,6 @@ let csv = headerss.join(",") + "\r\n" + lastReportData.map(row => headerss.map(h
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
-// Populate filter dropdowns from data safely
-function initDeliverySummaryFilters() {
-    const drivers = new Set();
-    const helpers = new Set();
-    const routeSet = new Set();
-    const lorrySet = new Set();
-    
-    Object.keys(cachedDeliveryPlans).forEach(planNo => {
-        const items = cachedDeliveryPlans[planNo] || [];
-        items.forEach(item => {
-            const driver = item.Driver || item.driver || '';
-            const helper = item.Helper || item.helper || '';
-            const route = item['Route Name'] || item.Route || item.route || '';
-            const lorry = item.Lorry || item.lorry || item['Vehicle No'] || '';
-            
-            if (driver.trim()) drivers.add(driver.trim());
-            if (helper.trim()) helpers.add(helper.trim());
-            if (route.trim()) routeSet.add(route.trim());
-            if (lorry.trim()) lorrySet.add(lorry.trim());
-        });
-    });
-    
-    document.getElementById('sumFilterDriver').innerHTML = `<option value="ALL">All Drivers</option>` + Array.from(drivers).sort().map(d => `<option value="${d}">${d}</option>`).join('');
-    document.getElementById('sumFilterHelper').innerHTML = `<option value="ALL">All Helpers</option>` + Array.from(helpers).sort().map(h => `<option value="${h}">${h}</option>`).join('');
-    document.getElementById('sumFilterRoute').innerHTML = `<option value="ALL">All Routes</option>` + Array.from(routeSet).sort().map(rt => `<option value="${rt}">${rt}</option>`).join('');
-    document.getElementById('sumFilterLorry').innerHTML = `<option value="ALL">All Lorries</option>` + Array.from(lorrySet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
-    
-    applyDeliverySummaryFilters();
-}
-
-function resetDeliverySummaryFilters() {
-    document.getElementById('sumFilterStartDate').value = '""';
-    document.getElementById('sumFilterEndDate').value = '""';
-    document.getElementById('sumFilterDriver').value = 'ALL';
-    document.getElementById('sumFilterHelper').value = 'ALL';
-    document.getElementById('sumFilterRoute').value = 'ALL';
-    document.getElementById('sumFilterLorry').value = 'ALL';
-    applyDeliverySummaryFilters();
-}
-
-function applyDeliverySummaryFilters() {
-    const startDate = document.getElementById('sumFilterStartDate').value;
-    const endDate = document.getElementById('sumFilterEndDate').value;
-    const selDriver = document.getElementById('sumFilterDriver').value;
-    const selHelper = document.getElementById('sumFilterHelper').value;
-    const selRoute = document.getElementById('sumFilterRoute').value;
-    const selLorry = document.getElementById('sumFilterLorry').value;
-    
-    let allRecords = [];
-    Object.keys(cachedDeliveryPlans).forEach(planNo => {
-        const items = cachedDeliveryPlans[planNo] || [];
-        
-        // Find matching schedule date for this plan if available
-        let scheduleDate = '';
-        if (typeof lastScheduleData !== 'undefined') {
-            const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
-            if (schedMatch) {
-                scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
-            }
-        }
-        
-        items.forEach(item => {
-            const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
-            allRecords.push({ ...item, planNo, resolvedDate: recordDate });
-        });
-    });
-    
-    const filtered = allRecords.filter(item => {
-        const itemDate = extractDateInputVal(item.resolvedDate);
-        
-        // If start/end dates are provided, filter by them; otherwise, allow all dates
-        const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
-        const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
-        
-        const itemDriver = String(item.Driver || item.driver || '').trim();
-        const itemHelper = String(item.Helper || item.helper || '').trim();
-        const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
-        const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
-        
-        const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
-        const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
-        const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
-        const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
-        
-        return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
-    });
-    
-    renderDeliverySummaryCards(filtered);
-}
-
-    
     function getMondayAndSunday(d) {
         var date = new Date(d);
         var day = date.getDay();
@@ -2904,6 +2799,164 @@ function fetchDeliveryScheduleReport(weekNo) {
         link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
+
+
+// Populate filter dropdowns from data safely
+function initDeliverySummaryFilters() {
+    const drivers = new Set();
+    const helpers = new Set();
+    const routeSet = new Set();
+    const lorrySet = new Set();
+    
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        items.forEach(item => {
+            const driver = item.Driver || item.driver || '';
+            const helper = item.Helper || item.helper || '';
+            const route = item['Route Name'] || item.Route || item.route || '';
+            const lorry = item.Lorry || item.lorry || item['Vehicle No'] || '';
+            
+            if (driver.trim()) drivers.add(driver.trim());
+            if (helper.trim()) helpers.add(helper.trim());
+            if (route.trim()) routeSet.add(route.trim());
+            if (lorry.trim()) lorrySet.add(lorry.trim());
+        });
+    });
+    
+    document.getElementById('sumFilterDriver').innerHTML = `<option value="ALL">All Drivers</option>` + Array.from(drivers).sort().map(d => `<option value="${d}">${d}</option>`).join('');
+    document.getElementById('sumFilterHelper').innerHTML = `<option value="ALL">All Helpers</option>` + Array.from(helpers).sort().map(h => `<option value="${h}">${h}</option>`).join('');
+    document.getElementById('sumFilterRoute').innerHTML = `<option value="ALL">All Routes</option>` + Array.from(routeSet).sort().map(rt => `<option value="${rt}">${rt}</option>`).join('');
+    document.getElementById('sumFilterLorry').innerHTML = `<option value="ALL">All Lorries</option>` + Array.from(lorrySet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
+    
+    applyDeliverySummaryFilters();
+}
+
+function resetDeliverySummaryFilters() {
+    document.getElementById('sumFilterStartDate').value = '""';
+    document.getElementById('sumFilterEndDate').value = '""';
+    document.getElementById('sumFilterDriver').value = 'ALL';
+    document.getElementById('sumFilterHelper').value = 'ALL';
+    document.getElementById('sumFilterRoute').value = 'ALL';
+    document.getElementById('sumFilterLorry').value = 'ALL';
+    applyDeliverySummaryFilters();
+}
+
+function applyDeliverySummaryFilters() {
+    const startDate = document.getElementById('sumFilterStartDate').value;
+    const endDate = document.getElementById('sumFilterEndDate').value;
+    const selDriver = document.getElementById('sumFilterDriver').value;
+    const selHelper = document.getElementById('sumFilterHelper').value;
+    const selRoute = document.getElementById('sumFilterRoute').value;
+    const selLorry = document.getElementById('sumFilterLorry').value;
+    
+    let allRecords = [];
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        
+        // Find matching schedule date for this plan if available
+        let scheduleDate = '';
+        if (typeof lastScheduleData !== 'undefined') {
+            const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
+            if (schedMatch) {
+                scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
+            }
+        }
+        
+        items.forEach(item => {
+            const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
+            allRecords.push({ ...item, planNo, resolvedDate: recordDate });
+        });
+    });
+    
+    const filtered = allRecords.filter(item => {
+        const itemDate = extractDateInputVal(item.resolvedDate);
+        
+        // If start/end dates are provided, filter by them; otherwise, allow all dates
+        const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
+        const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
+        
+        const itemDriver = String(item.Driver || item.driver || '').trim();
+        const itemHelper = String(item.Helper || item.helper || '').trim();
+        const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
+        const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
+        
+        const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
+        const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
+        const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
+        const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
+        
+        return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
+    });
+    
+    renderDeliverySummaryCards(filtered);
+}
+
+
+function renderDeliverySummaryCards(data) {
+    const grid = document.getElementById('deliverySummaryGrid');
+    const empty = document.getElementById('deliverySummaryEmpty');
+    
+    let totalInv = data.length;
+    let completedInv = 0;
+    let returnsInv = 0;
+    let totalVal = 0;
+    
+    if (totalInv === 0) {
+        grid.innerHTML = '';
+       // empty.classList.remove('hidden');
+        document.getElementById('statTotalInv').textContent = 0;
+        document.getElementById('statCompletedInv').textContent = 0;
+        document.getElementById('statReturnsInv').textContent = 0;
+        document.getElementById('statTotalValue').textContent = 'Rs. 0.00';
+        return;
+    }
+    
+    empty.classList.add('hidden');
+    
+    grid.innerHTML = data.map(item => {
+        const isDelivered = String(item['Delivered'] || '').trim().toLowerCase() === 'yes';
+        const hasReturn = String(item['Market Retun'] || '').trim() && item['Market Retun'] !== 'No Return';
+        
+        if (isDelivered) completedInv++;
+        if (hasReturn) returnsInv++;
+        
+        let invVal = parseFloat(String(item['Invoice Value'] || '0').replace(/[^0-9.-]+/g, ""));
+        if (!isNaN(invVal)) totalVal += invVal;
+        
+       /* return `
+       <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm space-y-2">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
+                        Route: ${item['Route Name'] || 'N/A'} (Plan: ${item.planNo || '-'})
+                    </span>
+                    <h4 class="font-black text-sm text-slate-900 dark:text-white mt-1">Inv: ${item['Invoice No'] || 'N/A'} - ${item['Customer Name'] || ''}</h4>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded-xl ${isDelivered ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                    ${isDelivered ? 'Complete' : 'Pending'}
+                </span>
+            </div>
+            <div class="bg-white/70 dark:bg-slate-950/80 p-2.5 rounded-xl border border-slate-200/60 text-xs space-y-1">
+                <p><strong>Driver:</strong> ${item.Driver || 'Unassigned'} | <strong>Helper:</strong> ${item.Helper || 'Unassigned'}</p>
+                <p><strong>Lorry:</strong> <span class="font-mono font-bold">${item.Lorry || 'N/A'}</span></p>
+                <p><strong>Value:</strong> <span class="font-mono font-semibold text-emerald-600">${item['Invoice Value'] || '0'}</span></p>
+                ${hasReturn ? `<p class="text-rose-500 font-bold">Return: ${item['Market Retun']}</p>` : ''}
+            </div>
+        </div>`;*/
+    }).join('');
+    
+    document.getElementById('statTotalInv').textContent = totalInv;
+    document.getElementById('statCompletedInv').textContent = completedInv;
+    document.getElementById('statReturnsInv').textContent = returnsInv;
+    document.getElementById('statTotalValue').textContent = 'Rs. ' + totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function refreshDeliverySummary() {
+    fetchAllData(true).then(() => {
+        updateDeliverySummaryCard();
+    });
+}
+
 
     // ================= ACTION REPORT LOGIC =================
     function applyActionFilters() {
