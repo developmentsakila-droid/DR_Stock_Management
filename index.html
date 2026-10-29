@@ -2559,9 +2559,9 @@ function fetchDeliveryScheduleReport(weekNo) {
                     document.getElementById('downloadScheduleCsvBtn').disabled = false;
                     
                     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-                    const isAuthorized = [""].includes(userLevel);
+                    //const isAuthorized = [""].includes(userLevel);
                    
-                   //const isAuthorized = ["executive", "manager"].includes(userLevel); //if i want to lock access
+                   const isAuthorized = ["executive", "manager"].includes(userLevel); //if i want to lock access
 
 
                     const vehicleOptions = `<option value="">-- Select Lorry --</option>` + vehicles.map(v => {
