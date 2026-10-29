@@ -2643,73 +2643,55 @@ function fetchDeliveryScheduleReport(weekNo) {
         lastScheduleData[index][field] = value;
     }
 
-    async function saveAllScheduleChanges() {
-        const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-        if (!["executive", "manager"].includes(userLevel)) {
-            alert("Permission denied. Only Executive and Manager levels are authorized to edit schedule details.");
-            return;
-        }
-
-        // Gather all rows from DOM or lastScheduleData
-        const rows = document.querySelectorAll('.schedule-row');
-        rows.forEach(row => {
-            const idx = row.getAttribute('data-index');
-            const inputs = row.querySelectorAll('.schedule-input');
-            inputs.forEach(input => {
-                const field = input.getAttribute('data-field');
-                if (field && lastScheduleData[idx]) {
-                    lastScheduleData[idx][field] = input.value;
-                }
-            });
-        });
-
-        showLoading(true, "Saving Schedule...");
-        try {
-            const body = new URLSearchParams();
-            body.append("payload", JSON.stringify({
-                action: "saveDeliveryScheduleBatch",
-                schedule: lastScheduleData
-            }));
-
-            const res = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: body
-            });
-            const result = await res.json();
-            if (result && result.status === "success") {
-                alert("Delivery schedule updated and saved successfully!");
-            } else {
-                // Fallback: send individual updates if batch isn't supported
-                for (let i = 0; i < lastScheduleData.length; i++) {
-                    const r = lastScheduleData[i];
-                    const recordId = r['id'] || r['No'] || (i + 1);
-                    for (const field of ['Lorry', 'Start Time', 'End Date', 'End Time', 'GSM KM']) {
-                        if (r[field] !== undefined) {
-                            await fetch(API_URL, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                                body: new URLSearchParams({
-                                    payload: JSON.stringify({
-                                        action: "updateDeliveryPlanStatus",
-                                        data: { id: recordId, rowIndex: i + 1, field: field, value: r[field] }
-                                    })
-                                })
-                            });
-                        }
-                    }
-                }
-                alert("Delivery schedule saved successfully!");
-            }
-            fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value);
-        } catch (err) {
-            console.error("Failed to save schedule:", err);
-            alert("Error saving schedule. Please check connection.");
-        } finally {
-            showLoading(false);
-        }
+   async function saveAllScheduleChanges() {
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    if (!["executive", "manager", "admin"].includes(userLevel)) {
+        alert("Permission denied. Only Executive, Manager, and Admin levels are authorized to edit schedule details.");
+        return;
     }
 
+    // Gather all rows from DOM into lastScheduleData
+    const rows = document.querySelectorAll('.schedule-row');
+    rows.forEach(row => {
+        const idx = row.getAttribute('data-index');
+        const inputs = row.querySelectorAll('.schedule-input');
+        inputs.forEach(input => {
+            const field = input.getAttribute('data-field');
+            if (field && lastScheduleData[idx]) {
+                lastScheduleData[idx][field] = input.value;
+            }
+        });
+    });
+
+    showLoading(true, "Saving Schedule...");
+    try {
+        const body = new URLSearchParams();
+        body.append("payload", JSON.stringify({
+            action: "saveDeliveryScheduleBatch",
+            schedule: lastScheduleData
+        }));
+
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body
+        });
+        
+        const result = await res.json();
+        
+        if (result && result.status === "success") {
+            //alert("Delivery schedule saved successfully!");
+            fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value);
+        } else {
+            throw new Error(result.message || "Unknown server error");
+        }
+    } catch (err) {
+        console.error("Failed to save schedule:", err);
+        alert("Error saving schedule: " + err.message);
+    } finally {
+        showLoading(false);
+    }
+}
 
    
     function downloadScheduleCSV() {
