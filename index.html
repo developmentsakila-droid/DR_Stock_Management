@@ -2603,42 +2603,34 @@ function fetchDeliveryScheduleReport(weekNo) {
                                     const endTimeVal = extractTimeInputVal(r['End Time']);
 
                                     return `
-                                    <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row" data-index="${idx}">
-                                        <td class="p-2.5 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
-                                        <td class="p-2.5 font-bold ${statusClass}">${r.No || '-'}</td> 
-                                        <td class="p-2.5 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
-                                        <td class="p-2.5 ${statusClass}">${r.Driver || '-'}</td>
-                                        <td class="p-2.5 ${statusClass}">${r.Helper || '-'}</td>
-                                        <td class="p-2.5 font-mono ${statusClass}">${formatCustomTime(r.Time)}</td>
-                                        <td class="p-2.5">
-                                            ${isAuthorized ? `
-                                                <select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">
-                                                    ${rowVehicleOptions}
-                                                </select>
-                                            ` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
-                                        </td>
-                                        <td class="p-2.5 font-mono">
-                                            ${isAuthorized ? `
-                                                <input type="time" data-field="Start Time" value="${startTimeVal}" onchange="updateScheduleField(${idx}, 'Start Time', this.value)" class="schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
-                                            ` : `<span>${formatCustomTime(r['Start Time'])}</span>`}
-                                        </td>
-                                        <td class="p-2.5 font-mono">
-                                            ${isAuthorized ? `
-                                                <input type="date" data-field="End Date" value="${endDateVal}" onchange="updateScheduleField(${idx}, 'End Date', this.value)" class="schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs">
-                                            ` : `<span>${formatCustomDateTime(r['End Date'])}</span>`}
-                                        </td>
-                                        <td class="p-2.5 font-mono">
-                                            ${isAuthorized ? `
-                                                <input type="time" data-field="End Time" value="${endTimeVal}" onchange="updateScheduleField(${idx}, 'End Time', this.value)" class="schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
-                                            ` : `<span>${formatCustomTime(r['End Time'])}</span>`}
-                                        </td>
-                                        <td class="p-2.5 font-bold">
-                                            ${isAuthorized ? `
-                                                <input type="text" data-field="GSM KM" value="${r['GSM KM'] || ''}" onchange="updateScheduleField(${idx}, 'GSM KM', this.value)" class="schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20">
-                                            ` : `<span>${r['GSM KM'] || '-'}</span>`}
-                                        </td>
-                                    </tr>`;
-                                }).join('')}
+                                     <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row" data-index="${idx}">
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${r.No || '-'}</td>
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
+                                    <td class="py-1.5 px-2 ${statusClass}">
+                                        ${isAuthorized ? `
+                                        <input type="text" data-field="Driver" value="${r.Driver || ''}" onchange="updateScheduleField(${idx}, 'Driver', this.value)" class="sm:w-auto schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
+                                        ` : `<span>${r.Driver || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 ${statusClass}">
+                                        ${isAuthorized ? `
+                                        <input type="text" data-field="Helper" value="${r.Helper || ''}" onchange="updateScheduleField(${idx}, 'Helper', this.value)" class="sm:w-auto schedule-input px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">
+                                        ` : `<span>${r.Helper || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono ${statusClass}">${formatCustomTime(r.Time)}</td>
+                                    <td class="py-1.5 px-2">
+                                        ${isAuthorized ? `
+                                        <select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">
+                                            ${rowVehicleOptions}
+                                        </select>
+                                        ` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono"><span>${formatCustomTime(r['Start Time'])}</span></td>
+                                    <td class="py-1.5 px-2 font-mono"><span>${formatCustomDateTime(r['End Date'])}</span></td>
+                                    <td class="py-1.5 px-2 font-mono"><span>${formatCustomTime(r['End Time'])}</span></td>
+                                    <td class="py-1.5 px-2 font-bold"><span>${r['GSM KM'] || '-'}</span></td>
+                                </tr>`;
+                           }).join('')}
                             </tbody>
                         </table>`;
                 }
