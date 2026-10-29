@@ -556,6 +556,81 @@
     </section>
 </div>
 
+
+<!-- ================= TAB 6: DELIVERY SUMMARY & PERFORMANCE ================= -->
+<div id="sectionDeliverySummary" class="space-y-3 hidden">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+            <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-teal-500"></i> Delivery Analytics
+            </h4>
+            <button onclick="resetDeliverySummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-right text-teal-500"></i> Reset Filters
+            </button>
+            </section>
+   <section         <!-- Filter Controls Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Start Date</label>
+        <input type="date" id="sumFilterStartDate" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+    </div>
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">End Date</label>
+        <input type="date" id="sumFilterEndDate" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+    </div>
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Driver</label>
+        <select id="sumFilterDriver" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            <option value="ALL">All Drivers</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Helper</label>
+        <select id="sumFilterHelper" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            <option value="ALL">All Helpers</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Route</label>
+        <select id="sumFilterRoute" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            <option value="ALL">All Routes</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Lorry / Vehicle</label>
+        <select id="sumFilterLorry" onchange="applyDeliverySummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            <option value="ALL">All Lorries</option>
+        </select>
+    </div>
+</div>
+            
+             <!-- Aggregated Summary Cards Bar -->
+ <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm space-y-1">
+         <span class="text-[10px] font-extrabold text-slate-400 uppercase">Filtered Invoices</span>
+         <h3 class="text-2xl font-black text-slate-900 dark:text-white" id="statTotalInv">0</h3>
+     </div>
+     <div class="glass-card dark:bg-slate-900 border border-emerald-500/30 p-4 rounded-2xl shadow-sm space-y-1 bg-emerald-50/30">
+         <span class="text-[10px] font-extrabold text-emerald-600 uppercase">Completed Deliveries</span>
+         <h3 class="text-2xl font-black text-emerald-700 dark:text-emerald-400" id="statCompletedInv">0</h3>
+     </div>
+     <div class="glass-card dark:bg-slate-900 border border-amber-500/30 p-4 rounded-2xl shadow-sm space-y-1 bg-amber-50/30">
+         <span class="text-[10px] font-extrabold text-amber-600 uppercase">Returns / Issues</span>
+         <h3 class="text-2xl font-black text-amber-700 dark:text-amber-400" id="statReturnsInv">0</h3>
+     </div>
+     <div class="glass-card dark:bg-slate-900 border border-blue-500/30 p-4 rounded-2xl shadow-sm space-y-1 bg-blue-50/30">
+         <span class="text-[10px] font-extrabold text-blue-600 uppercase">Total Value</span>
+         <h3 class="text-xl font-black text-blue-700 dark:text-blue-400 font-mono" id="statTotalValue">Rs. 0.00</h3>
+     </div>
+ </div>
+        </div>
+        
+       
+    </section>
+    
+
+</div>
+    
 </main>
 
 <!-- ================= MODALS ================= -->
@@ -586,6 +661,14 @@
         </div>
     </div>
 </div>
+
+        
+    <!-- Cards Grid (Vehicle Management Style) -->
+    <div id="deliverySummaryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+    <div id="deliverySummaryEmpty" class="hidden p-8 text-center border border-dashed border-slate-400 dark:border-slate-600 rounded-3xl bg-slate-50/50 dark:bg-slate-950/50">
+        <i class="fa-solid fa-chart-pie text-3xl text-slate-400 mb-2"></i>
+        <p class="text-xs font-bold text-slate-600 dark:text-slate-400">No delivery summary records match your filter criteria.</p>
+    </div>
 
 <!-- Modal: Add / Edit Location -->
 <div id="locationModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
@@ -2476,6 +2559,97 @@ let csv = headerss.join(",") + "\r\n" + lastReportData.map(row => headerss.map(h
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
+// Populate filter dropdowns from data safely
+function initDeliverySummaryFilters() {
+    const drivers = new Set();
+    const helpers = new Set();
+    const routeSet = new Set();
+    const lorrySet = new Set();
+    
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        items.forEach(item => {
+            const driver = item.Driver || item.driver || '';
+            const helper = item.Helper || item.helper || '';
+            const route = item['Route Name'] || item.Route || item.route || '';
+            const lorry = item.Lorry || item.lorry || item['Vehicle No'] || '';
+            
+            if (driver.trim()) drivers.add(driver.trim());
+            if (helper.trim()) helpers.add(helper.trim());
+            if (route.trim()) routeSet.add(route.trim());
+            if (lorry.trim()) lorrySet.add(lorry.trim());
+        });
+    });
+    
+    document.getElementById('sumFilterDriver').innerHTML = `<option value="ALL">All Drivers</option>` + Array.from(drivers).sort().map(d => `<option value="${d}">${d}</option>`).join('');
+    document.getElementById('sumFilterHelper').innerHTML = `<option value="ALL">All Helpers</option>` + Array.from(helpers).sort().map(h => `<option value="${h}">${h}</option>`).join('');
+    document.getElementById('sumFilterRoute').innerHTML = `<option value="ALL">All Routes</option>` + Array.from(routeSet).sort().map(rt => `<option value="${rt}">${rt}</option>`).join('');
+    document.getElementById('sumFilterLorry').innerHTML = `<option value="ALL">All Lorries</option>` + Array.from(lorrySet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
+    
+    applyDeliverySummaryFilters();
+}
+
+function resetDeliverySummaryFilters() {
+    document.getElementById('sumFilterStartDate').value = '""';
+    document.getElementById('sumFilterEndDate').value = '""';
+    document.getElementById('sumFilterDriver').value = 'ALL';
+    document.getElementById('sumFilterHelper').value = 'ALL';
+    document.getElementById('sumFilterRoute').value = 'ALL';
+    document.getElementById('sumFilterLorry').value = 'ALL';
+    applyDeliverySummaryFilters();
+}
+
+function applyDeliverySummaryFilters() {
+    const startDate = document.getElementById('sumFilterStartDate').value;
+    const endDate = document.getElementById('sumFilterEndDate').value;
+    const selDriver = document.getElementById('sumFilterDriver').value;
+    const selHelper = document.getElementById('sumFilterHelper').value;
+    const selRoute = document.getElementById('sumFilterRoute').value;
+    const selLorry = document.getElementById('sumFilterLorry').value;
+    
+    let allRecords = [];
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        
+        // Find matching schedule date for this plan if available
+        let scheduleDate = '';
+        if (typeof lastScheduleData !== 'undefined') {
+            const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
+            if (schedMatch) {
+                scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
+            }
+        }
+        
+        items.forEach(item => {
+            const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
+            allRecords.push({ ...item, planNo, resolvedDate: recordDate });
+        });
+    });
+    
+    const filtered = allRecords.filter(item => {
+        const itemDate = extractDateInputVal(item.resolvedDate);
+        
+        // If start/end dates are provided, filter by them; otherwise, allow all dates
+        const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
+        const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
+        
+        const itemDriver = String(item.Driver || item.driver || '').trim();
+        const itemHelper = String(item.Helper || item.helper || '').trim();
+        const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
+        const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
+        
+        const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
+        const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
+        const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
+        const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
+        
+        return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
+    });
+    
+    renderDeliverySummaryCards(filtered);
+}
+
+    
     function getMondayAndSunday(d) {
         var date = new Date(d);
         var day = date.getDay();
