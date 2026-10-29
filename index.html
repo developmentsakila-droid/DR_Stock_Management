@@ -2564,7 +2564,7 @@ function fetchDeliveryScheduleReport(weekNo) {
                    const isAuthorized = ["executive", "manager"].includes(userLevel); //if i want to lock access
 
 
-                    const vehicleOptions = `<option value="">-- Select Lorry --</option>` + vehicles.map(v => {
+                    const vehicleOptions = `<option value="">-- --</option>` + vehicles.map(v => {
                         const vNo = v['Vehicle No'] || v.vehicleNo || '';
                         return `<option value="${vNo}">${vNo}</option>`;
                     }).join('');
