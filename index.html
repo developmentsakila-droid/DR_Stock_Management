@@ -1819,18 +1819,37 @@ function handleApprovalStateUI(status) {
             "Emission Test": document.getElementById('formEmissionTest').value,
             "Service Date": document.getElementById('formServiceDate').value
         };
-        showLoading(true);
+
+        showLoading(true, "Saving...");
+        
         try {
+            // 1. Send to API
             await postToApi("saveVehicle", vehicleObj);
+            
+            // 2. Close modal and hide loading instantly
             closeVehicleModal();
-            await fetchAllData(true);
+            showLoading(false);
+
+            // 3. Update local memory array immediately without waiting for a full data re-fetch
+            const existingIndex = vehicles.findIndex(v => String(v.id) === String(id));
+            if (existingIndex !== -1) {
+                vehicles[existingIndex] = vehicleObj;
+            } else {
+                vehicles.push(vehicleObj);
+            }
+            
+            // 4. Re-render UI instantly
+            renderVehicleGrid();
+
+            // 5. Trigger a silent background fetch to keep sync without blocking user
+            fetchAllData(true).catch(err => console.warn("Background sync error:", err));
+
         } catch (err) { 
             showLoading(false); 
         } finally {
             setButtonLoading(saveBtn, false, "Save Vehicle");
         }
     }
-
     async function deleteVehicle(id) {
         if (confirm("Delete this vehicle record?")) {
             showLoading(true);
@@ -2643,34 +2662,38 @@ function fetchDeliveryScheduleReport(weekNo) {
         lastScheduleData[index][field] = value;
     }
 
-   async function saveAllScheduleChanges() {
+ async function saveAllScheduleChanges() {
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const saveBtn = document.getElementById('scsave'); // Ensure your save button has this ID
+    
     if (!["executive", "manager", "admin"].includes(userLevel)) {
         alert("Permission denied. Only Executive, Manager, and Admin levels are authorized to edit schedule details.");
         return;
     }
-
-    // Gather all rows from DOM into lastScheduleData
-    const rows = document.querySelectorAll('.schedule-row');
-    rows.forEach(row => {
-        const idx = row.getAttribute('data-index');
-        const inputs = row.querySelectorAll('.schedule-input');
-        inputs.forEach(input => {
-            const field = input.getAttribute('data-field');
-            if (field && lastScheduleData[idx]) {
-                lastScheduleData[idx][field] = input.value;
-            }
-        });
-    });
-
-    showLoading(true, "Saving Schedule...");
+    
+    setButtonLoading(scsave, true, "Save Schedule Changes");
+    //showLoading(true, "Saving Schedule...");
+    
     try {
+        // Gather all rows from DOM into lastScheduleData
+        const rows = document.querySelectorAll('.schedule-row');
+        rows.forEach(row => {
+            const idx = row.getAttribute('data-index');
+            const inputs = row.querySelectorAll('.schedule-input');
+            inputs.forEach(input => {
+                const field = input.getAttribute('data-field');
+                if (field && lastScheduleData[idx]) {
+                    lastScheduleData[idx][field] = input.value;
+                }
+            });
+        });
+        
         const body = new URLSearchParams();
         body.append("payload", JSON.stringify({
             action: "saveDeliveryScheduleBatch",
             schedule: lastScheduleData
         }));
-
+        
         const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -2680,7 +2703,7 @@ function fetchDeliveryScheduleReport(weekNo) {
         const result = await res.json();
         
         if (result && result.status === "success") {
-            //alert("Delivery schedule saved successfully!");
+           // alert("Delivery schedule saved successfully!");
             fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value);
         } else {
             throw new Error(result.message || "Unknown server error");
@@ -2689,10 +2712,11 @@ function fetchDeliveryScheduleReport(weekNo) {
         console.error("Failed to save schedule:", err);
         alert("Error saving schedule: " + err.message);
     } finally {
-        showLoading(false);
+       // showLoading(false);
+        setButtonLoading(scsave, false, "Save Schedule Changes");
     }
 }
-
+   
    
     function downloadScheduleCSV() {
         if (!lastScheduleData || lastScheduleData.length === 0) return;
