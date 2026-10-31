@@ -237,6 +237,17 @@
     
      <div id="sectionsum" class="dashboard-card glass-card dark:bg-slate-500 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 cursor-pointer shadow-lg flex flex-col justify-between space-y-2">
          <h4 class="font-extrabold text-base text-slate-900 dark:text-black">Summary & Filters</h4>
+         
+         <div id="card-delivery-schedule-summary" onclick="switchTab('deliveryScheduleSummary')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+    <div class="w-22 h-12 rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl font-bold border border-teal-500/20">
+        <i class="fa-solid fa-calendar-check"></i>
+    </div>
+    <div class="space-y-1">
+        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Delivery Schedule Summary</h4>
+        
+    </div>
+</div>
+
         <div id="card-delivery-summary" onclick="switchTab('deliverySummary')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl font-bold border border-teal-500/20">
                 <i class="fa-solid fa-chart-line"></i>
@@ -254,7 +265,10 @@
              <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Attendance</h4>
              <p class="text-xs text-slate-500 dark:text-slate-400"></p>
          </div>
-     </div> </div>
+     </div> 
+     
+     
+     </div>
 </div>
 
 <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
@@ -503,12 +517,14 @@
                 <p class="text-xs text-slate-500 font-medium">Filter attendance by Employee Name and Date range with automated OT calculation.</p>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
-                </button>
+                
                 <button onclick="resetAttendanceFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                     Reset Filters
                 </button>
+                
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+</button>
             </div>
         </div>
         
@@ -636,6 +652,94 @@
         </div>
     </section>
 </div>
+
+
+<!-- ================= TAB: DELIVERY SCHEDULE SUMMARY ================= -->
+<div id="sectionDeliveryScheduleSummary" class="space-y-4 hidden">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-2 shadow-x4 space-y-2">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-check text-teal-500"></i> Delivery Schedule Summary & Filter
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Filter dispatches by Date, Route, Driver, Helper, and Lorry.</p> 
+            </div>
+            <div class="flex items-center gap-2">
+                <!-- ADDED RELOAD BUTTON HERE -->
+                        
+                <button onclick="loadScheduleSummaryData()" class="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-rotate-right"></i> Reload
+                </button>
+                
+                <button onclick="resetScheduleSummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+    Reset Filters
+</button>
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Dashboard
+                </button>
+                
+            </div>
+        </div>
+        
+        <!-- Filter Controls & Table ... -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Date</label>
+                <input type="date" id="schedSumFilterDate" onchange="applyScheduleSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Route</label>
+                <select id="schedSumFilterRoute" onchange="applyScheduleSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="ALL">All Routes</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Driver</label>
+                <select id="schedSumFilterDriver" onchange="applyScheduleSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="ALL">All Drivers</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Helper</label>
+                <select id="schedSumFilterHelper" onchange="applyScheduleSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="ALL">All Helpers</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Lorry</label>
+                <select id="schedSumFilterLorry" onchange="applyScheduleSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="ALL">All Lorries</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Results Table -->
+        <div class="overflow-x-auto pt-2">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+                        <th class="py-3 px-3">No</th>
+                        <th class="py-3 px-3">Date</th>
+                        <th class="py-3 px-3">Route Name</th>
+                        <th class="py-3 px-3">Driver</th>
+                        <th class="py-3 px-3">Helper</th>
+                        <th class="py-3 px-3">Lorry</th>
+                        <th class="py-3 px-3">Start Time</th>
+                        <th class="py-3 px-3">GSM KM</th>
+                        <th class="py-3 px-3">Special Note</th>
+                    </tr>
+                </thead>
+                <tbody id="schedSumTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                    <tr>
+                        <td colspan="9" class="text-center py-8 text-slate-400">Loading schedule summary...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+
 
 <!-- ================= TAB 6: DELIVERY SUMMARY & PERFORMANCE ================= -->
 <div id="sectionDeliverySummary" class="space-y-3 hidden">
@@ -1379,8 +1483,8 @@
                 }
             }
         }
-        
-        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance'];
+      
+        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary'];
         sections.forEach(s => {
             const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
             if (el) el.classList.toggle('hidden', s !== tab);
@@ -1395,7 +1499,9 @@
             applyDeliverySummaryFilters();
         } else if (tab === 'attendance') {
             loadAttendanceData();
-        }
+        }else if (tab === 'deliveryScheduleSummary') {
+    loadScheduleSummaryData();
+}
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -3171,6 +3277,108 @@ async function loadAttendanceData() {
         document.getElementById('attFilterEndDate').value = '';
         applyAttendanceFilters();
     }
+    
+    
+    // Add module permission to switchTab validation map
+// (Inside switchTab function moduleMap definition):
+// 'deliveryScheduleSummary': 'delivery schedule'
+
+let globalScheduleSummaryData = [];
+
+async function loadScheduleSummaryData() {
+    const tbody = document.getElementById('schedSumTableBody');
+    if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-blue-500 font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Reloading schedule summary...</td></tr>`;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+        const result = await response.json();
+        if (result.status === "success" && result.scheduleSummary) {
+            globalScheduleSummaryData = result.scheduleSummary;
+            populateScheduleSummaryDropdowns(globalScheduleSummaryData);
+            applyScheduleSummaryFilters();
+        }
+    } catch (e) {
+        console.warn("Failed to load schedule summary", e);
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-rose-500 font-bold">Failed to load schedule data. Please check connection.</td></tr>`;
+        }
+    }
+}
+function populateScheduleSummaryDropdowns(data) {
+    const routesSet = new Set();
+    const driversSet = new Set();
+    const helpersSet = new Set();
+    const lorriesSet = new Set();
+    
+    data.forEach(row => {
+        if (row['Route Name']) routesSet.add(row['Route Name'].trim());
+        if (row['Driver']) driversSet.add(row['Driver'].trim());
+        if (row['Helper']) helpersSet.add(row['Helper'].trim());
+        if (row['Lorry']) lorriesSet.add(row['Lorry'].trim());
+    });
+    
+    document.getElementById('schedSumFilterRoute').innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routesSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
+    document.getElementById('schedSumFilterDriver').innerHTML = '<option value="ALL">All Drivers</option>' + Array.from(driversSet).sort().map(d => `<option value="${d}">${d}</option>`).join('');
+    document.getElementById('schedSumFilterHelper').innerHTML = '<option value="ALL">All Helpers</option>' + Array.from(helpersSet).sort().map(h => `<option value="${h}">${h}</option>`).join('');
+    document.getElementById('schedSumFilterLorry').innerHTML = '<option value="ALL">All Lorries</option>' + Array.from(lorriesSet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
+}
+
+function applyScheduleSummaryFilters() {
+    const filterDate = document.getElementById('schedSumFilterDate').value;
+    const filterRoute = document.getElementById('schedSumFilterRoute').value;
+    const filterDriver = document.getElementById('schedSumFilterDriver').value;
+    const filterHelper = document.getElementById('schedSumFilterHelper').value;
+    const filterLorry = document.getElementById('schedSumFilterLorry').value;
+    
+    const filtered = globalScheduleSummaryData.filter(row => {
+        const rowDate = extractDateInputVal(row.Date || row['End Date']);
+        const rowRoute = String(row['Route Name'] || '').trim();
+        const rowDriver = String(row.Driver || '').trim();
+        const rowHelper = String(row.Helper || '').trim();
+        const rowLorry = String(row.Lorry || '').trim();
+        
+        if (filterDate && rowDate !== filterDate) return false;
+        if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
+        if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
+        if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
+        if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
+        
+        return true;
+    });
+    
+    const tbody = document.getElementById('schedSumTableBody');
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No dispatches match your filter criteria.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = filtered.map(r => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+            <td class="py-3 px-3 font-bold text-slate-900 dark:text-white">${r.No || '-'}</td>
+            <td class="py-3 px-3 text-slate-600 dark:text-slate-300">${formatCustomDateTime(r.Date)}</td>
+            <td class="py-3 px-3 font-bold text-emerald-600">${r['Route Name'] || '-'}</td>
+            <td class="py-3 px-3">${r.Driver || '-'}</td>
+            <td class="py-3 px-3">${r.Helper || '-'}</td>
+            <td class="py-3 px-3 font-mono font-bold">${r.Lorry || '-'}</td>
+            <td class="py-3 px-3 font-mono">${formatCustomTime(r['Start Time'] || r.Time)}</td>
+            <td class="py-3 px-3 font-mono">${r['GSM KM'] || '-'}</td>
+            <td class="py-3 px-3 text-slate-500">${r['Special Note'] || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+function resetScheduleSummaryFilters() {
+    document.getElementById('schedSumFilterDate').value = '';
+    document.getElementById('schedSumFilterRoute').value = 'ALL';
+    document.getElementById('schedSumFilterDriver').value = 'ALL';
+    document.getElementById('schedSumFilterHelper').value = 'ALL';
+    document.getElementById('schedSumFilterLorry').value = 'ALL';
+    applyScheduleSummaryFilters();
+}
+
+
 </script>
 
 </body>
