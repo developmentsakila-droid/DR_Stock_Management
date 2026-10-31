@@ -191,6 +191,16 @@
             </div>
         </div>
 
+              <div id="card-vehicle" onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20" id="cardVehicleIconContainer">
+                <i class="fa-solid fa-truck" id="cardVehicleIcon"></i>
+            </div>
+            <div class="space-y-1">
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400" id="cardVehicleDesc">Manage delivery trucks, drivers, and capacity logs.</p>
+            </div>
+        </div>
+
         <div id="card-stock" onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
                 <i class="fa-solid fa-barcode"></i>
@@ -201,16 +211,7 @@
             </div>
         </div>
 
-        <div id="card-vehicle" onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20" id="cardVehicleIconContainer">
-                <i class="fa-solid fa-truck" id="cardVehicleIcon"></i>
-            </div>
-            <div class="space-y-1">
-                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400" id="cardVehicleDesc">Manage delivery trucks, drivers, and capacity logs.</p>
-            </div>
-        </div>
-
+  
         <div id="card-action-report" onclick="switchTab('actionReport')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold border border-indigo-500/20">
                 <i class="fa-solid fa-clipboard-list"></i>
