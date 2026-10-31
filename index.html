@@ -191,16 +191,6 @@
             </div>
         </div>
 
-              <div id="card-vehicle" onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20" id="cardVehicleIconContainer">
-                <i class="fa-solid fa-truck" id="cardVehicleIcon"></i>
-            </div>
-            <div class="space-y-1">
-                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400" id="cardVehicleDesc">Manage delivery trucks, drivers, and capacity logs.</p>
-            </div>
-        </div>
-
         <div id="card-stock" onclick="switchTab('stock')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold border border-blue-500/20">
                 <i class="fa-solid fa-barcode"></i>
@@ -211,7 +201,16 @@
             </div>
         </div>
 
-  
+        <div id="card-vehicle" onclick="switchTab('vehicle')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/20" id="cardVehicleIconContainer">
+                <i class="fa-solid fa-truck" id="cardVehicleIcon"></i>
+            </div>
+            <div class="space-y-1">
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Management</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400" id="cardVehicleDesc">Manage delivery trucks, drivers, and capacity logs.</p>
+            </div>
+        </div>
+
         <div id="card-action-report" onclick="switchTab('actionReport')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold border border-indigo-500/20">
                 <i class="fa-solid fa-clipboard-list"></i>
@@ -608,6 +607,7 @@
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
                 <input type="date" id="scheduleDateInput" onchange="onScheduleDateChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
                 <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-16 text-center">
+                
                 <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                      <button id="scsave" onclick="saveAllScheduleChanges()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5">
                          <i class="fa-solid fa-floppy-disk"></i> Save Schedule Changes
@@ -622,7 +622,14 @@
 
         <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <button id="downloadScheduleCsvBtn" onclick="downloadScheduleCSV()" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-sm" disabled>Download Schedule CSV</button>
+            
+                     <!-- NEW JPG Download Button -->
+ <button id="downloadScheduleJpgBtn" onclick="downloadScheduleJPG()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 transition">
+     <i class="fa-solid fa-file-image"></i> Download Schedule JPG
+ </button>
+        
         </div>
+
     </section>
 </div>
 
@@ -715,8 +722,7 @@
         </div>
         
         <!-- Results Table -->
-        <div class="overflow-x-auto pt-2">
-            <table class="w-full text-left border-collapse text-xs">
+        <div id="schedTableCaptureContainer" table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
                         <th class="py-3 px-3">No</th>
@@ -2912,7 +2918,145 @@
         link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
+    
 
+async function downloadScheduleJPG() {
+    const jpgBtn = document.getElementById('downloadScheduleJpgBtn');
+    
+    // If data is empty, automatically fetch it first
+    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+        setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Downloading...');
+        try {
+            const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && result.scheduleSummary) {
+                globalScheduleSummaryData = result.scheduleSummary;
+                populateScheduleSummaryDropdowns(globalScheduleSummaryData);
+            }
+        } catch (e) {
+            console.error("Auto-fetch failed", e);
+        }
+        setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+    }
+    
+    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+        alert("No schedule data available to export from Google Sheets.");
+        return;
+    }
+    
+    // 1. Grab ALL active filters from the screen (including Week)
+    const filterWeek = document.getElementById('reportWeekNo') ? document.getElementById('reportWeekNo').value.trim() : '';
+    const filterDate = document.getElementById('schedSumFilterDate').value;
+    const filterRoute = document.getElementById('schedSumFilterRoute').value;
+    const filterDriver = document.getElementById('schedSumFilterDriver').value;
+    const filterHelper = document.getElementById('schedSumFilterHelper').value;
+    const filterLorry = document.getElementById('schedSumFilterLorry').value;
+    
+    // 2. Filter rows ensuring ONLY the selected week and criteria are exported
+    const rowsToExport = globalScheduleSummaryData.filter(row => {
+        const rowWeek = String(row['Week No'] || row.weekNo || '').trim();
+        const rawDate = row.Date || row['End Date'] || '';
+        const rowDate = String(rawDate).trim().substring(0, 10);
+        
+        const rowRoute = String(row['Route Name'] || '').trim();
+        const rowDriver = String(row.Driver || '').trim();
+        const rowHelper = String(row.Helper || '').trim();
+        const rowLorry = String(row.Lorry || '').trim();
+        
+        if (filterWeek && rowWeek !== filterWeek) return false;
+        if (filterDate && rowDate !== filterDate) return false;
+        if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
+        if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
+        if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
+        if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
+        
+        return true;
+    });
+    
+    if (rowsToExport.length === 0) {
+        alert(`No schedule rows match Week ${filterWeek || 'selected'} and your filter criteria.`);
+        return;
+    }
+    
+    setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+    
+    try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const rowHeight = 35;
+        const headerHeight = 45;
+        const padding = 40;
+        const width = 1000;
+        const height = headerHeight + (rowsToExport.length * rowHeight) + (padding * 2) + 40;
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const isDark = document.documentElement.classList.contains('dark');
+        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Title displaying the exact exported week
+        ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
+        ctx.font = 'bold 18px Inter, sans-serif';
+        ctx.fillText(`HARUMI HOLDINGS (PVT) LTD - DELIVERY SCHEDULE SUMMARY (WEEK ${filterWeek || 'ALL'})`, padding, 35);
+        
+        ctx.fillStyle = '#056396';
+        ctx.fillRect(padding, 60, width - (padding * 2), headerHeight);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px Inter, sans-serif';
+        const headers = ["No", "Date", "Route", "Driver", "Helper", "Lorry", "Start", "KM", "Special Note"];
+        const colX = [padding + 15, padding + 70, padding + 180, padding + 390, padding + 600, padding + 810];
+        
+        headers.forEach((h, idx) => {
+            ctx.fillText(h, colX[idx], 60 + 27);
+        });
+        
+        ctx.font = '12px Inter, sans-serif';
+        rowsToExport.forEach((r, idx) => {
+            const y = 60 + headerHeight + (idx * rowHeight);
+            
+            if (idx % 2 === 1) {
+                ctx.fillStyle = isDark ? '#1e293b' : '#f8fafc';
+                ctx.fillRect(padding, y, width - (padding * 2), rowHeight);
+            }
+            
+            ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
+            
+            const vals = [
+                r.No || '-',
+                String(formatCustomDateTime(r.Date)|| '').substring(0, 10),
+                r['Route Name'] || '-',
+                r.Driver || '-',
+                r.Helper || '-',
+                r.Lorry || '-',
+               // r['Start Time'] || r.Time || '-',
+              //  r['GSM KM'] || '-',
+               // r['Special Note'] || '-'
+            ];
+            
+            vals.forEach((val, vIdx) => {
+                ctx.fillText(val, colX[vIdx], y + 22);
+            });
+        });
+        
+        const imageURL = canvas.toDataURL('image/jpeg', 0.95);
+        const link = document.createElement('a');
+        link.href = imageURL;
+        link.download = `Delivery_Schedule_Week_${filterWeek || 'Summary'}_${new Date().toISOString().slice(0, 10)}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+    } catch (err) {
+        console.error("Fast JPG generation error:", err);
+        alert("Could not generate JPG: " + err.message);
+    } finally {
+        setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+    }
+}
     function initDeliverySummaryFilters() {
         const drivers = new Set();
         const helpers = new Set();
