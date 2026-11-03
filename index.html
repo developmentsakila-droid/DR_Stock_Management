@@ -3723,7 +3723,10 @@ function applyTotalPlanSummaryFilters() {
 
 function renderTotalPlanSummaryCards(plansObj) {
     const container = document.getElementById('totalPlanSummaryResultsContainer');
-    const planNos = Object.keys(plansObj);
+    // CHANGED: Sort plan numbers from Z to A (descending order)
+const planNos = Object.keys(plansObj).sort((a, b) => {
+    return String(b).localeCompare(String(a), undefined, { numeric: true, sensitivity: 'base' });
+});
     
     if (planNos.length === 0) {
         container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery plans match your search criteria.</p>`;
