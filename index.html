@@ -3667,7 +3667,7 @@ function applyScheduleSummaryFilters() {
     async function reloadTotalPlanSummary() {
         const container = document.getElementById('totalPlanSummaryResultsContainer');
         if (container) {
-            container.innerHTML = `<p class="text-center text-blue-500 font-bold text-xs py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Refreshing data from Google Sheets...</p>`;
+            container.innerHTML = `<p class="text-center text-blue-500 font-bold text-xs py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Refreshing....</p>`;
         }
         await fetchAllData(true);
         initTotalPlanSummaryData();
