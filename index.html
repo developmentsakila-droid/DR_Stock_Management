@@ -238,6 +238,19 @@
      <div id="sectionsum" class="dashboard-card glass-card dark:bg-slate-200 border border-slate-900/80 dark:border-slate-800 rounded-2xl p-1 cursor-pointer shadow-lg flex flex-col justify-between space-y-2 text-center">
          <h4 class="font-extrabold text-base text-slate-900 dark:text-black ">Summary & Filters</h4>
          
+         
+         <!-- NEW: Total Plan Summary Card -->
+<div id="card-total-plan-summary" onclick="switchTab('totalPlanSummary')" class="dashboard-card glass-card dark:bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+    <div class="w-18 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl font-bold border border-emerald-500/20">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+    </div>
+    <div class="space-y-1">
+        <h4 class="font-bold text-base text-slate-900 dark:text-white">Total Plan Summary</h4>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Search plan no, customer name, and route details.</p>
+    </div>
+</div>
+
+
          <div id="card-delivery-schedule-summary" onclick="switchTab('deliveryScheduleSummary')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-900 rounded-2xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
     <div class="w-18 h-12 rounded-2xl bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center text-xl font-bold border border-gray-500/20  ">
         <i class="fa-solid text-gray-300 fa-calendar-check"></i>
@@ -249,11 +262,11 @@
 </div>
 
         <div id="card-delivery-summary" onclick="switchTab('deliverySummary')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
-            <div class="w-18 h-12 rounded-2xl bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center text-xl font-bold border border-gray-500/20 ">
-                <i class="fa-solid text-gray-400 fa-chart-line"></i>
+            <div class="w-18 h-12 rounded-2xl bg-yellow-900 text-gray-600 dark:text-gray-400 flex items-center justify-center text-xl font-bold border border-gray-500/20 ">
+                <i class="fa-solid text-white fa-chart-line"></i>
             </div>
             <div class="space-y-1">
-                <h4 class="font-bold text-base text-slate-900 dark:text-white">Delivery Summary & Filters</h4>
+                <h4 class="font-bold text-base text-slate-900 dark:text-white">Live Delivery Summary</h4>
                 <p class="text-xs text-slate-500 dark:text-slate-400"></p>
             </div>
         </div>
@@ -506,6 +519,52 @@
     <div id="status" class="text-center font-bold text-sm"></div>
 </div>
 
+
+<!-- ================= TAB: TOTAL PLAN SUMMARY ================= -->
+<div id="sectionTotalPlanSummary" class="space-y-4 hidden">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-500"></i> Total Plan Summary Report
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Search by Plan No, Customer Name, or Route.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="resetTotalPlanSummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                    Reset Filters
+                </button>
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search & Filter Controls Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Search Plan No</label>
+                <input type="text" id="totalPlanFilterNo" oninput="applyTotalPlanSummaryFilters()" placeholder="e.g. 1024..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Search Customer Name</label>
+                <input type="text" id="totalPlanFilterCustomer" oninput="applyTotalPlanSummaryFilters()" placeholder="Customer name..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+            </div>
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Route</label>
+                <select id="totalPlanFilterRoute" onchange="applyTotalPlanSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="ALL">All Routes</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Plan Results Container (Headers + Table Cards) -->
+        <div id="totalPlanSummaryResultsContainer" class="space-y-4 pt-2">
+            <p class="text-center text-slate-400 text-xs py-8">Loading total plan summary...</p>
+        </div>
+    </section>
+</div>
+
 <!-- ================= SECTION: ATTENDANCE SUMMARY ================= -->
 <div id="sectionAttendance" class="space-y-4 hidden">
     <section class="glass-card dark:bg-slate-900/90 border border-slate-200/85 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
@@ -612,6 +671,9 @@
                      <button id="scsave" onclick="saveAllScheduleChanges()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5">
                          <i class="fa-solid fa-floppy-disk"></i> Save
                      </button>
+                     <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+</button>
                  </div>
             </div>
         </div>
@@ -1134,6 +1196,7 @@
     let loginActivityRecords = [];
     let deliveryPlanData = [];
     let cachedDeliveryPlans = {};
+    
     let availablePlanNos = [];
 
     let loggedInUser = null;
@@ -1485,7 +1548,8 @@
                 'actionReport': 'action report',
                 'deliveryPlan': 'delivery plan',
                 'deliverySummary': 'delivery summary',
-                'attendance': 'attendance sum'
+                'attendance': 'attendance sum',
+                'totalPlanSummary': 'delivery plan'
             };
             const requiredKeyword = moduleMap[tab];
             if (requiredKeyword) {
@@ -1497,7 +1561,7 @@
             }
         }
       
-        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary'];
+        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary'];
         sections.forEach(s => {
             const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
             if (el) el.classList.toggle('hidden', s !== tab);
@@ -1507,14 +1571,20 @@
         if (tab === 'schedule') {
             const weekNo = document.getElementById('reportWeekNo').value || "43";
             fetchDeliveryScheduleReport(weekNo);
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'schedule');
         } else if (tab === 'deliverySummary') {
             initDeliverySummaryFilters();
             applyDeliverySummaryFilters();
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
         } else if (tab === 'attendance') {
             loadAttendanceData();
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'attendance');
         }else if (tab === 'deliveryScheduleSummary') {
     loadScheduleSummaryData();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryScheduleSummary');
+}else if (tab === 'totalPlanSummary') {
+    initTotalPlanSummaryData();
+    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'totalPlanSummary');
 }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1578,6 +1648,7 @@
                 try {
                     const data = JSON.parse(cachedData);
                     loadDataIntoMemory(data);
+                    loadDataIntoMemorynew(data);
                 } catch (e) {
                     console.warn("Cache parse error", e);
                 }
@@ -1595,6 +1666,7 @@
             
             localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
             loadDataIntoMemory(data);
+            loadDataIntoMemorynew(data);
             
         } catch (error) {
             console.error("Error loading data from Google Sheets:", error);
@@ -1603,14 +1675,14 @@
         }
     }
 
-    function loadDataIntoMemory(data) {
+     function loadDataIntoMemory(data) {
         locations = data.locations || [];
         routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
         employees = data.employees || [];
         vehicles = data.vehicles || [];
-        loginRecords = data.loginData || [];
-        warehouseActions = data.warehouseActions || [];
-        loginActivityRecords = data.loginActivity || [];
+       loginRecords = data.loginData || [];
+       warehouseActions = data.warehouseActions || [];
+       loginActivityRecords = data.loginActivity || [];
         
         const planRouteMap = {};
         const completedPlans = new Set();
@@ -1659,13 +1731,65 @@
         renderActionReport(warehouseActions);
         renderRouteTabs();
         renderEmployeeDropdowns();
-        renderVehicleGrid();
-        applyFilters();
+       renderVehicleGrid();
+       applyFilters();
 
         if (loggedInUser) {
             applyAccessControl();
         }
+    } 
+    
+  
+function loadDataIntoMemorynew(data) {
+    locations = data.locations || [];
+    routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
+    employees = data.employees || [];
+    vehicles = data.vehicles || [];
+   // loginRecords = data.loginData || [];
+   // warehouseActions = data.warehouseActions || [];
+  //  loginActivityRecords = data.loginActivity || [];
+    
+    const planRouteMap = {};
+    const deliveryDataRecords = data.deliveryDataRecords || [];
+    
+    // UPDATED: Include ALL plans, but keep track of completed ones if needed or store their end dates
+    deliveryDataRecords.forEach(row => {
+        let pNo = String(row['No'] || '').trim();
+        let rName = String(row['Route Name'] || '').trim();
+        let endDate = String(row['End Date'] || '').trim();
+        
+        if (pNo) {
+            if (rName) planRouteMap[pNo] = rName;
+        }
+    });
+    
+    deliveryPlanData = data.deliveryPlan || [];
+    cachedDeliveryPlans = {};
+    
+    // UPDATED: Process ALL delivery plans without skipping those with non-empty end dates
+    deliveryPlanData.forEach(item => {
+        let pNo = String(item['Plan No'] || item['planNo'] || '').trim();
+        if (pNo) {
+            if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
+            cachedDeliveryPlans[pNo].push(item);
+            cachedDeliveryPlans[pNo].routeName = planRouteMap[pNo] || item['Route Name'] || 'Unassigned Route';
+        }
+    });
+    
+    availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
+    
+  
+    renderActionReport(warehouseActions);
+    renderRouteTabs();
+    renderEmployeeDropdowns();
+    renderVehicleGrid();
+    applyFilters();
+    applyTotalPlanSummaryFilters()
+    
+    if (loggedInUser) {
+        applyAccessControl();
     }
+}
 
     function openLoginActivityModal() {
         fetchLatestLoginActivity();
@@ -3536,6 +3660,140 @@ function applyScheduleSummaryFilters() {
     `).join('');
 }
 
+async function initTotalPlanSummaryData() {
+    // Auto-fetch schedule summary data if not already loaded so header data (Driver, Helper, Lorry, etc.) is available immediately
+    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+        try {
+            const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && result.scheduleSummary) {
+                globalScheduleSummaryData = result.scheduleSummary;
+            }
+        } catch (e) {
+            console.warn("Failed to auto-load schedule summary for Total Plan", e);
+        }
+    }
+    
+    const routeSet = new Set();
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        items.forEach(item => {
+            const rName = String(item['Route Name'] || items.routeName || '').trim();
+            if (rName) routeSet.add(rName);
+        });
+    });
+    
+    const routeSelect = document.getElementById('totalPlanFilterRoute');
+    if (routeSelect) {
+        routeSelect.innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routeSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
+    }
+    applyTotalPlanSummaryFilters();
+}
+
+function applyTotalPlanSummaryFilters() {
+    const planQuery = document.getElementById('totalPlanFilterNo').value.toLowerCase().trim();
+    const custQuery = document.getElementById('totalPlanFilterCustomer').value.toLowerCase().trim();
+    const selectedRoute = document.getElementById('totalPlanFilterRoute').value;
+    
+    let filteredPlans = {};
+    
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        const routeName = String(items.routeName || items[0]?.['Route Name'] || '').trim();
+        
+        if (selectedRoute !== 'ALL' && routeName !== selectedRoute) return;
+        if (planQuery && !String(planNo).toLowerCase().includes(planQuery)) return;
+        
+        const matchingItems = items.filter(item => {
+            const cName = String(item['Customer Name'] || '').toLowerCase();
+            return !custQuery || cName.includes(custQuery);
+        });
+        
+        if (matchingItems.length > 0) {
+            filteredPlans[planNo] = [...matchingItems];
+            filteredPlans[planNo].routeName = routeName;
+        }
+    });
+    
+    renderTotalPlanSummaryCards(filteredPlans);
+}
+
+function renderTotalPlanSummaryCards(plansObj) {
+    const container = document.getElementById('totalPlanSummaryResultsContainer');
+    const planNos = Object.keys(plansObj);
+    
+    if (planNos.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery plans match your search criteria.</p>`;
+        return;
+    }
+    
+    container.innerHTML = planNos.map(planNo => {
+        const items = plansObj[planNo];
+        const routeName = items.routeName || 'Unassigned Route';
+        
+        let scheduleMeta = {};
+        const dataSource = (globalScheduleSummaryData && globalScheduleSummaryData.length > 0) ? globalScheduleSummaryData : lastScheduleData;
+        
+        if (dataSource) {
+            const match = dataSource.find(s => String(s.No || s.planNo || '').trim() === String(planNo).trim());
+            if (match) scheduleMeta = match;
+        }
+        
+        const startTime = formatCustomTime(scheduleMeta['Start Time'] || scheduleMeta.Time || '-');
+        const endDate = formatCustomDateTime(scheduleMeta['End Date'] || scheduleMeta.Date || '-');
+        const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
+        const gsmKm = scheduleMeta['GSM KM'] || '-';
+        const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
+        const helper = scheduleMeta['Helper'] || scheduleMeta.helper || '-';
+        const lorry = scheduleMeta['Lorry'] || scheduleMeta.lorry || '-';
+        
+        return `
+        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-md space-y-0">
+            <!-- Header Info -->
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
+                <div><strong>Plan No : </strong> <span class="text-emerald-600 font-bold">${planNo}</span></div>
+                <div><strong>Route : </strong> <span class="font-bold text-emerald-500">${routeName}</span></div>
+                <div><strong>Driver : </strong> <span class="text-yellow-600 font-bold">${driver}</span></div>
+                <div><strong>Helper : </strong> <span class="text-yellow-600 font-bold">${helper}</span></div>
+                <div><strong>Lorry : </strong> <span class="font-bold text-white">${lorry}</span></div>
+                </div>
+                
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-4xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
+                <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
+                <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
+                <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
+                <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
+            </div>
+            
+            <!-- Table Content -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+                            <th class="py-2.5 px-3">Plan No</th>
+                            <th class="py-2.5 px-3">Customer Name</th>
+                            <th class="py-2.5 px-3">Address</th>
+                            <th class="py-2.5 px-3">Invoice No</th>
+                            <th class="py-2.5 px-3 text-right">Invoice Value</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                        ${items.map(item => `
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold">${planNo}</td>
+                            <td class="py-2.5 px-3 text-slate-900 dark:text-white">${item['Customer Name'] || '-'}</td>
+                            <td class="py-2.5 px-3 text-slate-500">${item['Address'] || '-'}</td>
+                            <td class="py-2.5 px-3 font-mono font-bold">${item['Invoice No'] || '-'}</td>
+                            <td class="py-2.5 px-3 text-right font-slate font-bold text-emerald-600">${item['Invoice Value'] || '0.00'}</td>
+                        </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
+    }).join('');
+}
+
 function resetScheduleSummaryFilters() {
     document.getElementById('schedSumFilterDate').value = '';
     document.getElementById('schedSumFilterRoute').value = 'ALL';
@@ -3544,6 +3802,7 @@ function resetScheduleSummaryFilters() {
     document.getElementById('schedSumFilterLorry').value = 'ALL';
     applyScheduleSummaryFilters();
 }
+
 
 
 </script>
