@@ -534,9 +534,10 @@
                 <p class="text-xs text-slate-500 font-medium">Search by Plan No, Customer Name, or Route.</p>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="resetTotalPlanSummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
-                    Reset Filters
+                 <button onclick="resetTotalPlanSummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-rotate-right"></i>Reset & Reload
                 </button>
+               
                 <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
                 </button>
@@ -3663,151 +3664,158 @@ function applyScheduleSummaryFilters() {
     `).join('');
 }
 
-async function initTotalPlanSummaryData() {
-    // Auto-fetch schedule summary data if not already loaded so header data (Driver, Helper, Lorry, etc.) is available immediately
-    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
-        try {
-            const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
-            const result = await response.json();
-            if (result.status === "success" && result.scheduleSummary) {
-                globalScheduleSummaryData = result.scheduleSummary;
+    async function reloadTotalPlanSummary() {
+        const container = document.getElementById('totalPlanSummaryResultsContainer');
+        if (container) {
+            container.innerHTML = `<p class="text-center text-blue-500 font-bold text-xs py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Refreshing data from Google Sheets...</p>`;
+        }
+        await fetchAllData(true);
+        initTotalPlanSummaryData();
+    }
+
+    async function initTotalPlanSummaryData() {
+        if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+            try {
+                const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+                const result = await response.json();
+                if (result.status === "success" && result.scheduleSummary) {
+                    globalScheduleSummaryData = result.scheduleSummary;
+                }
+            } catch (e) {
+                console.warn("Failed to auto-load schedule summary for Total Plan", e);
             }
-        } catch (e) {
-            console.warn("Failed to auto-load schedule summary for Total Plan", e);
         }
-    }
-    
-    const routeSet = new Set();
-    Object.keys(cachedDeliveryPlans).forEach(planNo => {
-        const items = cachedDeliveryPlans[planNo] || [];
-        items.forEach(item => {
-            const rName = String(item['Route Name'] || items.routeName || '').trim();
-            if (rName) routeSet.add(rName);
-        });
-    });
-    
-    const routeSelect = document.getElementById('totalPlanFilterRoute');
-    if (routeSelect) {
-        routeSelect.innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routeSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
-    }
-    applyTotalPlanSummaryFilters();
-}
-
-function applyTotalPlanSummaryFilters() {
-    const planQuery = document.getElementById('totalPlanFilterNo').value.toLowerCase().trim();
-    const custQuery = document.getElementById('totalPlanFilterCustomer').value.toLowerCase().trim();
-    const selectedRoute = document.getElementById('totalPlanFilterRoute').value;
-    
-    let filteredPlans = {};
-    
-    Object.keys(cachedDeliveryPlans).forEach(planNo => {
-        const items = cachedDeliveryPlans[planNo] || [];
-        const routeName = String(items.routeName || items[0]?.['Route Name'] || '').trim();
         
-        if (selectedRoute !== 'ALL' && routeName !== selectedRoute) return;
-        if (planQuery && !String(planNo).toLowerCase().includes(planQuery)) return;
-        
-        const matchingItems = items.filter(item => {
-            const cName = String(item['Customer Name'] || '').toLowerCase();
-            return !custQuery || cName.includes(custQuery);
+        const routeSet = new Set();
+        Object.keys(cachedDeliveryPlans).forEach(planNo => {
+            const items = cachedDeliveryPlans[planNo] || [];
+            items.forEach(item => {
+                const rName = String(item['Route Name'] || items.routeName || '').trim();
+                if (rName) routeSet.add(rName);
+            });
         });
         
-        if (matchingItems.length > 0) {
-            filteredPlans[planNo] = [...matchingItems];
-            filteredPlans[planNo].routeName = routeName;
+        const routeSelect = document.getElementById('totalPlanFilterRoute');
+        if (routeSelect) {
+            routeSelect.innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routeSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
         }
-    });
-    
-    renderTotalPlanSummaryCards(filteredPlans);
-}
-
-function renderTotalPlanSummaryCards(plansObj) {
-    const container = document.getElementById('totalPlanSummaryResultsContainer');
-    // CHANGED: Sort plan numbers from Z to A (descending order)
-const planNos = Object.keys(plansObj).sort((a, b) => {
-    return String(b).localeCompare(String(a), undefined, { numeric: true, sensitivity: 'base' });
-});
-    
-    if (planNos.length === 0) {
-        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery plans match your search criteria.</p>`;
-        return;
+        applyTotalPlanSummaryFilters();
     }
-    
-    container.innerHTML = planNos.map(planNo => {
-        const items = plansObj[planNo];
-        const routeName = items.routeName || 'Unassigned Route';
+
+    function applyTotalPlanSummaryFilters() {
+        const planQuery = document.getElementById('totalPlanFilterNo').value.toLowerCase().trim();
+        const custQuery = document.getElementById('totalPlanFilterCustomer').value.toLowerCase().trim();
+        const selectedRoute = document.getElementById('totalPlanFilterRoute').value;
         
-        let scheduleMeta = {};
-        const dataSource = (globalScheduleSummaryData && globalScheduleSummaryData.length > 0) ? globalScheduleSummaryData : lastScheduleData;
+        let filteredPlans = {};
         
-        if (dataSource) {
-            const match = dataSource.find(s => String(s.No || s.planNo || '').trim() === String(planNo).trim());
-            if (match) scheduleMeta = match;
+        Object.keys(cachedDeliveryPlans).forEach(planNo => {
+            const items = cachedDeliveryPlans[planNo] || [];
+            const routeName = String(items.routeName || items[0]?.['Route Name'] || '').trim();
+            
+            if (selectedRoute !== 'ALL' && routeName !== selectedRoute) return;
+            if (planQuery && !String(planNo).toLowerCase().includes(planQuery)) return;
+            
+            const matchingItems = items.filter(item => {
+                const cName = String(item['Customer Name'] || '').toLowerCase();
+                return !custQuery || cName.includes(custQuery);
+            });
+            
+            if (matchingItems.length > 0) {
+                filteredPlans[planNo] = [...matchingItems];
+                filteredPlans[planNo].routeName = routeName;
+            }
+        });
+        
+        renderTotalPlanSummaryCards(filteredPlans);
+    }
+
+    function renderTotalPlanSummaryCards(plansObj) {
+        const container = document.getElementById('totalPlanSummaryResultsContainer');
+        
+        // Sorted Z to A (descending order)
+        const planNos = Object.keys(plansObj).sort((a, b) => {
+            return String(b).localeCompare(String(a), undefined, { numeric: true, sensitivity: 'base' });
+        });
+        
+        if (planNos.length === 0) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery plans match your search criteria.</p>`;
+            return;
         }
         
-        const startTime = formatCustomTime(scheduleMeta['Start Time'] || '-');
-        const endDate = formatCustomDateTime(scheduleMeta['End Date'] || '-');
-        const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
-        const gsmKm = scheduleMeta['GSM KM'] || '-';
-        const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
-        const helper = scheduleMeta['Helper'] || scheduleMeta.helper || '-';
-        const lorry = scheduleMeta['Lorry'] || scheduleMeta.lorry || '-';
-        
-        return `
-        <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-md space-y-0">
-            <!-- Header Info -->
-            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
-                <div><strong>Plan No : </strong> <span class="text-emerald-600 font-bold">${planNo}</span></div>
-                <div><strong>Route : </strong> <span class="font-bold text-emerald-500">${routeName}</span></div>
-                <div><strong>Driver : </strong> <span class="text-yellow-600 font-bold">${driver}</span></div>
-                <div><strong>Helper : </strong> <span class="text-yellow-600 font-bold">${helper}</span></div>
-                <div><strong>Lorry : </strong> <span class="font-bold text-white">${lorry}</span></div>
+        container.innerHTML = planNos.map(planNo => {
+            const items = plansObj[planNo];
+            const routeName = items.routeName || 'Unassigned Route';
+            
+            let scheduleMeta = {};
+            const dataSource = (globalScheduleSummaryData && globalScheduleSummaryData.length > 0) ? globalScheduleSummaryData : lastScheduleData;
+            
+            if (dataSource) {
+                const match = dataSource.find(s => String(s.No || s.planNo || '').trim() === String(planNo).trim());
+                if (match) scheduleMeta = match;
+            }
+            
+            const startTime = formatCustomTime(scheduleMeta['Start Time'] || '-');
+            const endDate = formatCustomDateTime(scheduleMeta['End Date'] || '-');
+            const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
+            const gsmKm = scheduleMeta['GSM KM'] || '-';
+            const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
+            const helper = scheduleMeta['Helper'] || scheduleMeta.helper || '-';
+            const lorry = scheduleMeta['Lorry'] || scheduleMeta.lorry || '-';
+            
+            return `
+            <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl p-2 shadow-md space-y-0">
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
+                    <div><strong>Plan No : </strong> <span class="text-emerald-600 font-bold">${planNo}</span></div>
+                    <div><strong>Route : </strong> <span class="font-bold text-emerald-500">${routeName}</span></div>
+                    <div><strong>Driver : </strong> <span class="text-yellow-600 font-bold">${driver}</span></div>
+                    <div><strong>Helper : </strong> <span class="text-yellow-600 font-bold">${helper}</span></div>
+                    <div><strong>Lorry : </strong> <span class="font-bold text-white">${lorry}</span></div>
                 </div>
                 
                 <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-4xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
-                <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
-                <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
-                <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
-                <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
-            </div>
-            
-            <!-- Table Content -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
-                            <th class="py-2.5 px-3">Plan No</th>
-                            <th class="py-2.5 px-3">Customer Name</th>
-                            <th class="py-2.5 px-3">Address</th>
-                            <th class="py-2.5 px-3">Invoice No</th>
-                            <th class="py-2.5 px-3 text-right">Invoice Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
-                        ${items.map(item => `
-                        <tr>
-                            <td class="py-2.5 px-3 font-bold">${planNo}</td>
-                            <td class="py-2.5 px-3 text-slate-900 dark:text-white">${item['Customer Name'] || '-'}</td>
-                            <td class="py-2.5 px-3 text-slate-500">${item['Address'] || '-'}</td>
-                            <td class="py-2.5 px-3 font-mono font-bold">${item['Invoice No'] || '-'}</td>
-                            <td class="py-2.5 px-3 text-right font-slate font-bold text-emerald-600">${item['Invoice Value'] || '0.00'}</td>
-                        </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
-    }).join('');
+                    <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
+                    <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
+                    <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
+                    <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+                                <th class="py-2.5 px-3">Plan No</th>
+                                <th class="py-2.5 px-3">Customer Name</th>
+                                <th class="py-2.5 px-3">Address</th>
+                                <th class="py-2.5 px-3">Invoice No</th>
+                                <th class="py-2.5 px-3 text-right">Invoice Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                            ${items.map(item => `
+                            <tr>
+                                <td class="py-2.5 px-3 font-bold">${planNo}</td>
+                                <td class="py-2.5 px-3 text-slate-900 dark:text-white">${item['Customer Name'] || '-'}</td>
+                                <td class="py-2.5 px-3 text-slate-500">${item['Address'] || '-'}</td>
+                                <td class="py-2.5 px-3 font-mono font-bold">${item['Invoice No'] || '-'}</td>
+                                <td class="py-2.5 px-3 text-right font-slate font-bold text-emerald-600">${item['Invoice Value'] || '0.00'}</td>
+                            </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    
+function resetTotalPlanSummaryFilters() {
+    document.getElementById('totalPlanFilterNo').value = '';
+    document.getElementById('totalPlanFilterCustomer').value = '';
+    document.getElementById('totalPlanFilterRoute').value = 'All Routes';
+reloadTotalPlanSummary();
 }
 
-function resetScheduleSummaryFilters() {
-    document.getElementById('schedSumFilterDate').value = '';
-    document.getElementById('schedSumFilterRoute').value = 'ALL';
-    document.getElementById('schedSumFilterDriver').value = 'ALL';
-    document.getElementById('schedSumFilterHelper').value = 'ALL';
-    document.getElementById('schedSumFilterLorry').value = 'ALL';
-    applyScheduleSummaryFilters();
-}
 
 
 
