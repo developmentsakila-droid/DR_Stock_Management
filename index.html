@@ -3123,6 +3123,18 @@ async function downloadScheduleJPG() {
         return true;
     });
     
+    // 3. Sort rows by Date (A to Z), then by Plan No (A to Z numerically)
+    rowsToExport.sort((a, b) => {
+        const dateA = String(formatCustomDateTime(a.Date) || '');
+        const dateB = String(formatCustomDateTime(b.Date) || '');
+        if (dateA !== dateB) {
+            return dateA.localeCompare(dateB);
+        }
+        const planA = String(a.No || '');
+        const planB = String(b.No || '');
+        return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+    
     if (rowsToExport.length === 0) {
         alert(`No schedule rows match Week ${filterWeek || 'selected'} and your filter criteria.`);
         return;
@@ -3130,77 +3142,77 @@ async function downloadScheduleJPG() {
     
     setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
     
-    try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        const rowHeight = 35;
-        const headerHeight = 45;
-        const padding = 40;
-        const width = 1000;
-        const height = headerHeight + (rowsToExport.length * rowHeight) + (padding * 2) + 40;
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        const isDark = document.documentElement.classList.contains('dark');
-        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
-        ctx.fillRect(0, 0, width, height);
-        
-        // Title displaying the exact exported week
-        ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
-        ctx.font = 'bold 18px Inter, sans-serif';
-        ctx.fillText(`HARUMI HOLDINGS (PVT) LTD - DELIVERY SCHEDULE SUMMARY (WEEK ${filterWeek || 'ALL'})`, padding, 35);
-        
-        ctx.fillStyle = '#056396';
-        ctx.fillRect(padding, 60, width - (padding * 2), headerHeight);
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px Inter, sans-serif';
-        const headers = ["No", "Date", "Route", "Driver", "Helper", "Lorry", "Start", "KM", "Special Note"];
-        const colX = [padding + 15, padding + 70, padding + 180, padding + 390, padding + 600, padding + 810];
-        
-        headers.forEach((h, idx) => {
-            ctx.fillText(h, colX[idx], 60 + 27);
-        });
-        
-        ctx.font = '12px Inter, sans-serif';
-        rowsToExport.forEach((r, idx) => {
-            const y = 60 + headerHeight + (idx * rowHeight);
-            
-            if (idx % 2 === 1) {
-                ctx.fillStyle = isDark ? '#1e293b' : '#f8fafc';
-                ctx.fillRect(padding, y, width - (padding * 2), rowHeight);
-            }
-            
-            ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
-            
-            const vals = [
-                r.No || '-',
-                String(formatCustomDateTime(r.Date)|| '').substring(0, 10),
-                r['Route Name'] || '-',
-                r.Driver || '-',
-                r.Helper || '-',
-                r.Lorry || '-',
+   try {
+       const canvas = document.createElement('canvas');
+       const ctx = canvas.getContext('2d');
+       
+       const rowHeight = 35;
+       const headerHeight = 45;
+       const padding = 40;
+       const width = 1000;
+       const height = headerHeight + (rowsToExport.length * rowHeight) + (padding * 2) + 40;
+       
+       canvas.width = width;
+       canvas.height = height;
+       
+       const isDark = document.documentElement.classList.contains('dark');
+       ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+       ctx.fillRect(0, 0, width, height);
+       
+       // Title displaying the exact exported week
+       ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
+       ctx.font = 'bold 18px Inter, sans-serif';
+       ctx.fillText(`HARUMI HOLDINGS (PVT) LTD - DELIVERY SCHEDULE SUMMARY (WEEK ${filterWeek || 'ALL'})`, padding, 35);
+       
+       ctx.fillStyle = '#056396';
+       ctx.fillRect(padding, 60, width - (padding * 2), headerHeight);
+       
+       ctx.fillStyle = '#ffffff';
+       ctx.font = 'bold 12px Inter, sans-serif';
+       const headers = ["No", "Date", "Route", "Driver", "Helper", "Lorry", "Start", "KM", "Special Note"];
+       const colX = [padding + 15, padding + 70, padding + 180, padding + 390, padding + 600, padding + 810];
+       
+       headers.forEach((h, idx) => {
+           ctx.fillText(h, colX[idx], 60 + 27);
+       });
+       
+       ctx.font = '12px Inter, sans-serif';
+       rowsToExport.forEach((r, idx) => {
+           const y = 60 + headerHeight + (idx * rowHeight);
+           
+           if (idx % 2 === 1) {
+               ctx.fillStyle = isDark ? '#1e293b' : '#f8fafc';
+               ctx.fillRect(padding, y, width - (padding * 2), rowHeight);
+           }
+           
+           ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
+           
+           const vals = [
+               r.No || '-',
+               String(formatCustomDateTime(r.Date) || '').substring(0, 10),
+               r['Route Name'] || '-',
+               r.Driver || '-',
+               r.Helper || '-',
+               r.Lorry || '-',
                // r['Start Time'] || r.Time || '-',
-              //  r['GSM KM'] || '-',
+               //  r['GSM KM'] || '-',
                // r['Special Note'] || '-'
-            ];
-            
-            vals.forEach((val, vIdx) => {
-                ctx.fillText(val, colX[vIdx], y + 22);
-            });
-        });
-        
-        const imageURL = canvas.toDataURL('image/jpeg', 0.95);
-        const link = document.createElement('a');
-        link.href = imageURL;
-        link.download = `Delivery_Schedule_Week_${filterWeek || 'Summary'}_${new Date().toISOString().slice(0, 10)}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-    } catch (err) {
+           ];
+           
+           vals.forEach((val, vIdx) => {
+               ctx.fillText(val, colX[vIdx], y + 22);
+           });
+       });
+       
+       const imageURL = canvas.toDataURL('image/jpeg', 0.95);
+       const link = document.createElement('a');
+       link.href = imageURL;
+       link.download = `Delivery_Schedule_Week_${filterWeek || 'Summary'}_${new Date().toISOString().slice(0, 10)}.jpg`;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+       
+   } catch (err) {
         console.error("Fast JPG generation error:", err);
         alert("Could not generate JPG: " + err.message);
     } finally {
