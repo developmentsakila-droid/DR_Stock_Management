@@ -3764,8 +3764,8 @@ async function initTotalPlanSummaryData() {
                 if (match) scheduleMeta = match;
             }
             
-            const startTime = formatCustomTime(scheduleMeta['Start Time'] || scheduleMeta.Time || '-');
-            const endDate = formatCustomDateTime(scheduleMeta['End Date'] || scheduleMeta.Date || '-');
+            const startTime = formatCustomTime(scheduleMeta['Start Time'] || '-');
+            const endDate = formatCustomDateTime(scheduleMeta['End Date'] || '-');
             const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
             const gsmKm = scheduleMeta['GSM KM'] || '-';
             const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
