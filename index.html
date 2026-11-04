@@ -3673,7 +3673,7 @@ function applyScheduleSummaryFilters() {
         initTotalPlanSummaryData();
     }
 
-    async function initTotalPlanSummaryData() {
+async function initTotalPlanSummaryData() {
         if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
             try {
                 const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
@@ -3747,6 +3747,15 @@ function applyScheduleSummaryFilters() {
             const items = plansObj[planNo];
             const routeName = items.routeName || 'Unassigned Route';
             
+            // Calculate total invoices and total invoice value for this plan
+            const totalInvoices = items.length;
+            let totalValue = 0;
+            items.forEach(item => {
+                let val = parseFloat(String(item['Invoice Value'] || '0').replace(/[^0-9.-]+/g, ""));
+                if (!isNaN(val)) totalValue += val;
+            });
+            const formattedTotalValue = 'Rs. ' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
             let scheduleMeta = {};
             const dataSource = (globalScheduleSummaryData && globalScheduleSummaryData.length > 0) ? globalScheduleSummaryData : lastScheduleData;
             
@@ -3755,8 +3764,8 @@ function applyScheduleSummaryFilters() {
                 if (match) scheduleMeta = match;
             }
             
-            const startTime = formatCustomTime(scheduleMeta['Start Time'] || '-');
-            const endDate = formatCustomDateTime(scheduleMeta['End Date'] || '-');
+            const startTime = formatCustomTime(scheduleMeta['Start Time'] || scheduleMeta.Time || '-');
+            const endDate = formatCustomDateTime(scheduleMeta['End Date'] || scheduleMeta.Date || '-');
             const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
             const gsmKm = scheduleMeta['GSM KM'] || '-';
             const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
@@ -3773,14 +3782,16 @@ function applyScheduleSummaryFilters() {
                     <div><strong>Lorry : </strong> <span class="font-bold text-white">${lorry}</span></div>
                 </div>
                 
-                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-4xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400">
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
                     <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
                     <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
                     <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
                     <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
+                    <div><strong>No. of Invoices : </strong> <span class="font-bold text-teal-400">${totalInvoices}</span></div>
+                    <div><strong>Total Value : </strong> <span class="font-bold font-mono text-emerald-400">${formattedTotalValue}</span></div>
                 </div>
                 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto pt-2">
                     <table class="w-full text-xs text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
