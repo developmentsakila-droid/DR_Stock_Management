@@ -3782,14 +3782,19 @@ async function initTotalPlanSummaryData() {
                     <div><strong>Lorry : </strong> <span class="font-bold text-white">${lorry}</span></div>
                 </div>
                 
-                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
+               <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-1xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
                     <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
                     <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
                     <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
                     <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
-                    <div><strong>No. of Invoices : </strong> <span class="font-bold text-teal-400">${totalInvoices}</span></div>
-                    <div><strong>Total Value : </strong> <span class="font-bold font-mono text-emerald-400">${formattedTotalValue}</span></div>
+                   
                 </div>
+               <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-1xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
+               
+                 <div><strong>No. of Invoices : </strong> <span class="font-bold text-teal-400">${totalInvoices}</span></div>
+ <div><strong>Total Value : </strong> <span class="font-bold font-slate text-emerald-400">${formattedTotalValue}</span></div>
+ 
+        </div>
                 
                 <div class="overflow-x-auto pt-2">
                     <table class="w-full text-xs text-left border-collapse">
