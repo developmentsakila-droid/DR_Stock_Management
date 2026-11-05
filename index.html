@@ -407,7 +407,7 @@
                     <option value="">-- Select Plan --</option>
                 </select>
                 <button onclick="fetchAllData(true)" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-rotate"></i> Refresh Plan Data
+                    <i class="fa-solid fa-rotate"></i> Refresh...
                 </button>
             </div>
         </div>
@@ -2005,26 +2005,35 @@ function loadDataIntoMemorynew(data) {
     }
 
     async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
-        if (cachedDeliveryPlans[planNo] && cachedDeliveryPlans[planNo][itemIndex]) {
-            cachedDeliveryPlans[planNo][itemIndex][field] = value;
-        }
-
-        try {
-            const body = new URLSearchParams();
-            body.append("payload", JSON.stringify({
-                action: "updateDeliveryPlanStatus",
-                data: { id, field, value }
-            }));
-
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: body
-            });
-        } catch (err) {
-            console.error("Background sync error:", err);
+    // Safely update local cache by matching the unique ID
+    if (cachedDeliveryPlans[planNo]) {
+        const item = cachedDeliveryPlans[planNo].find(i => String(i['ID']) === String(id));
+        if (item) {
+            item[field] = value;
         }
     }
+    
+    try {
+        const body = new URLSearchParams();
+        body.append("payload", JSON.stringify({
+            action: "updateDeliveryPlanStatus",
+            data: { id, field, value }
+        }));
+        
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body
+        });
+        
+        const result = await res.json();
+        if (result.status !== "success") {
+            console.error("Backend sync failed:", result.message);
+        }
+    } catch (err) {
+        console.error("Background sync error:", err);
+    }
+}
 
     function formatAndCheckDate(dateStr) {
         if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
