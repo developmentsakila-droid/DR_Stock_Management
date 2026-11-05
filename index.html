@@ -409,6 +409,9 @@
                 <button onclick="fetchAllData(true)" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
                     <i class="fa-solid fa-rotate"></i> Refresh...
                 </button>
+                    <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                     <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                 </button>
             </div>
         </div>
 
@@ -642,9 +645,14 @@
             <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet Registry (Vehicle_Details)
             </h4>
+              <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <button onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-xs shadow-md transition flex items-center gap-1.5">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </button>
+            <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+    <i class="fa-solid fa-arrow-left mr-1"></i> Back
+</button>
+</div>
         </div>
     </section>
     <p class="text-xs text-slate-500">Track Vehicle No, Absolute Owner, Make, Model, Insurance, Revenue Licence, Fitness, Emission Test, and Service Dates synced with Google Sheets.</p>
@@ -1589,6 +1597,8 @@
 }else if (tab === 'totalPlanSummary') {
     initTotalPlanSummaryData();
     document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'totalPlanSummary');
+}else if (tab === 'deliveryPlan') {
+    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryPlan');
 }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
