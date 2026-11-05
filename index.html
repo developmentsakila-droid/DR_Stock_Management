@@ -1931,7 +1931,7 @@ function loadDataIntoMemorynew(data) {
         }
     }
 
-    function onPlanNoChange(planNo) {
+      function onPlanNoChange(planNo) {
         const container = document.getElementById('deliveryPlanResult');
         if (!planNo) {
             container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
@@ -1942,69 +1942,130 @@ function loadDataIntoMemorynew(data) {
         renderDeliveryPlanTable(planNo, items);
     }
 
-    function renderDeliveryPlanTable(planNo, items) {
-        const container = document.getElementById('deliveryPlanResult');
-        if (!planNo) {
-            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
-            return;
-        }
+  function renderDeliveryPlanTable(planNo, items) {
+    
+    const container = document.getElementById('deliveryPlanResult');
+    
+    if (!planNo) {
         
-        const routeName = items.routeName || 'Unassigned Route';
+        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
         
-        if (items.length === 0) {
-            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
-            return;
-        }
+        return;
         
-        container.innerHTML = `
-            <div class="mb-4 flex items-center justify-between bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900 p-1.5 rounded-2xl">
-                <span class="text-xs font-bold px-1.5 py-1.5 bg-amber-500 text-slate-950 rounded-xl shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-route text-slate-950"></i>: ${routeName}
-                </span>
-                <span class="text-xs font-bold px-3 py-1 bg-teal-600 text-white rounded-xl shadow-sm">Plan : ${planNo} (${items.length} Invoices)</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                            <th class="p-2.5">Invoice No</th>
-                            <th class="p-2.5">Customer Name</th>
-                            <th class="p-2.5">Address</th>
-                            <th class="p-2.5 text-right">Inv Value</th>
-                            <th class="p-2.5">Delivered Status</th>
-                            <th class="p-2.5">Return / Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${items.map((item, idx) => `
-                            <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                                <td class="p-2.5 font-bold">${item['Invoice No'] || '-'}</td>
-                                <td class="p-2.5 font-bold text-slate-400">${item['Customer Name'] || '-'}</td>
-                                <td class="p-2.5 text-slate-300">${item['Address'] || '-'}</td>
-                                <td class="p-2 text-right font-mono font-semibold">${item['Invoice Value'] || '0'}</td>
-                                <td class="p-2.5">
-                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-100 dark:bg-slate-900 border-slate-300'}">
-                                        <option value="" ${!item['Delivered'] ? 'selected' : ''}>Pending</option>
-                                        <option value="Yes" ${item['Delivered'] === 'Yes' ? 'selected' : ''}>Complete</option>
-                                        <option value="No" ${item['Delivered'] === 'No' ? 'selected' : ''}>Not Delivered</option>
-                                    </select>
-                                </td>
-                                <td class="p-2.5 space-y-1">
-                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Market Retun', this.value, '${planNo}', ${idx})" class="px-2 py-1 rounded-xl text-[11px] font-bold border bg-slate-50 dark:bg-slate-900 border-slate-300">
-                                        <option value="" ${!item['Market Retun'] ? 'selected' : ''}>No Return</option>
-                                        <option value="Full Return" ${item['Market Retun'] === 'Full Return' ? 'selected' : ''}>Full Return</option>
-                                        <option value="Part Return" ${item['Market Retun'] === 'Part Return' ? 'selected' : ''}>Part Return</option>
-                                    </select>
-                                    <input type="text" value="${item['If Undelivered Reason'] || ''}" placeholder="Undelivered reason..." onchange="updateDeliveryStatus('${item['ID']}', 'If Undelivered Reason', this.value, '${planNo}', ${idx})" class="w-full px-2 py-1 rounded-lg text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>`;
     }
+    
+    
+    
+    const routeName = items.routeName || 'Unassigned Route';
+    
+    
+    
+    if (items.length === 0) {
+        
+        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
+        
+        return;
+        
+    }
+    
+    
+    
+    container.innerHTML = `
 
-    async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
+            <div class="mb-4 flex items-center justify-between bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900 p-1.5 rounded-2xl">
+
+                <span class="text-xs font-bold px-1.5 py-1.5 bg-amber-500 text-slate-950 rounded-xl shadow-sm flex items-center gap-1.5">
+
+                    <i class="fa-solid fa-route text-slate-950"></i>: ${routeName}
+
+                </span>
+
+                <span class="text-xs font-bold px-3 py-1 bg-teal-600 text-white rounded-xl shadow-sm">Plan : ${planNo} (${items.length} Invoices)</span>
+
+            </div>
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-xs text-left border-collapse">
+
+                    <thead>
+
+                        <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+
+                            <th class="p-2.5">Invoice No</th>
+
+                            <th class="p-2.5">Customer Name</th>
+
+                            <th class="p-2.5">Address</th>
+
+                            <th class="p-2.5 text-right">Inv Value</th>
+
+                            <th class="p-2.5">Delivered Status</th>
+
+                            <th class="p-2.5">Return / Reason</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${items.map((item, idx) => `
+
+                            <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+
+                                <td class="p-2.5 font-bold">${item['Invoice No'] || '-'}</td>
+
+                                <td class="p-2.5 font-bold text-slate-400">${item['Customer Name'] || '-'}</td>
+
+                                <td class="p-2.5 text-slate-300">${item['Address'] || '-'}</td>
+
+                                <td class="p-2 text-right font-mono font-semibold">${item['Invoice Value'] || '0'}</td>
+
+                                <td class="p-2.5">
+
+                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-100 dark:bg-slate-900 border-slate-300'}">
+
+                                        <option value="" ${!item['Delivered'] ? 'selected' : ''}>Pending</option>
+
+                                        <option value="Yes" ${item['Delivered'] === 'Yes' ? 'selected' : ''}>Complete</option>
+
+                                        <option value="No" ${item['Delivered'] === 'No' ? 'selected' : ''}>Not Delivered</option>
+
+                                    </select>
+
+                                </td>
+
+                                <td class="p-2.5 space-y-1">
+
+                                    <select onchange="updateDeliveryStatus('${item['ID']}', 'Market Retun', this.value, '${planNo}', ${idx})" class="px-2 py-1 rounded-xl text-[11px] font-bold border bg-slate-50 dark:bg-slate-900 border-slate-300">
+
+                                        <option value="" ${!item['Market Retun'] ? 'selected' : ''}>No Return</option>
+
+                                        <option value="Full Return" ${item['Market Retun'] === 'Full Return' ? 'selected' : ''}>Full Return</option>
+
+                                        <option value="Part Return" ${item['Market Retun'] === 'Part Return' ? 'selected' : ''}>Part Return</option>
+
+                                    </select>
+
+                                    <input type="text" value="${item['If Undelivered Reason'] || ''}" placeholder="Undelivered reason..." onchange="updateDeliveryStatus('${item['ID']}', 'If Undelivered Reason', this.value, '${planNo}', ${idx})" class="w-full px-2 py-1 rounded-lg text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+
+                                </td>
+
+                            </tr>
+
+                        `).join('')}
+
+                    </tbody>
+
+                </table>
+
+            </div>`;
+    
+}
+
+
+async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
     // Safely update local cache by matching the unique ID
     if (cachedDeliveryPlans[planNo]) {
         const item = cachedDeliveryPlans[planNo].find(i => String(i['ID']) === String(id));
@@ -2034,6 +2095,7 @@ function loadDataIntoMemorynew(data) {
         console.error("Background sync error:", err);
     }
 }
+
 
     function formatAndCheckDate(dateStr) {
         if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
