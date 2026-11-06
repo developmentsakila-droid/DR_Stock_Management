@@ -139,7 +139,7 @@
             </button>
         </div>
     </div>
-    <div class="max-w-6xl mx-auto px-4 pb-2">
+    <div class="max-w-6xl mx-auto px-4 pb-2 flex justify-end">
         <button onclick="switchTab('dashboard')" id="backToDashBtn" class="hidden items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 shadow-sm hover:bg-emerald-100 transition">
             <i class="fa-solid fa-arrow-left"></i> Dashboard
         </button>
@@ -3003,6 +3003,28 @@ function onScheduleDateChange(dateVal) {
     }
 
     function fetchDeliveryScheduleReport(weekNo) {
+
+
+
+const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+const isAuthorized = ["executive", "manager"].includes(userLevel);
+
+// Toggle save button visibility based on role
+const saveBtnEl = document.getElementById('scsave');
+if (saveBtnEl) {
+    if (isAuthorized) {
+        saveBtnEl.classList.remove('hidden');
+        saveBtnEl.classList.add('flex');
+    } else {
+        saveBtnEl.classList.add('hidden');
+        saveBtnEl.classList.remove('flex');
+    }
+}
+
+
+
+
+
         if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
         const container = document.getElementById('scheduleReportResult');
         container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
