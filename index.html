@@ -668,7 +668,7 @@
 <!-- ================= TAB 4: DELIVERY SCHEDULE REPORT ================= -->
 <div id="sectionSchedule" class="space-y-3 hidden">
     <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 shadow-xl space-y-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
             <div>
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-calendar-check text-purple-500"></i> Delivery Schedule (Monday to Sunday)
@@ -1636,10 +1636,7 @@ else if (tab === 'deliverySummary') {
 }
 
 
-else if (deliverySummaryInterval) {
-    clearInterval(deliverySummaryInterval);
-    deliverySummaryInterval = null;
-}
+
         
         else if (tab === 'attendance') {
             loadAttendanceData();
