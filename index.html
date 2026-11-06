@@ -1610,12 +1610,36 @@ if (saveBtnEl) {
 }
         }
         
-        else if (tab === 'deliverySummary') {
-            initDeliverySummaryFilters();
-            applyDeliverySummaryFilters();
-            resetDeliverySummaryFilters();
-            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
-        } 
+     
+else if (tab === 'deliverySummary') {
+    resetDeliverySummaryFilters();
+   // initDeliverySummaryFilters();
+   // applyDeliverySummaryFilters();
+    
+    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
+    
+    // Clear any existing interval to prevent duplicates
+    if (deliverySummaryInterval) {
+        clearInterval(deliverySummaryInterval);
+    }
+    
+    // Set up auto-refresh every 60 seconds (60,000 milliseconds)
+    deliverySummaryInterval = setInterval(() => {
+        // Optional: Call your data fetch function here if you need to fetch fresh data from Google Apps Script first
+        // e.g., fetchFreshDeliveryData().then(() => { resetDeliverySummaryFilters(); });
+        
+        resetDeliverySummaryFilters();
+        //initDeliverySummaryFilters();
+       // applyDeliverySummaryFilters();
+        console.log('Delivery summary filters auto-reset & refreshed.');
+    }, 600);
+}
+
+
+else if (deliverySummaryInterval) {
+    clearInterval(deliverySummaryInterval);
+    deliverySummaryInterval = null;
+}
         
         else if (tab === 'attendance') {
             loadAttendanceData();
