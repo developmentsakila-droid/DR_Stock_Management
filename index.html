@@ -96,7 +96,8 @@
             <div id="loginError" class="text-xs font-bold text-rose-500 text-center hidden">Invalid username or password.</div>
 
             <button type="submit" id="loginBtn" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-emerald-600/30 transition">
-                Sign In to Portal
+                <i class="fa-solid fa-right-to-bracket p-3"></i>
+                Log In
             </button>
         </form>
     </div>
@@ -401,13 +402,13 @@
                 </h4>
                 <p class="text-xs text-slate-500 font-medium">Select Plan No to view and update status online.</p>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
                 <label class="text-xs font-bold text-slate-500 uppercase">Plan No:</label>
                 <select id="planNoSelect" onchange="onPlanNoChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white">
                     <option value="">-- Select Plan --</option>
                 </select>
                 <button onclick="fetchAllData(true)" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-rotate"></i> Refresh...
+                    <i class="fa-solid fa-rotate"></i> Refresh
                 </button>
                     <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                      <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -541,7 +542,7 @@
                     <i class="fa-solid fa-rotate-right"></i>  Reset & Reload
                 </button>
                
-                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex justify-end">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Back
                 </button>
             </div>
@@ -588,7 +589,7 @@
                     Reset Filters
                 </button>
                 
-                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex justify-end">
     <i class="fa-solid fa-arrow-left mr-1"></i> Back
 </button>
             </div>
@@ -645,11 +646,11 @@
             <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Fleet Registry (Vehicle_Details)
             </h4>
-              <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <button onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-xs shadow-md transition flex items-center gap-1.5">
+              <div class="flex justify-end gap-2 pt-2">
+            <button id="addv" onclick="openAddVehicleModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-xs shadow-md transition flex items-center gap-1.5">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </button>
-            <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+            <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex justify-end">
     <i class="fa-solid fa-arrow-left mr-1"></i> Back
 </button>
 </div>
@@ -676,10 +677,15 @@
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                
+                 <button onclick="fetchDeliveryScheduleReport()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
+     <i class="fa-solid fa-rotate-right"></i> Reset & Reload
+ </button>
+ 
                 <input type="date" id="scheduleDateInput" onchange="onScheduleDateChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
                 <input type="text" id="reportWeekNo" placeholder="Week No" value="43" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold w-16 text-center">
                 
-                <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <div class="gap-2 pt-2 flex justify-end">
                      <button id="scsave" onclick="saveAllScheduleChanges()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5">
                          <i class="fa-solid fa-floppy-disk"></i> Save
                      </button>
@@ -1430,7 +1436,7 @@
         const errDiv = document.getElementById('loginError');
         const loginBtn = document.getElementById('loginBtn');
         
-        setButtonLoading(loginBtn, true, "Sign In to Portal");
+        setButtonLoading(loginBtn, true, "Log In");
         showLoading(true, "Authenticating...");
         
         try {
@@ -1450,7 +1456,7 @@
                     if (approvalStatus === 'Revoked') {
                         errDiv.textContent = "Access denied: This device has been revoked by warehouse management.";
                         errDiv.classList.remove('hidden');
-                        setButtonLoading(loginBtn, false, "Sign In to Portal");
+                        setButtonLoading(loginBtn, false, "Log In");
                         showLoading(false);
                         return;
                     }
@@ -1475,7 +1481,7 @@
             errDiv.textContent = "Connection error. Please check your network.";
             errDiv.classList.remove('hidden');
         } finally {
-            setButtonLoading(loginBtn, false, "Sign In to Portal");
+            setButtonLoading(loginBtn, false, "Log In");
             showLoading(false);
         }
     }
@@ -1584,21 +1590,81 @@
             const weekNo = document.getElementById('reportWeekNo').value || "43";
             //fetchDeliveryScheduleReport(weekNo);
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'schedule');
-        } else if (tab === 'deliverySummary') {
+            
+            const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+const isAuthorized = ["executive", "manager"].includes(userLevel);
+
+// Toggle save button visibility based on role
+const saveBtnEl = document.getElementById('scsave');
+if (saveBtnEl) {
+    if (isAuthorized) {
+        saveBtnEl.classList.remove('hidden');
+        saveBtnEl.classList.add('flex');
+    } else {
+        saveBtnEl.classList.add('hidden');
+        saveBtnEl.classList.remove('flex');
+    }
+}
+        }
+        
+        else if (tab === 'deliverySummary') {
             initDeliverySummaryFilters();
             applyDeliverySummaryFilters();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
-        } else if (tab === 'attendance') {
+        } 
+        
+        else if (tab === 'attendance') {
             loadAttendanceData();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'attendance');
-        }else if (tab === 'deliveryScheduleSummary') {
+        }
+        
+        else if (tab === 'deliveryScheduleSummary') {
     loadScheduleSummaryData();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryScheduleSummary');
-}else if (tab === 'totalPlanSummary') {
+}
+
+else if (tab === 'totalPlanSummary') {
     initTotalPlanSummaryData();
     document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'totalPlanSummary');
-}else if (tab === 'deliveryPlan') {
+}
+
+else if (tab === 'deliveryPlan') {
     document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryPlan');
+}
+
+else if (tab === 'vehicle') {
+    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
+     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+ const isAuthorized = ["executive", "manager"].includes(userLevel);
+ 
+ // Toggle save button visibility based on role
+ const saveBtnEl = document.getElementById('addv');
+ if (saveBtnEl) {
+     if (isAuthorized) {
+         saveBtnEl.classList.remove('hidden');
+         saveBtnEl.classList.add('flex');
+     } else {
+         saveBtnEl.classList.add('hidden');
+         saveBtnEl.classList.remove('flex');
+     }
+ }
+}
+else if (tab === 'stock') {
+  //  document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    
+    // Toggle save button visibility based on role
+    const saveBtnEl = document.getElementById('addNewItemBtn');
+    if (saveBtnEl) {
+        if (isAuthorized) {
+            saveBtnEl.classList.remove('hidden');
+            saveBtnEl.classList.add('flex');
+        } else {
+            saveBtnEl.classList.add('hidden');
+            saveBtnEl.classList.remove('flex');
+        }
+    }
 }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3881,6 +3947,7 @@ async function initTotalPlanSummaryData() {
             
             const startTime = formatCustomTime(scheduleMeta['Start Time'] || '-');
             const endDate = formatCustomDateTime(scheduleMeta['End Date'] || '-');
+            const startDate = formatCustomDateTime(scheduleMeta['Date'] || '-');
             const endTime = formatCustomTime(scheduleMeta['End Time'] || '-');
             const gsmKm = scheduleMeta['GSM KM'] || '-';
             const driver = scheduleMeta['Driver'] || scheduleMeta.driver || '-';
@@ -3898,6 +3965,8 @@ async function initTotalPlanSummaryData() {
                 </div>
                 
                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-1xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
+               
+               <div><strong>Start Date : </strong> <span class="font-bold text-white">${startDate}</span></div>
                     <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
                     <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
                     <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
