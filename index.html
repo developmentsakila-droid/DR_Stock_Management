@@ -1613,6 +1613,7 @@ if (saveBtnEl) {
         else if (tab === 'deliverySummary') {
             initDeliverySummaryFilters();
             applyDeliverySummaryFilters();
+            resetDeliverySummaryFilters();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
         } 
         
@@ -3420,61 +3421,94 @@ async function downloadScheduleJPG() {
         applyDeliverySummaryFilters();
     }
 
-    function resetDeliverySummaryFilters() {
-        document.getElementById('sumFilterStartDate').value = '';
-        document.getElementById('sumFilterEndDate').value = '';
-        document.getElementById('sumFilterDriver').value = 'ALL';
-        document.getElementById('sumFilterHelper').value = 'ALL';
-        document.getElementById('sumFilterRoute').value = 'ALL';
-        document.getElementById('sumFilterLorry').value = 'ALL';
-        applyDeliverySummaryFilters();
-    }
+     function resetDeliverySummaryFilters() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    // 1st day of the current month (e.g., "2026-11-01")
+    const firstDayOfMonth = `${year}-${month}-01`;
+    // Today's date (e.g., "2026-11-07")
+    const todayFormatted = `${year}-${month}-${day}`;
+    
+    // Set the inputs to the current month range
+    document.getElementById('sumFilterStartDate').value = firstDayOfMonth;
+    document.getElementById('sumFilterEndDate').value = todayFormatted;
+    
+    document.getElementById('sumFilterDriver').value = 'ALL';
+    document.getElementById('sumFilterHelper').value = 'ALL';
+    document.getElementById('sumFilterRoute').value = 'ALL';
+    document.getElementById('sumFilterLorry').value = 'ALL';
+    
+    applyDeliverySummaryFilters();
+}
 
-    function applyDeliverySummaryFilters() {
-        const startDate = document.getElementById('sumFilterStartDate').value;
-        const endDate = document.getElementById('sumFilterEndDate').value;
-        const selDriver = document.getElementById('sumFilterDriver').value;
-        const selHelper = document.getElementById('sumFilterHelper').value;
-        const selRoute = document.getElementById('sumFilterRoute').value;
-        const selLorry = document.getElementById('sumFilterLorry').value;
-        
-        let allRecords = [];
-        Object.keys(cachedDeliveryPlans).forEach(planNo => {
-            const items = cachedDeliveryPlans[planNo] || [];
-            let scheduleDate = '';
-            if (typeof lastScheduleData !== 'undefined') {
-                const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
-                if (schedMatch) {
-                    scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
-                }
-            }
-            
-            items.forEach(item => {
-                const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
-                allRecords.push({ ...item, planNo, resolvedDate: recordDate });
-            });
-        });
-        
-        const filtered = allRecords.filter(item => {
-            const itemDate = extractDateInputVal(item.resolvedDate);
-            const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
-            const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
-            
-            const itemDriver = String(item.Driver || item.driver || '').trim();
-            const itemHelper = String(item.Helper || item.helper || '').trim();
-            const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
-            const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
-            
-            const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
-            const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
-            const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
-            const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
-            
-            return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
-        });
-        
-        renderDeliverySummaryCards(filtered);
+function applyDeliverySummaryFilters() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    const firstDayOfMonth = `${year}-${month}-01`;
+    const todayFormatted = `${year}-${month}-${day}`;
+    
+    // If inputs are empty when applying, default them to the current month range
+    let startDate = document.getElementById('sumFilterStartDate').value;
+    if (!startDate) {
+        startDate = firstDayOfMonth;
+        document.getElementById('sumFilterStartDate').value = startDate;
     }
+    
+    let endDate = document.getElementById('sumFilterEndDate').value;
+    if (!endDate) {
+        endDate = todayFormatted;
+        document.getElementById('sumFilterEndDate').value = endDate;
+    }
+    
+    const selDriver = document.getElementById('sumFilterDriver').value;
+    const selHelper = document.getElementById('sumFilterHelper').value;
+    const selRoute = document.getElementById('sumFilterRoute').value;
+    const selLorry = document.getElementById('sumFilterLorry').value;
+    
+    let allRecords = [];
+    Object.keys(cachedDeliveryPlans).forEach(planNo => {
+        const items = cachedDeliveryPlans[planNo] || [];
+        let scheduleDate = '';
+        if (typeof lastScheduleData !== 'undefined') {
+            const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
+            if (schedMatch) {
+                scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
+            }
+        }
+        
+        items.forEach(item => {
+            const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
+            allRecords.push({ ...item, planNo, resolvedDate: recordDate });
+        });
+    });
+    
+    const filtered = allRecords.filter(item => {
+        const itemDate = extractDateInputVal(item.resolvedDate);
+        const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
+        const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
+        
+        const itemDriver = String(item.Driver || item.driver || '').trim();
+        const itemHelper = String(item.Helper || item.helper || '').trim();
+        const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
+        const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
+        
+        const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
+        const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
+        const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
+        const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
+        
+        return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
+    });
+    
+    renderDeliverySummaryCards(filtered);
+}
+
 
     function renderDeliverySummaryCards(data) {
         const grid = document.getElementById('deliverySummaryGrid');
