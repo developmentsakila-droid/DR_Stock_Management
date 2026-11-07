@@ -3104,9 +3104,6 @@ function onScheduleDateChange(dateVal) {
     }
 
     function fetchDeliveryScheduleReport(weekNo) {
-
-
-
 const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
 const isAuthorized = ["executive", "manager"].includes(userLevel);
 
@@ -3122,10 +3119,6 @@ if (saveBtnEl) {
     }
 }
 
-
-
-
-
         if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
         const container = document.getElementById('scheduleReportResult');
         container.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
@@ -3134,6 +3127,24 @@ if (saveBtnEl) {
             .then(res => res.json())
             .then(data => {
                 if (data.status === "success" && data.schedule) {
+                    
+                    // --- SORTING ADDED HERE (Date A-Z, then Plan No A-Z) ---
+                    data.schedule.sort((a, b) => {
+                        const dateA = new Date(a.Date || 0);
+                        const dateB = new Date(b.Date || 0);
+                        
+                        // 1. Compare Dates first
+                        if (dateA - dateB !== 0) {
+                            return dateA - dateB;
+                        }
+                        
+                        // 2. If dates are equal, sort by Plan No (No) A to Z
+                        const planA = String(a.No || '').toLowerCase();
+                        const planB = String(b.No || '').toLowerCase();
+                        return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
+                    });
+                    // --------------------------------------------------------
+
                     lastScheduleData = data.schedule;
                     document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
 
@@ -3157,7 +3168,7 @@ if (saveBtnEl) {
                             <thead>
                                 <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
                                     <th class="p-2.5">Date</th>
-                                    <th class="p-2.5">Week</th>
+                                    <th class="p-2.5">Plan No</th>
                                     <th class="p-2.5">Route Name</th>
                                     <th class="p-2.5">Driver</th>
                                     <th class="p-2.5">Helper</th>
@@ -3208,7 +3219,6 @@ if (saveBtnEl) {
             })
             .catch(() => { container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`; });
     }
-
     function updateScheduleField(index, field, value) {
         if (!lastScheduleData || !lastScheduleData[index]) return;
         lastScheduleData[index][field] = value;
