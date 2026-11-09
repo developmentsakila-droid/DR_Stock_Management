@@ -1255,6 +1255,31 @@
         checkExistingSession();
         fetchAllData();
         initScheduleDateDefaults();
+        
+        // Initialize mobile phone back button support
+        history.replaceState({ tab: 'dashboard' }, document.title, window.location.href);
+    });
+
+    // ================= MOBILE BACK BUTTON HANDLING =================
+    window.addEventListener('popstate', (event) => {
+        const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary'];
+        let currentActiveTab = 'dashboard';
+
+        for (const s of activeSections) {
+            if (s === 'dashboard') continue;
+            const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+            if (el && !el.classList.contains('hidden')) {
+                currentActiveTab = s;
+                break;
+            }
+        }
+
+        if (currentActiveTab !== 'dashboard') {
+            history.pushState({ tab: 'dashboard' }, document.title, window.location.href);
+            switchTabWithoutPush('dashboard');
+        } else {
+            closeHtmlApp();
+        }
     });
 
     function setButtonLoading(btnEl, isLoading, defaultHtml) {
@@ -1492,7 +1517,7 @@
             }
         } catch (err) {
             errDiv.textContent = "Connection error. Please check your network.";
-            errDiv.classList.remove('hidden');
+            errDiv.classList.add('hidden');
         } finally {
             setButtonLoading(loginBtn, false, "Log In");
             showLoading(false);
@@ -1570,6 +1595,11 @@
     }
 
     function switchTab(tab) {
+        history.pushState({ tab: tab }, document.title, window.location.href);
+        switchTabWithoutPush(tab);
+    }
+
+    function switchTabWithoutPush(tab) {
         if (tab !== 'dashboard') {
             const moduleMap = {
                 'delivery': 'delivery finder',
@@ -1601,52 +1631,36 @@
         
         if (tab === 'schedule') {
             const weekNo = document.getElementById('reportWeekNo').value || "43";
-            //fetchDeliveryScheduleReport(weekNo);
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'schedule');
             
             const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-const isAuthorized = ["executive", "manager"].includes(userLevel);
+            const isAuthorized = ["executive", "manager"].includes(userLevel);
 
-// Toggle save button visibility based on role
-const saveBtnEl = document.getElementById('scsave');
-if (saveBtnEl) {
-    if (isAuthorized) {
-        saveBtnEl.classList.remove('hidden');
-        saveBtnEl.classList.add('flex');
-    } else {
-        saveBtnEl.classList.add('hidden');
-        saveBtnEl.classList.remove('flex');
-    }
-}
+            const saveBtnEl = document.getElementById('scsave');
+            if (saveBtnEl) {
+                if (isAuthorized) {
+                    saveBtnEl.classList.remove('hidden');
+                    saveBtnEl.classList.add('flex');
+                } else {
+                    saveBtnEl.classList.add('hidden');
+                    saveBtnEl.classList.remove('flex');
+                }
+            }
         }
         
-     
-else if (tab === 'deliverySummary') {
-    resetDeliverySummaryFilters();
-   // initDeliverySummaryFilters();
-   // applyDeliverySummaryFilters();
-    
-    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
-    
-    // Clear any existing interval to prevent duplicates
-    if (deliverySummaryInterval) {
-        clearInterval(deliverySummaryInterval);
-    }
-    
-    // Set up auto-refresh every 60 seconds (60,000 milliseconds)
-    deliverySummaryInterval = setInterval(() => {
-        // Optional: Call your data fetch function here if you need to fetch fresh data from Google Apps Script first
-        // e.g., fetchFreshDeliveryData().then(() => { resetDeliverySummaryFilters(); });
-        
-        resetDeliverySummaryFilters();
-        //initDeliverySummaryFilters();
-       // applyDeliverySummaryFilters();
-        console.log('Delivery summary filters auto-reset & refreshed.');
-    }, 600);
-}
-
-
-
+        else if (tab === 'deliverySummary') {
+            resetDeliverySummaryFilters();
+            
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliverySummary');
+            
+            if (window.deliverySummaryInterval) {
+                clearInterval(window.deliverySummaryInterval);
+            }
+            
+            window.deliverySummaryInterval = setInterval(() => {
+                resetDeliverySummaryFilters();
+            }, 600);
+        }
         
         else if (tab === 'attendance') {
             loadAttendanceData();
@@ -1654,55 +1668,74 @@ else if (tab === 'deliverySummary') {
         }
         
         else if (tab === 'deliveryScheduleSummary') {
-    loadScheduleSummaryData();
+            loadScheduleSummaryData();
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryScheduleSummary');
-}
-
-else if (tab === 'totalPlanSummary') {
-    initTotalPlanSummaryData();
-    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'totalPlanSummary');
-}
-
-else if (tab === 'deliveryPlan') {
-    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryPlan');
-}
-
-else if (tab === 'vehicle') {
-    document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
-     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
- const isAuthorized = ["executive", "manager"].includes(userLevel);
- 
- // Toggle save button visibility based on role
- const saveBtnEl = document.getElementById('addv');
- if (saveBtnEl) {
-     if (isAuthorized) {
-         saveBtnEl.classList.remove('hidden');
-         saveBtnEl.classList.add('flex');
-     } else {
-         saveBtnEl.classList.add('hidden');
-         saveBtnEl.classList.remove('flex');
-     }
- }
-}
-else if (tab === 'stock') {
-  //  document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
-    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager"].includes(userLevel);
-    
-    // Toggle save button visibility based on role
-    const saveBtnEl = document.getElementById('addNewItemBtn');
-    if (saveBtnEl) {
-        if (isAuthorized) {
-            saveBtnEl.classList.remove('hidden');
-            saveBtnEl.classList.add('flex');
-        } else {
-            saveBtnEl.classList.add('hidden');
-            saveBtnEl.classList.remove('flex');
         }
-    }
-}
+
+        else if (tab === 'totalPlanSummary') {
+            initTotalPlanSummaryData();
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'totalPlanSummary');
+        }
+
+        else if (tab === 'deliveryPlan') {
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryPlan');
+        }
+
+        else if (tab === 'vehicle') {
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
+            const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            
+            const saveBtnEl = document.getElementById('addv');
+            if (saveBtnEl) {
+                if (isAuthorized) {
+                    saveBtnEl.classList.remove('hidden');
+                    saveBtnEl.classList.add('flex');
+                } else {
+                    saveBtnEl.classList.add('hidden');
+                    saveBtnEl.classList.remove('flex');
+                }
+            }
+        }
+        else if (tab === 'stock') {
+            const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            
+            const saveBtnEl = document.getElementById('addNewItemBtn');
+            if (saveBtnEl) {
+                if (isAuthorized) {
+                    saveBtnEl.classList.remove('hidden');
+                    saveBtnEl.classList.add('flex');
+                } else {
+                    saveBtnEl.classList.add('hidden');
+                    saveBtnEl.classList.remove('flex');
+                }
+            }
+        }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeHtmlApp() {
+        try {
+            window.close();
+        } catch (e) {}
+
+        try {
+            window.location.href = "about:blank";
+        } catch (e) {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                document.body.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; height:100vh; background:#0f172a; color:#fff; font-family:Inter,sans-serif; text-align:center; padding:20px;">
+                        <div>
+                            <h2 style="font-size:20px; font-weight:bold; margin-bottom:8px;">Portal Closed</h2>
+                            <p style="font-size:14px; color:#94a3b8;">You can safely close this browser tab or window.</p>
+                        </div>
+                    </div>`;
+            }
+        }
     }
 
     function initTheme() {
@@ -1790,14 +1823,14 @@ else if (tab === 'stock') {
         }
     }
 
-     function loadDataIntoMemory(data) {
+    function loadDataIntoMemory(data) {
         locations = data.locations || [];
         routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
         employees = data.employees || [];
         vehicles = data.vehicles || [];
-       loginRecords = data.loginData || [];
-       warehouseActions = data.warehouseActions || [];
-       loginActivityRecords = data.loginActivity || [];
+        loginRecords = data.loginData || [];
+        warehouseActions = data.warehouseActions || [];
+        loginActivityRecords = data.loginActivity || [];
         
         const planRouteMap = {};
         const completedPlans = new Set();
@@ -1846,8 +1879,8 @@ else if (tab === 'stock') {
         renderActionReport(warehouseActions);
         renderRouteTabs();
         renderEmployeeDropdowns();
-       renderVehicleGrid();
-       applyFilters();
+        renderVehicleGrid();
+        applyFilters();
 
         if (loggedInUser) {
             applyAccessControl();
@@ -1855,56 +1888,50 @@ else if (tab === 'stock') {
     } 
     
   
-function loadDataIntoMemorynew(data) {
-    locations = data.locations || [];
-    routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
-    employees = data.employees || [];
-    vehicles = data.vehicles || [];
-   // loginRecords = data.loginData || [];
-   // warehouseActions = data.warehouseActions || [];
-  //  loginActivityRecords = data.loginActivity || [];
-    
-    const planRouteMap = {};
-    const deliveryDataRecords = data.deliveryDataRecords || [];
-    
-    // UPDATED: Include ALL plans, but keep track of completed ones if needed or store their end dates
-    deliveryDataRecords.forEach(row => {
-        let pNo = String(row['No'] || '').trim();
-        let rName = String(row['Route Name'] || '').trim();
-        let endDate = String(row['End Date'] || '').trim();
+    function loadDataIntoMemorynew(data) {
+        locations = data.locations || [];
+        routes = [{ name: "ALL", mapUrl: "" }, ...(data.routes || [])];
+        employees = data.employees || [];
+        vehicles = data.vehicles || [];
         
-        if (pNo) {
-            if (rName) planRouteMap[pNo] = rName;
+        const planRouteMap = {};
+        const deliveryDataRecords = data.deliveryDataRecords || [];
+        
+        deliveryDataRecords.forEach(row => {
+            let pNo = String(row['No'] || '').trim();
+            let rName = String(row['Route Name'] || '').trim();
+            let endDate = String(row['End Date'] || '').trim();
+            
+            if (pNo) {
+                if (rName) planRouteMap[pNo] = rName;
+            }
+        });
+        
+        deliveryPlanData = data.deliveryPlan || [];
+        cachedDeliveryPlans = {};
+        
+        deliveryPlanData.forEach(item => {
+            let pNo = String(item['Plan No'] || item['planNo'] || '').trim();
+            if (pNo) {
+                if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
+                cachedDeliveryPlans[pNo].push(item);
+                cachedDeliveryPlans[pNo].routeName = planRouteMap[pNo] || item['Route Name'] || 'Unassigned Route';
+            }
+        });
+        
+        availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
+        
+        renderActionReport(warehouseActions);
+        renderRouteTabs();
+        renderEmployeeDropdowns();
+        renderVehicleGrid();
+        applyFilters();
+        applyTotalPlanSummaryFilters();
+        
+        if (loggedInUser) {
+            applyAccessControl();
         }
-    });
-    
-    deliveryPlanData = data.deliveryPlan || [];
-    cachedDeliveryPlans = {};
-    
-    // UPDATED: Process ALL delivery plans without skipping those with non-empty end dates
-    deliveryPlanData.forEach(item => {
-        let pNo = String(item['Plan No'] || item['planNo'] || '').trim();
-        if (pNo) {
-            if (!cachedDeliveryPlans[pNo]) cachedDeliveryPlans[pNo] = [];
-            cachedDeliveryPlans[pNo].push(item);
-            cachedDeliveryPlans[pNo].routeName = planRouteMap[pNo] || item['Route Name'] || 'Unassigned Route';
-        }
-    });
-    
-    availablePlanNos = Object.keys(cachedDeliveryPlans).sort((a, b) => Number(b) - Number(a));
-    
-  
-    renderActionReport(warehouseActions);
-    renderRouteTabs();
-    renderEmployeeDropdowns();
-    renderVehicleGrid();
-    applyFilters();
-    applyTotalPlanSummaryFilters()
-    
-    if (loggedInUser) {
-        applyAccessControl();
     }
-}
 
     function openLoginActivityModal() {
         fetchLatestLoginActivity();
@@ -2042,7 +2069,7 @@ function loadDataIntoMemorynew(data) {
         }
     }
 
-      function onPlanNoChange(planNo) {
+    function onPlanNoChange(planNo) {
         const container = document.getElementById('deliveryPlanResult');
         if (!planNo) {
             container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
@@ -2053,160 +2080,98 @@ function loadDataIntoMemorynew(data) {
         renderDeliveryPlanTable(planNo, items);
     }
 
-  function renderDeliveryPlanTable(planNo, items) {
-    
-    const container = document.getElementById('deliveryPlanResult');
-    
-    if (!planNo) {
+    function renderDeliveryPlanTable(planNo, items) {
+        const container = document.getElementById('deliveryPlanResult');
         
-        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
+        if (!planNo) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">Please select a Delivery Plan No above.</p>`;
+            return;
+        }
         
-        return;
+        const routeName = items.routeName || 'Unassigned Route';
         
-    }
-    
-    
-    
-    const routeName = items.routeName || 'Unassigned Route';
-    
-    
-    
-    if (items.length === 0) {
+        if (items.length === 0) {
+            container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
+            return;
+        }
         
-        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No records found for Plan : ${planNo}.</p>`;
-        
-        return;
-        
-    }
-    
-    
-    
-    container.innerHTML = `
-
+        container.innerHTML = `
             <div class="mb-4 flex items-center justify-between bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900 p-1.5 rounded-2xl">
-
                 <span class="text-xs font-bold px-1.5 py-1.5 bg-amber-500 text-slate-950 rounded-xl shadow-sm flex items-center gap-1.5">
-
                     <i class="fa-solid fa-route text-slate-950"></i>: ${routeName}
-
                 </span>
-
                 <span class="text-xs font-bold px-3 py-1 bg-teal-600 text-white rounded-xl shadow-sm">Plan : ${planNo} (${items.length} Invoices)</span>
-
             </div>
-
             <div class="overflow-x-auto">
-
                 <table class="w-full text-xs text-left border-collapse">
-
                     <thead>
-
                         <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-
                             <th class="p-2.5">Invoice No</th>
-
                             <th class="p-2.5">Customer Name</th>
-
                             <th class="p-2.5">Address</th>
-
                             <th class="p-2.5 text-right">Inv Value</th>
-
                             <th class="p-2.5">Delivered Status</th>
-
                             <th class="p-2.5">Return / Reason</th>
-
                         </tr>
-
                     </thead>
-
                     <tbody>
-
                         ${items.map((item, idx) => `
-
                             <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-
                                 <td class="p-2.5 font-bold">${item['Invoice No'] || '-'}</td>
-
                                 <td class="p-2.5 font-bold text-slate-400">${item['Customer Name'] || '-'}</td>
-
                                 <td class="p-2.5 text-slate-300">${item['Address'] || '-'}</td>
-
                                 <td class="p-2 text-right font-mono font-semibold">${item['Invoice Value'] || '0'}</td>
-
                                 <td class="p-2.5">
-
                                     <select onchange="updateDeliveryStatus('${item['ID']}', 'Delivered', this.value, '${planNo}', ${idx})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${item['Delivered'] === 'Yes' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-100 dark:bg-slate-900 border-slate-300'}">
-
                                         <option value="" ${!item['Delivered'] ? 'selected' : ''}>Pending</option>
-
                                         <option value="Yes" ${item['Delivered'] === 'Yes' ? 'selected' : ''}>Complete</option>
-
                                         <option value="No" ${item['Delivered'] === 'No' ? 'selected' : ''}>Not Delivered</option>
-
                                     </select>
-
                                 </td>
-
                                 <td class="p-2.5 space-y-1">
-
                                     <select onchange="updateDeliveryStatus('${item['ID']}', 'Market Retun', this.value, '${planNo}', ${idx})" class="px-2 py-1 rounded-xl text-[11px] font-bold border bg-slate-50 dark:bg-slate-900 border-slate-300">
-
                                         <option value="" ${!item['Market Retun'] ? 'selected' : ''}>No Return</option>
-
                                         <option value="Full Return" ${item['Market Retun'] === 'Full Return' ? 'selected' : ''}>Full Return</option>
-
                                         <option value="Part Return" ${item['Market Retun'] === 'Part Return' ? 'selected' : ''}>Part Return</option>
-
                                     </select>
-
                                     <input type="text" value="${item['If Undelivered Reason'] || ''}" placeholder="Undelivered reason..." onchange="updateDeliveryStatus('${item['ID']}', 'If Undelivered Reason', this.value, '${planNo}', ${idx})" class="w-full px-2 py-1 rounded-lg text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-
                                 </td>
-
                             </tr>
-
                         `).join('')}
-
                     </tbody>
-
                 </table>
-
             </div>`;
-    
-}
+    }
 
-
-async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
-    // Safely update local cache by matching the unique ID
-    if (cachedDeliveryPlans[planNo]) {
-        const item = cachedDeliveryPlans[planNo].find(i => String(i['ID']) === String(id));
-        if (item) {
-            item[field] = value;
+    async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
+        if (cachedDeliveryPlans[planNo]) {
+            const item = cachedDeliveryPlans[planNo].find(i => String(i['ID']) === String(id));
+            if (item) {
+                item[field] = value;
+            }
+        }
+        
+        try {
+            const body = new URLSearchParams();
+            body.append("payload", JSON.stringify({
+                action: "updateDeliveryPlanStatus",
+                data: { id, field, value }
+            }));
+            
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            
+            const result = await res.json();
+            if (result.status !== "success") {
+                console.error("Backend sync failed:", result.message);
+            }
+        } catch (err) {
+            console.error("Background sync error:", err);
         }
     }
-    
-    try {
-        const body = new URLSearchParams();
-        body.append("payload", JSON.stringify({
-            action: "updateDeliveryPlanStatus",
-            data: { id, field, value }
-        }));
-        
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: body
-        });
-        
-        const result = await res.json();
-        if (result.status !== "success") {
-            console.error("Backend sync failed:", result.message);
-        }
-    } catch (err) {
-        console.error("Background sync error:", err);
-    }
-}
-
 
     function formatAndCheckDate(dateStr) {
         if (!dateStr || dateStr === 'N/A') return { text: 'N/A', isUrgent: false };
@@ -2294,7 +2259,7 @@ async function updateDeliveryStatus(id, field, value, planNo, itemIndex) {
         updateDashboardVehicleCard(hasAnyUrgentVehicle);
     }
 
-    function updateDashboardVehicleCard(isUrgent) {
+   function updateDashboardVehicleCard(isUrgent) {
         const cardEl = document.getElementById('card-vehicle');
         const iconContainer = document.getElementById('cardVehicleIconContainer');
         const descEl = document.getElementById('cardVehicleDesc');
