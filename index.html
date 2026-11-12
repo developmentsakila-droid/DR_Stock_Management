@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Html5-Qrcode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
     tailwind.config = {
@@ -172,6 +173,19 @@
             </div>
         </div>
         
+        
+        
+        <div id="card-vehicle-maintenance" onclick="switchTab('vehicleMaintenance')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
+    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl font-bold border border-teal-500/20">
+        <i class="fa-solid fa-screwdriver-wrench"></i>
+    </div>
+    <div class="space-y-1">
+        <h4 class="font-extrabold text-base text-slate-900 dark:text-white">Vehicle Maintenance</h4>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Log repair requests and generate A4 Maintenance JPG forms.</p>
+    </div>
+</div>
+
+
         <div id="card-delivery-plan" onclick="switchTab('deliveryPlan')" class="dashboard-card glass-card dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 cursor-pointer shadow-lg flex flex-col justify-between space-y-4">
             <div class="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xl font-bold border border-orange-500/20">
                 <i class="fa-solid fa-location-arrow"></i>
@@ -287,6 +301,297 @@
      </div>
          </div>
 </div>
+
+
+
+
+
+
+
+<!-- Modal: Printable Vehicle Maintenance A4 PDF Preview -->
+<div id="maintenancePdfModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-black flex flex-col">
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
+    <h3 class="font-extrabold text-base flex items-center gap-2 text-white"><i class="fa-solid fa-file-pdf text-teal-500"></i> Vehicle Maintenance Form (A4 Preview)</h3>
+    <div class="flex items-center gap-2">
+        <button onclick="printMaintenancePdf()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-print"></i> Print / Save PDF
+        </button>
+        <button onclick="closeMaintenancePdfModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-rose-800 flex items-center justify-center text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+</div>
+        
+        <!-- A4 Printable Card Container -->
+        <div id="printableA4Form" class="bg-white text-black font-sans">
+            <!-- Header -->
+            <div class="flex justify-between items-start border-b-2 border-black pb-4">
+                <div>
+                    <h1 class="text-xl font-black tracking-wide text-black">HARUMI HOLDINGS (PVT) LTD</h1>
+                    <p class="text-sm font-bold mt-1 text-black" style="font-family: 'Iskoola Pota', sans-serif;">වාහන නඩත්තු කටයුතු සඳහා ඉල්ලුම් කිරීම</p>
+                </div>
+                <div class="border-2 border-black text-[11px] font-mono">
+                    <div class="flex border-b border-black">
+                        <div class="px-2 py-1 font-bold border-r border-black w-24">Doc No:</div>
+                        <div class="px-2 py-1 w-24 font-bold">F 5.5</div>
+                    </div>
+                    <div class="flex border-b border-black">
+                        <div class="px-2 py-1 font-bold border-r border-black">Issued Date:</div>
+                        <div class="px-2 py-1">12/01/2021</div>
+                    </div>
+                    <div class="flex">
+                        <div class="px-2 py-1 font-bold border-r border-black">Version No:</div>
+                        <div class="px-2 py-1">001</div>
+                    </div>
+                </div>
+            </div>
+            
+          <!-- Details Section 1 -->
+<div class="border-2 border-black p-4 space-y-3 text-xs text-black" style="font-size: 10px;">
+    <div class="grid grid-cols-2 gap-4">
+        <div><strong>ඉල්ලුම් කරන දිනය (Date):</strong> <span id="pdfDate" class="font-mono" style="font-size:10px;"></span></div>
+        <div><strong>ඉල්ලුම් අංකය (NoRequest):</strong> <span id="pdfNoRequest" class="font-mono font-bold text-teal-700" style="font-size: 10px;"></span></div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div><strong>වාහන අංකය (Vehicle No):</strong> <span id="pdfVehicleNo" class="font-mono font-bold" style="font-size: 10px;"></span></div>
+        <div><strong>අංශය (Department):</strong> <span id="pdfDepartment" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px;"></span></div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div><strong>ඉල්ලුම් කරන්නාගේ නම (Request By):</strong> <span id="pdfRequestBy" style="font-size: 10px;"></span></div>
+        <div><strong>කාණ්ඩය (Issue Type):</strong> <span id="pdfIssueType" class="font-bold" style="font-size: 10px;"></span></div>
+    </div>
+</div>
+
+
+<div class="p-1"></div>
+
+<!-- Section 1: Nature of work -->
+<div class="border-2 border-dashed border-black text-black" style="font-size: 12px;">
+    <div class=" px-2 py-1 font-bold border-b-2 border-black flex justify-between items-center" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px;">
+        <span>① නඩත්තු කටයුතු වල ස්වභාවය :</span>
+        <span class="font-sans" style="font-size: 10px;">වාහන පරීක්ෂණ පත්‍රය පිටුපස අමුණා ඇත ─────────></span>
+    </div>
+    <div class="p-2 space-y-6" style="font-size: 12px;">
+        <p><strong>Issue Details:</strong> <span id="pdfDetails" style="font-size: 10px;"></span></p>
+        <p><strong>Remarks:</strong> <span id="pdfRemarks" style="font-size: 12px;"></span></p>
+        <div class="text-right pt-4" style="font-family: 'Iskoola Pota', sans-serif; font-size: 12px;">ඉල්ලුම් කරන්නාගේ අත්සන : ..............................................................</div>
+    </div>
+</div>
+
+
+<div class="p-1"></div>
+
+<!-- Section 2: Technical Inspection -->
+<div class="border-2 border-dashed border-black text-black" style="font-size: 10px;">
+    <div class=" px-2 py-1 font-bold " style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px; text-black">
+        ② කාර්මික පරීක්ෂණ සටහන් : (හඳුනාගත් දෝෂ, නිර්දේශිත අලුත්වැඩියා සහ අනෙකුත් නිරීක්ෂණ)
+   
+    </div>
+    <div class="p-10 h-30"></div>
+</div>
+
+<div class="p-2 h-10 flex justify-end items-end grid grid-cols-3 text-black">
+     <div class=" p-1 text-center w-48" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px; text-black">
+      
+        <p class="font-bold mt-1 font-size: 10px; text-black">ඇස්තමේන්තු පිරිවැය </p>
+        <div class="p-3 h-5"></div>
+        <p>............................................................................ </p>
+    </div>
+    
+    <div class=" p-1 text-center w-48" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px; text-black">
+        <p>( පරීක්ෂා කිරීම )</p>
+        <p class="font-bold mt-1 font-size: 10px; text-black">තාක්ෂණික නිලධාරී</p>
+    </div>
+    
+         <div class=" p-1 text-center w-48" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px; text-black">
+         <p>( අනුමැතිය )</p>
+         <p class="font-bold mt-1 font-size: 10px; text-black">දෙපාර්තමේන්තු ප්‍රධානී</p>
+     </div>
+</div>
+
+
+
+
+
+<div class="p-1 h-10"></div>
+
+<!-- Section 3: Office Use -->
+<div class="text-black" style="font-size: 12px;">
+    <div class="bg-slate-200 px-3 py-2 font-bold border-b-2 border-black"</div
+   
+    
+    <div class="px-1 py-1 flex justify-between" style="font-family: 'Iskoola Pota', sans-serif; font-size: 12px;">
+        <span>③ කාර්යාලීය ප්‍රයෝජනය සඳහා :</span>
+        <span>දිනය : ........................</span>
+    </div>
+    <div class="p-2" style="font-family: 'Iskoola Pota', sans-serif; font-size: 12px;">
+        කාර්යාලීය අනුමැතිය ( ගණකාධිකරණ අංශය ):
+        <p class="font-bold p-2 font-size: 8px;">.................................................................................................................................................................... </p>
+        <p class="font-bold p-2 font-size: 8px;">.................................................................................................................................................................... </p>
+    </div>
+
+    <div class="p-2 h-15 flex justify-end items-end grid grid-cols-2">
+    <div class=" p-1 text-center w-48" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px;">
+        
+        <p class="font-bold mt-1 font-size: 10px;">අනුමැතිය :........................................... </p>
+    </div>
+    
+    <div class=" p-1 text-center w-48" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px;">
+        <p class="font-bold mt-1 font-size: 10px;">අනුමැතිය :........................................... </p>
+</div>
+</div>
+</div>
+
+
+
+<div class="p-2"></div>
+<!-- Section 4: Completed Repairs -->
+<div class="text-black" style="font-size: 12px;">
+    <div class="bg-slate-200 px-3 py-2 font-bold border-b-2 border-black text-black" style="font-family: 'Iskoola Pota', sans-serif; font-size: 12px;">
+        ④ අවසන් කළ අලුත්වැඩියා හා සේවාවන් :
+    </div>
+    
+    <div class="p-2 text-black" style="font-family: 'Iskoola Pota', sans-serif; font-size: 10px;">
+        <div class="grid grid-cols-2 gap-2 text-black">
+            
+            <div>අවසන් කළ දිනය : ...................................</div>
+            <div>අවසන් පිරිවැය : ...................................</div>
+        </div>
+        <div class="p-2"></div>
+        <div>අවසන් කළ බවට :</div></div>
+        <div class="grid grid-cols-4 gap-2 h-2 text-center font-bold text-black" style="font-size: 12px;">
+            <div>තාක්ෂණික නිලධාරී</div>
+            <div>ආරක්ෂක නිලධාරී</div>
+            <div>ගිණුම් අංශය</div>
+            <div>දෙපාර්තමේන්තු ප්‍රධානී</div>
+        </div>
+
+    
+</div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- ================= TAB: VEHICLE MAINTENANCE ================= -->
+<div id="sectionVehicleMaintenance" class="space-y-4 hidden">
+    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-teal-500"></i> Vehicle Maintenance Management
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Log service requests and export official A4 JPG forms for the maintenance department.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+                <button onclick="openAddMaintenanceModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> New Request
+                </button>
+                <button onclick="fetchVehicleMaintenanceData()" class="px-4 py-2 bg-slate-800 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+                <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                </button>
+            </div>
+        </div>
+
+        <!-- Maintenance Requests Table -->
+        <div class="overflow-x-auto pt-2">
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+                        <th class="p-3">NoRequest</th>
+                        <th class="p-3">Date</th>
+                        <th class="p-3">Department</th>
+                        <th class="p-3">Vehicle No</th>
+                        <th class="p-3">Request By</th>
+                        <th class="p-3">Issue Type</th>
+                        <th class="p-3">Details</th>
+                        <th class="p-3">Department Head</th>
+                        <th class="p-3 text-right">Print</th>
+                    </tr>
+                </thead>
+                <tbody id="maintenanceTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                    <tr><td colspan="9" class="text-center py-8 text-slate-400">Loading maintenance requests...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal: Add Vehicle Maintenance Request -->
+<div id="maintenanceModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-slate-900 dark:text-slate-100">
+        <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+            <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-teal-500"></i> New Vehicle Maintenance Request</h3>
+            <button onclick="closeMaintenanceModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="maintenanceForm" onsubmit="handleMaintenanceFormSubmit(event)" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">NoRequest *</label>
+                    <input type="text" id="mNoRequest" required value="vm-00025" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Date *</label>
+                    <input type="date" id="mDate" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Department *</label>
+                    <input type="text" id="mDepartment" required value="ගබඩා හා බෙදාහැරීම් අංශය" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Vehicle No *</label>
+                    <select id="mVehicleNo" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold"></select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Request By *</label>
+                    <input type="text" id="mRequestBy" required placeholder="Name" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Issue Type *</label>
+                    <select id="mIssueType" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                        <option value="Mechanical Repair">Mechanical Repair</option>
+                        <option value="Brake Overhaul">Brake Overhaul</option>
+                        <option value="Electrical Repair">Electrical Repair</option>
+                        <option value="Routine Service">Routine Service</option>
+                        <option value="Tire Replacement">Tire Replacement</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-[11px] font-extrabold uppercase mb-1">Details *</label>
+                <textarea id="mDetails" required rows="2" placeholder="Repair details..." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"></textarea>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Department Head *</label>
+                    <input type="text" id="mDepartmentHead" required value="" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold uppercase mb-1">Remarks</label>
+                    <input type="text" id="mRemarks" placeholder="Optional remarks" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+                </div>
+            </div>
+            <div class="pt-3 flex gap-3">
+                <button type="button" onclick="closeMaintenanceModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
+                <button type="submit" id="saveMaintenanceBtn" class="w-1/2 py-3 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl shadow-md text-xs">Save & Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
 
 <!-- ================= TAB 1: DELIVERY LOCATION FINDER ================= -->
 <div id="sectionDelivery" class="space-y-6 hidden">
@@ -1217,7 +1522,7 @@
 
 <!-- JavaScript Application Logic -->
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbweOtXZqpHeHftwMp4iBFKBI72mMmSUaJWuApilhSXXngwbTrtVFWo4xjQinotKiSq4/exec";
+   const API_URL = "https://script.google.com/macros/s/AKfycbweOtXZqpHeHftwMp4iBFKBI72mMmSUaJWuApilhSXXngwbTrtVFWo4xjQinotKiSq4/exec";
 
     let locations = [];
     let routes = [{ name: "ALL", mapUrl: "" }];
@@ -1227,6 +1532,7 @@
     let loginActivityRecords = [];
     let deliveryPlanData = [];
     let cachedDeliveryPlans = {};
+    let globalMaintenanceData = [];
     
     let availablePlanNos = [];
 
@@ -1262,7 +1568,7 @@
 
     // ================= MOBILE BACK BUTTON HANDLING =================
     window.addEventListener('popstate', (event) => {
-        const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'customerForm'];
+        const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'customerForm', 'vehicleMaintenance'];
         let currentActiveTab = 'dashboard';
 
         for (const s of activeSections) {
@@ -1577,7 +1883,8 @@
             { id: 'card-delivery-plan', keyword: 'delivery plan' },
             { id: 'card-login-activity', keyword: 'login activity' },
             { id: 'card-delivery-summary', keyword: 'delivery summary' },
-            { id: 'card-attendance', keyword: 'attendance sum' }
+            { id: 'card-attendance', keyword: 'attendance sum' },
+            { id: 'card-vehicle-maintenance', keyword: 'vehicle maintenance' }
         ];
 
         modules.forEach(mod => {
@@ -1610,7 +1917,9 @@
                 'deliveryPlan': 'delivery plan',
                 'deliverySummary': 'delivery summary',
                 'attendance': 'attendance sum',
-                'totalPlanSummary': 'delivery plan'
+                'deliveryScheduleSummary': 'delivery schedule',
+                'totalPlanSummary': 'delivery plan',
+                'vehicleMaintenance': 'vehicle maintenance'
             };
             const requiredKeyword = moduleMap[tab];
             if (requiredKeyword) {
@@ -1622,7 +1931,7 @@
             }
         }
       
-        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary'];
+        const sections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'vehicleMaintenance'];
         sections.forEach(s => {
             const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
             if (el) el.classList.toggle('hidden', s !== tab);
@@ -1679,6 +1988,11 @@
 
         else if (tab === 'deliveryPlan') {
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'deliveryPlan');
+        }
+
+        else if (tab === 'vehicleMaintenance') {
+            fetchVehicleMaintenanceData();
+            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicleMaintenance');
         }
 
         else if (tab === 'vehicle') {
@@ -2989,34 +3303,31 @@
         }
     }
 
-function onScheduleDateChange(dateVal) {
-    if (!dateVal) return;
-    var d = new Date(dateVal);
-    var weekNo = getISOWeekNumber(d);
-    
-    // Check if time is between Monday 12:00 PM and Tuesday 12:00 PM
-    var day = d.getDay(); // 1 = Monday, 2 = Tuesday
-    var hours = d.getHours(); // 0 - 23
-    
-    var isMondayAfterNoon = (day === 6 && hours >= 05);
-    var isTuesdayBeforeNoon = (day === 7 && hours < 17);
-    
-    if (isMondayAfterNoon || isTuesdayBeforeNoon) {
-        weekNo += 1;
-        // Shift base date by 7 days so the week range label matches the new weekNo
-        d.setDate(d.getDate() + 7);
+    function onScheduleDateChange(dateVal) {
+        if (!dateVal) return;
+        var d = new Date(dateVal);
+        var weekNo = getISOWeekNumber(d);
+        
+        var day = d.getDay(); 
+        var hours = d.getHours(); 
+        
+        var isMondayAfterNoon = (day === 6 && hours >= 05);
+        var isTuesdayBeforeNoon = (day === 7 && hours < 17);
+        
+        if (isMondayAfterNoon || isTuesdayBeforeNoon) {
+            weekNo += 1;
+            d.setDate(d.getDate() + 7);
+        }
+        
+        var range = getMondayAndSunday(d);
+        
+        document.getElementById('reportWeekNo').value = weekNo;
+        var mStr = range.monday.toISOString().split('T')[0].replace(/-/g, '/');
+        var sStr = range.sunday.toISOString().split('T')[0].replace(/-/g, '/');
+        document.getElementById('weekDateRangeLabel').innerHTML = `Week <strong>${weekNo}</strong> Range: <span class="text-purple-600 font-bold">${mStr} (Mon)</span> to <span class="text-purple-600 font-bold">${sStr} (Sun)</span>`;
+        
+        fetchDeliveryScheduleReport(weekNo);
     }
-    
-    var range = getMondayAndSunday(d);
-    
-    document.getElementById('reportWeekNo').value = weekNo;
-    var mStr = range.monday.toISOString().split('T')[0].replace(/-/g, '/');
-    var sStr = range.sunday.toISOString().split('T')[0].replace(/-/g, '/');
-    document.getElementById('weekDateRangeLabel').innerHTML = `Week <strong>${weekNo}</strong> Range: <span class="text-purple-600 font-bold">${mStr} (Mon)</span> to <span class="text-purple-600 font-bold">${sStr} (Sun)</span>`;
-    
-    fetchDeliveryScheduleReport(weekNo);
-}
-
 
     function formatCustomDateTime(dateString) {
         if (!dateString) return "-";
@@ -3069,20 +3380,19 @@ function onScheduleDateChange(dateVal) {
     }
 
     function fetchDeliveryScheduleReport(weekNo) {
-const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-const isAuthorized = ["executive", "manager"].includes(userLevel);
+        const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+        const isAuthorized = ["executive", "manager"].includes(userLevel);
 
-// Toggle save button visibility based on role
-const saveBtnEl = document.getElementById('scsave');
-if (saveBtnEl) {
-    if (isAuthorized) {
-        saveBtnEl.classList.remove('hidden');
-        saveBtnEl.classList.add('flex');
-    } else {
-        saveBtnEl.classList.add('hidden');
-        saveBtnEl.classList.remove('flex');
-    }
-}
+        const saveBtnEl = document.getElementById('scsave');
+        if (saveBtnEl) {
+            if (isAuthorized) {
+                saveBtnEl.classList.remove('hidden');
+                saveBtnEl.classList.add('flex');
+            } else {
+                saveBtnEl.classList.add('hidden');
+                saveBtnEl.classList.remove('flex');
+            }
+        }
 
         if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
         const container = document.getElementById('scheduleReportResult');
@@ -3092,23 +3402,16 @@ if (saveBtnEl) {
             .then(res => res.json())
             .then(data => {
                 if (data.status === "success" && data.schedule) {
-                    
-                    // --- SORTING ADDED HERE (Date A-Z, then Plan No A-Z) ---
                     data.schedule.sort((a, b) => {
                         const dateA = new Date(a.Date || 0);
                         const dateB = new Date(b.Date || 0);
-                        
-                        // 1. Compare Dates first
                         if (dateA - dateB !== 0) {
                             return dateA - dateB;
                         }
-                        
-                        // 2. If dates are equal, sort by Plan No (No) A to Z
                         const planA = String(a.No || '').toLowerCase();
                         const planB = String(b.No || '').toLowerCase();
                         return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
                     });
-                    // --------------------------------------------------------
 
                     lastScheduleData = data.schedule;
                     document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
@@ -3120,9 +3423,6 @@ if (saveBtnEl) {
                     }
                     document.getElementById('downloadScheduleCsvBtn').disabled = false;
                     
-                    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-                    const isAuthorized = ["executive", "manager"].includes(userLevel);
-
                     const vehicleOptions = `<option value="">-- --</option>` + vehicles.map(v => {
                         const vNo = v['Vehicle No'] || v.vehicleNo || '';
                         return `<option value="${vNo}">${vNo}</option>`;
@@ -3184,6 +3484,7 @@ if (saveBtnEl) {
             })
             .catch(() => { container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`; });
     }
+
     function updateScheduleField(index, field, value) {
         if (!lastScheduleData || !lastScheduleData[index]) return;
         lastScheduleData[index][field] = value;
@@ -3247,157 +3548,149 @@ if (saveBtnEl) {
         link.download = `Delivery_Schedule_Week_${document.getElementById('reportWeekNo').value}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
-    
 
-async function downloadScheduleJPG() {
-    const jpgBtn = document.getElementById('downloadScheduleJpgBtn');
-    
-    // If data is empty, automatically fetch it first
-    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
-        setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Downloading...');
-        try {
-            const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
-            const result = await response.json();
-            if (result.status === "success" && result.scheduleSummary) {
-                globalScheduleSummaryData = result.scheduleSummary;
-                populateScheduleSummaryDropdowns(globalScheduleSummaryData);
+    async function downloadScheduleJPG() {
+        const jpgBtn = document.getElementById('downloadScheduleJpgBtn');
+        
+        if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+            setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Downloading...');
+            try {
+                const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+                const result = await response.json();
+                if (result.status === "success" && result.scheduleSummary) {
+                    globalScheduleSummaryData = result.scheduleSummary;
+                    populateScheduleSummaryDropdowns(globalScheduleSummaryData);
+                }
+            } catch (e) {
+                console.error("Auto-fetch failed", e);
             }
-        } catch (e) {
-            console.error("Auto-fetch failed", e);
+            setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
         }
-        setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
-    }
-    
-    if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
-        alert("No schedule data available to export from Google Sheets.");
-        return;
-    }
-    
-    // 1. Grab ALL active filters from the screen (including Week)
-    const filterWeek = document.getElementById('reportWeekNo') ? document.getElementById('reportWeekNo').value.trim() : '';
-    const filterDate = document.getElementById('schedSumFilterDate').value;
-    const filterRoute = document.getElementById('schedSumFilterRoute').value;
-    const filterDriver = document.getElementById('schedSumFilterDriver').value;
-    const filterHelper = document.getElementById('schedSumFilterHelper').value;
-    const filterLorry = document.getElementById('schedSumFilterLorry').value;
-    
-    // 2. Filter rows ensuring ONLY the selected week and criteria are exported
-    const rowsToExport = globalScheduleSummaryData.filter(row => {
-        const rowWeek = String(row['Week No'] || row.weekNo || '').trim();
-        const rawDate = row.Date || row['End Date'] || '';
-        const rowDate = String(rawDate).trim().substring(0, 10);
         
-        const rowRoute = String(row['Route Name'] || '').trim();
-        const rowDriver = String(row.Driver || '').trim();
-        const rowHelper = String(row.Helper || '').trim();
-        const rowLorry = String(row.Lorry || '').trim();
-        
-        if (filterWeek && rowWeek !== filterWeek) return false;
-        if (filterDate && rowDate !== filterDate) return false;
-        if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
-        if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
-        if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
-        if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
-        
-        return true;
-    });
-    
-    // 3. Sort rows by Date (A to Z), then by Plan No (A to Z numerically)
-    rowsToExport.sort((a, b) => {
-        const dateA = String(formatCustomDateTime(a.Date) || '');
-        const dateB = String(formatCustomDateTime(b.Date) || '');
-        if (dateA !== dateB) {
-            return dateA.localeCompare(dateB);
+        if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
+            alert("No schedule data available to export from Google Sheets.");
+            return;
         }
-        const planA = String(a.No || '');
-        const planB = String(b.No || '');
-        return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
-    });
-    
-    if (rowsToExport.length === 0) {
-        alert(`No schedule rows match Week ${filterWeek || 'selected'} and your filter criteria.`);
-        return;
-    }
-    
-    setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
-    
-   try {
-       const canvas = document.createElement('canvas');
-       const ctx = canvas.getContext('2d');
-       
-       const rowHeight = 35;
-       const headerHeight = 45;
-       const padding = 40;
-       const width = 1000;
-       const height = headerHeight + (rowsToExport.length * rowHeight) + (padding * 2) + 40;
-       
-       canvas.width = width;
-       canvas.height = height;
-       
-       const isDark = document.documentElement.classList.contains('dark');
-       ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
-       ctx.fillRect(0, 0, width, height);
-       
-       // Title displaying the exact exported week
-       ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
-       ctx.font = 'bold 18px Inter, sans-serif';
-       ctx.fillText(`HARUMI HOLDINGS (PVT) LTD - DELIVERY SCHEDULE SUMMARY (WEEK ${filterWeek || 'ALL'})`, padding, 35);
-       
-       ctx.fillStyle = '#056396';
-       ctx.fillRect(padding, 60, width - (padding * 2), headerHeight);
-       
-       ctx.fillStyle = '#ffffff';
-       ctx.font = 'bold 12px Inter, sans-serif';
-       const headers = ["No", "Date", "Route", "Driver", "Helper", "Lorry", "Start", "KM", "Special Note"];
-       const colX = [padding + 15, padding + 70, padding + 180, padding + 390, padding + 600, padding + 810];
-       
-       headers.forEach((h, idx) => {
-           ctx.fillText(h, colX[idx], 60 + 27);
-       });
-       
-       ctx.font = '12px Inter, sans-serif';
-       rowsToExport.forEach((r, idx) => {
-           const y = 60 + headerHeight + (idx * rowHeight);
+        
+        const filterWeek = document.getElementById('reportWeekNo') ? document.getElementById('reportWeekNo').value.trim() : '';
+        const filterDate = document.getElementById('schedSumFilterDate').value;
+        const filterRoute = document.getElementById('schedSumFilterRoute').value;
+        const filterDriver = document.getElementById('schedSumFilterDriver').value;
+        const filterHelper = document.getElementById('schedSumFilterHelper').value;
+        const filterLorry = document.getElementById('schedSumFilterLorry').value;
+        
+        const rowsToExport = globalScheduleSummaryData.filter(row => {
+            const rowWeek = String(row['Week No'] || row.weekNo || '').trim();
+            const rawDate = row.Date || row['End Date'] || '';
+            const rowDate = String(rawDate).trim().substring(0, 10);
+            
+            const rowRoute = String(row['Route Name'] || '').trim();
+            const rowDriver = String(row.Driver || '').trim();
+            const rowHelper = String(row.Helper || '').trim();
+            const rowLorry = String(row.Lorry || '').trim();
+            
+            if (filterWeek && rowWeek !== filterWeek) return false;
+            if (filterDate && rowDate !== filterDate) return false;
+            if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
+            if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
+            if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
+            if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
+            
+            return true;
+        });
+        
+        rowsToExport.sort((a, b) => {
+            const dateA = String(formatCustomDateTime(a.Date) || '');
+            const dateB = String(formatCustomDateTime(b.Date) || '');
+            if (dateA !== dateB) {
+                return dateA.localeCompare(dateB);
+            }
+            const planA = String(a.No || '');
+            const planB = String(b.No || '');
+            return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
+        });
+        
+        if (rowsToExport.length === 0) {
+            alert(`No schedule rows match Week ${filterWeek || 'selected'} and your filter criteria.`);
+            return;
+        }
+        
+        setButtonLoading(jpgBtn, true, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+        
+       try {
+           const canvas = document.createElement('canvas');
+           const ctx = canvas.getContext('2d');
            
-           if (idx % 2 === 1) {
-               ctx.fillStyle = isDark ? '#1e293b' : '#f8fafc';
-               ctx.fillRect(padding, y, width - (padding * 2), rowHeight);
-           }
+           const rowHeight = 35;
+           const headerHeight = 45;
+           const padding = 40;
+           const width = 1000;
+           const height = headerHeight + (rowsToExport.length * rowHeight) + (padding * 2) + 40;
            
-           ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
+           canvas.width = width;
+           canvas.height = height;
            
-           const vals = [
-               r.No || '-',
-               String(formatCustomDateTime(r.Date) || '').substring(0, 10),
-               r['Route Name'] || '-',
-               r.Driver || '-',
-               r.Helper || '-',
-               r.Lorry || '-',
-               // r['Start Time'] || r.Time || '-',
-               //  r['GSM KM'] || '-',
-               // r['Special Note'] || '-'
-           ];
+           const isDark = document.documentElement.classList.contains('dark');
+           ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+           ctx.fillRect(0, 0, width, height);
            
-           vals.forEach((val, vIdx) => {
-               ctx.fillText(val, colX[vIdx], y + 22);
+           ctx.fillStyle = isDark ? '#ffffff' : '#0f172a';
+           ctx.font = 'bold 18px Inter, sans-serif';
+           ctx.fillText(`HARUMI HOLDINGS (PVT) LTD - DELIVERY SCHEDULE SUMMARY (WEEK ${filterWeek || 'ALL'})`, padding, 35);
+           
+           ctx.fillStyle = '#056396';
+           ctx.fillRect(padding, 60, width - (padding * 2), headerHeight);
+           
+           ctx.fillStyle = '#ffffff';
+           ctx.font = 'bold 12px Inter, sans-serif';
+           const headers = ["No", "Date", "Route", "Driver", "Helper", "Lorry", "Start", "KM", "Special Note"];
+           const colX = [padding + 15, padding + 70, padding + 180, padding + 390, padding + 600, padding + 810];
+           
+           headers.forEach((h, idx) => {
+               ctx.fillText(h, colX[idx], 60 + 27);
            });
-       });
-       
-       const imageURL = canvas.toDataURL('image/jpeg', 0.95);
-       const link = document.createElement('a');
-       link.href = imageURL;
-       link.download = `Delivery_Schedule_Week_${filterWeek || 'Summary'}_${new Date().toISOString().slice(0, 10)}.jpg`;
-       document.body.appendChild(link);
-       link.click();
-       document.body.removeChild(link);
-       
-   } catch (err) {
-        console.error("Fast JPG generation error:", err);
-        alert("Could not generate JPG: " + err.message);
-    } finally {
-        setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+           
+           ctx.font = '12px Inter, sans-serif';
+           rowsToExport.forEach((r, idx) => {
+               const y = 60 + headerHeight + (idx * rowHeight);
+               
+               if (idx % 2 === 1) {
+                   ctx.fillStyle = isDark ? '#1e293b' : '#f8fafc';
+                   ctx.fillRect(padding, y, width - (padding * 2), rowHeight);
+               }
+               
+               ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
+               
+               const vals = [
+                   r.No || '-',
+                   String(formatCustomDateTime(r.Date) || '').substring(0, 10),
+                   r['Route Name'] || '-',
+                   r.Driver || '-',
+                   r.Helper || '-',
+                   r.Lorry || '-'
+               ];
+               
+               vals.forEach((val, vIdx) => {
+                   ctx.fillText(val, colX[vIdx], y + 22);
+               });
+           });
+           
+           const imageURL = canvas.toDataURL('image/jpeg', 0.95);
+           const link = document.createElement('a');
+           link.href = imageURL;
+           link.download = `Delivery_Schedule_Week_${filterWeek || 'Summary'}_${new Date().toISOString().slice(0, 10)}.jpg`;
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+           
+       } catch (err) {
+            console.error("Fast JPG generation error:", err);
+            alert("Could not generate JPG: " + err.message);
+        } finally {
+            setButtonLoading(jpgBtn, false, '<i class="fa-solid fa-file-image"></i> Download Schedule JPG');
+        }
     }
-}
+
     function initDeliverySummaryFilters() {
         const drivers = new Set();
         const helpers = new Set();
@@ -3427,94 +3720,89 @@ async function downloadScheduleJPG() {
         applyDeliverySummaryFilters();
     }
 
-     function resetDeliverySummaryFilters() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    
-    // 1st day of the current month (e.g., "2026-11-01")
-    const firstDayOfMonth = `${year}-${month}-01`;
-    // Today's date (e.g., "2026-11-07")
-    const todayFormatted = `${year}-${month}-${day}`;
-    
-    // Set the inputs to the current month range
-    document.getElementById('sumFilterStartDate').value = firstDayOfMonth;
-    document.getElementById('sumFilterEndDate').value = todayFormatted;
-    
-    document.getElementById('sumFilterDriver').value = 'ALL';
-    document.getElementById('sumFilterHelper').value = 'ALL';
-    document.getElementById('sumFilterRoute').value = 'ALL';
-    document.getElementById('sumFilterLorry').value = 'ALL';
-    
-    applyDeliverySummaryFilters();
-}
+    function resetDeliverySummaryFilters() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        
+        const firstDayOfMonth = `${year}-${month}-01`;
+        const todayFormatted = `${year}-${month}-${day}`;
+        
+        document.getElementById('sumFilterStartDate').value = firstDayOfMonth;
+        document.getElementById('sumFilterEndDate').value = todayFormatted;
+        
+        document.getElementById('sumFilterDriver').value = 'ALL';
+        document.getElementById('sumFilterHelper').value = 'ALL';
+        document.getElementById('sumFilterRoute').value = 'ALL';
+        document.getElementById('sumFilterLorry').value = 'ALL';
+        
+        applyDeliverySummaryFilters();
+    }
 
-function applyDeliverySummaryFilters() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    
-    const firstDayOfMonth = `${year}-${month}-01`;
-    const todayFormatted = `${year}-${month}-${day}`;
-    
-    // If inputs are empty when applying, default them to the current month range
-    let startDate = document.getElementById('sumFilterStartDate').value;
-    if (!startDate) {
-        startDate = firstDayOfMonth;
-        document.getElementById('sumFilterStartDate').value = startDate;
-    }
-    
-    let endDate = document.getElementById('sumFilterEndDate').value;
-    if (!endDate) {
-        endDate = todayFormatted;
-        document.getElementById('sumFilterEndDate').value = endDate;
-    }
-    
-    const selDriver = document.getElementById('sumFilterDriver').value;
-    const selHelper = document.getElementById('sumFilterHelper').value;
-    const selRoute = document.getElementById('sumFilterRoute').value;
-    const selLorry = document.getElementById('sumFilterLorry').value;
-    
-    let allRecords = [];
-    Object.keys(cachedDeliveryPlans).forEach(planNo => {
-        const items = cachedDeliveryPlans[planNo] || [];
-        let scheduleDate = '';
-        if (typeof lastScheduleData !== 'undefined') {
-            const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
-            if (schedMatch) {
-                scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
-            }
+    function applyDeliverySummaryFilters() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        
+        const firstDayOfMonth = `${year}-${month}-01`;
+        const todayFormatted = `${year}-${month}-${day}`;
+        
+        let startDate = document.getElementById('sumFilterStartDate').value;
+        if (!startDate) {
+            startDate = firstDayOfMonth;
+            document.getElementById('sumFilterStartDate').value = startDate;
         }
         
-        items.forEach(item => {
-            const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
-            allRecords.push({ ...item, planNo, resolvedDate: recordDate });
+        let endDate = document.getElementById('sumFilterEndDate').value;
+        if (!endDate) {
+            endDate = todayFormatted;
+            document.getElementById('sumFilterEndDate').value = endDate;
+        }
+        
+        const selDriver = document.getElementById('sumFilterDriver').value;
+        const selHelper = document.getElementById('sumFilterHelper').value;
+        const selRoute = document.getElementById('sumFilterRoute').value;
+        const selLorry = document.getElementById('sumFilterLorry').value;
+        
+        let allRecords = [];
+        Object.keys(cachedDeliveryPlans).forEach(planNo => {
+            const items = cachedDeliveryPlans[planNo] || [];
+            let scheduleDate = '';
+            if (typeof lastScheduleData !== 'undefined') {
+                const schedMatch = lastScheduleData.find(s => String(s.No || '').trim() === String(planNo).trim());
+                if (schedMatch) {
+                    scheduleDate = schedMatch.Date || schedMatch['End Date'] || 'ALL';
+                }
+            }
+            
+            items.forEach(item => {
+                const recordDate = item.Date || item['End Date'] || item.date || item['delivery date'] || scheduleDate || 'ALL';
+                allRecords.push({ ...item, planNo, resolvedDate: recordDate });
+            });
         });
-    });
-    
-    const filtered = allRecords.filter(item => {
-        const itemDate = extractDateInputVal(item.resolvedDate);
-        const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
-        const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
         
-        const itemDriver = String(item.Driver || item.driver || '').trim();
-        const itemHelper = String(item.Helper || item.helper || '').trim();
-        const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
-        const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
+        const filtered = allRecords.filter(item => {
+            const itemDate = extractDateInputVal(item.resolvedDate);
+            const matchesStart = !startDate || (itemDate && itemDate >= startDate) || !itemDate;
+            const matchesEnd = !endDate || (itemDate && itemDate <= endDate) || !itemDate;
+            
+            const itemDriver = String(item.Driver || item.driver || '').trim();
+            const itemHelper = String(item.Helper || item.helper || '').trim();
+            const itemRoute = String(item['Route Name'] || item.Route || item.route || '').trim();
+            const itemLorry = String(item.Lorry || item.lorry || item['Vehicle No'] || '').trim();
+            
+            const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
+            const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
+            const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
+            const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
+            
+            return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
+        });
         
-        const matchesDriver = selDriver === 'ALL' || itemDriver === selDriver;
-        const matchesHelper = selHelper === 'ALL' || itemHelper === selHelper;
-        const matchesRoute = selRoute === 'ALL' || itemRoute === selRoute;
-        const matchesLorry = selLorry === 'ALL' || itemLorry === selLorry;
-        
-        return matchesStart && matchesEnd && matchesDriver && matchesHelper && matchesRoute && matchesLorry;
-    });
-    
-    renderDeliverySummaryCards(filtered);
-}
-
+        renderDeliverySummaryCards(filtered);
+    }
 
     function renderDeliverySummaryCards(data) {
         const grid = document.getElementById('deliverySummaryGrid');
@@ -3663,73 +3951,70 @@ function applyDeliverySummaryFilters() {
     }
 
     function calculateWorkingAndOTHours(checkInStr, checkOutStr) {
-    if (!checkInStr || !checkOutStr) return { normalHours: 0, otHours: 0 };
-    
-    // Fix date parsing for "YYYY-MM-DD HH:mm:ss" vs ISO "YYYY-MM-DDTHH:mm:ss"
-    const parseDate = (str) => {
-        if (!str) return new Date(NaN);
-        let normalized = String(str).trim();
-        if (normalized.includes(' ') && !normalized.includes('T')) {
-            normalized = normalized.replace(' ', 'T');
+        if (!checkInStr || !checkOutStr) return { normalHours: 0, otHours: 0 };
+        
+        const parseDate = (str) => {
+            if (!str) return new Date(NaN);
+            let normalized = String(str).trim();
+            if (normalized.includes(' ') && !normalized.includes('T')) {
+                normalized = normalized.replace(' ', 'T');
+            }
+            return new Date(normalized);
+        };
+        
+        const checkIn = parseDate(checkInStr);
+        const checkOut = parseDate(checkOutStr);
+        
+        if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+            return { normalHours: 0, otHours: 0 };
         }
-        return new Date(normalized);
-    };
-    
-    const checkIn = parseDate(checkInStr);
-    const checkOut = parseDate(checkOutStr);
-    
-    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
-        return { normalHours: 0, otHours: 0 };
+        
+        const dayOfWeek = checkIn.getDay();
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        
+        const totalWorkedHours = (checkOut - checkIn) / (1000 * 60 * 60);
+        if (totalWorkedHours <= 0) return { normalHours: 0, otHours: 0 };
+        
+        if (isWeekend) {
+            return { normalHours: 0, otHours: parseFloat(totalWorkedHours.toFixed(2)) };
+        }
+        
+        const standardDailyHours = 8;
+        
+        let normalHours = Math.min(totalWorkedHours, standardDailyHours);
+        let otHours = Math.max(0, totalWorkedHours - standardDailyHours);
+        
+        return {
+            normalHours: parseFloat(normalHours.toFixed(2)),
+            otHours: parseFloat(otHours.toFixed(2))
+        };
     }
-    
-    const dayOfWeek = checkIn.getDay(); // 0 = Sunday, 6 = Saturday
-    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-    
-    const totalWorkedHours = (checkOut - checkIn) / (1000 * 60 * 60);
-    if (totalWorkedHours <= 0) return { normalHours: 0, otHours: 0 };
-    
-    if (isWeekend) {
-        return { normalHours: 0, otHours: parseFloat(totalWorkedHours.toFixed(2)) };
-    }
-    
-    // Standard workday parameters (e.g., 8 hours normal shift)
-    const standardDailyHours = 8;
-    
-    let normalHours = Math.min(totalWorkedHours, standardDailyHours);
-    let otHours = Math.max(0, totalWorkedHours - standardDailyHours);
-    
-    return {
-        normalHours: parseFloat(normalHours.toFixed(2)),
-        otHours: parseFloat(otHours.toFixed(2))
-    };
-}
 
-async function loadAttendanceData() {
-    try {
-        const response = await fetch(API_URL + "?action=getAttendance");
-        const result = await response.json();
-        
-        // FIXED: Changed result.data to result.attendance to match Apps Script response
-        allAttendanceRecords = result.attendance || result.data || [];
-        
-        const employeeSet = [...new Set(allAttendanceRecords.map(r => r.name || r.Name || r['Name']).filter(Boolean))].sort();
-        const empSelect = document.getElementById('attFilterEmployee');
-        if (empSelect) {
-            empSelect.innerHTML = '<option value="ALL">All Employees</option>';
-            employeeSet.forEach(emp => {
-                empSelect.innerHTML += `<option value="${emp}">${emp}</option>`;
-            });
+    async function loadAttendanceData() {
+        try {
+            const response = await fetch(API_URL + "?action=getAttendance");
+            const result = await response.json();
+            
+            allAttendanceRecords = result.attendance || result.data || [];
+            
+            const employeeSet = [...new Set(allAttendanceRecords.map(r => r.name || r.Name || r['Name']).filter(Boolean))].sort();
+            const empSelect = document.getElementById('attFilterEmployee');
+            if (empSelect) {
+                empSelect.innerHTML = '<option value="ALL">All Employees</option>';
+                employeeSet.forEach(emp => {
+                    empSelect.innerHTML += `<option value="${emp}">${emp}</option>`;
+                });
+            }
+            
+            applyAttendanceFilters();
+        } catch (e) {
+            console.warn("Failed to load attendance from Apps Script, using fallback demo records", e);
+            allAttendanceRecords = [
+                { date: '2026-04-08', ETF: '768', Category: 'Executive', Name: 'Sakila', Status: 'Present', In: '08:00', Out: '19:30', Remark: 'Regular attendance' }
+            ];
+            applyAttendanceFilters();
         }
-        
-        applyAttendanceFilters();
-    } catch (e) {
-        console.warn("Failed to load attendance from Apps Script, using fallback demo records", e);
-        allAttendanceRecords = [
-            { date: '2026-04-08', ETF: '768', Category: 'Executive', Name: 'Sakila', Status: 'Present', In: '08:00', Out: '19:30', Remark: 'Regular attendance' }
-        ];
-        applyAttendanceFilters();
     }
-}
 
     function applyAttendanceFilters() {
         const selectedEmp = document.getElementById('attFilterEmployee').value;
@@ -3754,14 +4039,10 @@ async function loadAttendanceData() {
         
         tbody.innerHTML = filtered.map(r => {
             const date = r.date || r.Date || '-';
-            const etfId = r.etfId || r.ETF || '-';
-            const role = r.role || r.Category || '-';
             const name = r.name || r.Name || '-';
             const status = r.status || r.Status || 'Present';
             const cin = r.in || r.In || '-';
             const cout = r.out || r.Out || '-';
-            
-            
             
             let badgeColor = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
             if (status.toLowerCase() === 'absent') badgeColor = 'bg-rose-500/10 text-rose-600 border-rose-500/20';
@@ -3769,24 +4050,15 @@ async function loadAttendanceData() {
             
             const { normalHours, otHours } = calculateWorkingAndOTHours(r.checkIn, r.checkOut);
 
-            
-            // IF YOU WaNT add the top of name row
-            //<td class="py-3 px-4 text-slate-500 font-mono">${etfId}</td>
-                 //   <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${role}</td>
-            
             return `
                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                     <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTime(r.Date)}</td>
-
-                   
                     <td class="py-3 px-4 font-extrabold text-slate-900 dark:text-white">${name}</td>
                     <td class="py-3 px-4">
                         <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border ${badgeColor}">${status}</span>
                     </td>
-                    
                     <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(r.In)}</td>
                     <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(r.Out)}</td>
-                    
                     <td class="py-3 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${status.toLowerCase() === 'absent' ? '0.00' : normalHours.toFixed(2)} hrs</td>
                     <td class="py-3 px-4 text-right font-mono font-extrabold text-orange-600 dark:text-orange-400">${status.toLowerCase() === 'absent' ? '0.00' : otHours.toFixed(2)} hrs</td>
                 </tr>
@@ -3800,97 +4072,93 @@ async function loadAttendanceData() {
         document.getElementById('attFilterEndDate').value = '';
         applyAttendanceFilters();
     }
-    
-    
-    // Add module permission to switchTab validation map
-// (Inside switchTab function moduleMap definition):
-// 'deliveryScheduleSummary': 'delivery schedule'
 
-let globalScheduleSummaryData = [];
+    let globalScheduleSummaryData = [];
 
-async function loadScheduleSummaryData() {
-    const tbody = document.getElementById('schedSumTableBody');
-    if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-blue-500 font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Reloading schedule summary...</td></tr>`;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
-        const result = await response.json();
-        if (result.status === "success" && result.scheduleSummary) {
-            globalScheduleSummaryData = result.scheduleSummary;
-            populateScheduleSummaryDropdowns(globalScheduleSummaryData);
-            applyScheduleSummaryFilters();
-        }
-    } catch (e) {
-        console.warn("Failed to load schedule summary", e);
+    async function loadScheduleSummaryData() {
+        const tbody = document.getElementById('schedSumTableBody');
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-rose-500 font-bold">Failed to load schedule data. Please check connection.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-blue-500 font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Reloading schedule summary...</td></tr>`;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && result.scheduleSummary) {
+                globalScheduleSummaryData = result.scheduleSummary;
+                populateScheduleSummaryDropdowns(globalScheduleSummaryData);
+                applyScheduleSummaryFilters();
+            }
+        } catch (e) {
+            console.warn("Failed to load schedule summary", e);
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-rose-500 font-bold">Failed to load schedule data. Please check connection.</td></tr>`;
+            }
         }
     }
-}
-function populateScheduleSummaryDropdowns(data) {
-    const routesSet = new Set();
-    const driversSet = new Set();
-    const helpersSet = new Set();
-    const lorriesSet = new Set();
-    
-    data.forEach(row => {
-        if (row['Route Name']) routesSet.add(row['Route Name'].trim());
-        if (row['Driver']) driversSet.add(row['Driver'].trim());
-        if (row['Helper']) helpersSet.add(row['Helper'].trim());
-        if (row['Lorry']) lorriesSet.add(row['Lorry'].trim());
-    });
-    
-    document.getElementById('schedSumFilterRoute').innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routesSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
-    document.getElementById('schedSumFilterDriver').innerHTML = '<option value="ALL">All Drivers</option>' + Array.from(driversSet).sort().map(d => `<option value="${d}">${d}</option>`).join('');
-    document.getElementById('schedSumFilterHelper').innerHTML = '<option value="ALL">All Helpers</option>' + Array.from(helpersSet).sort().map(h => `<option value="${h}">${h}</option>`).join('');
-    document.getElementById('schedSumFilterLorry').innerHTML = '<option value="ALL">All Lorries</option>' + Array.from(lorriesSet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
-}
 
-function applyScheduleSummaryFilters() {
-    const filterDate = document.getElementById('schedSumFilterDate').value;
-    const filterRoute = document.getElementById('schedSumFilterRoute').value;
-    const filterDriver = document.getElementById('schedSumFilterDriver').value;
-    const filterHelper = document.getElementById('schedSumFilterHelper').value;
-    const filterLorry = document.getElementById('schedSumFilterLorry').value;
-    
-    const filtered = globalScheduleSummaryData.filter(row => {
-        const rowDate = extractDateInputVal(row.Date || row['End Date']);
-        const rowRoute = String(row['Route Name'] || '').trim();
-        const rowDriver = String(row.Driver || '').trim();
-        const rowHelper = String(row.Helper || '').trim();
-        const rowLorry = String(row.Lorry || '').trim();
+    function populateScheduleSummaryDropdowns(data) {
+        const routesSet = new Set();
+        const driversSet = new Set();
+        const helpersSet = new Set();
+        const lorriesSet = new Set();
         
-        if (filterDate && rowDate !== filterDate) return false;
-        if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
-        if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
-        if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
-        if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
+        data.forEach(row => {
+            if (row['Route Name']) routesSet.add(row['Route Name'].trim());
+            if (row['Driver']) driversSet.add(row['Driver'].trim());
+            if (row['Helper']) helpersSet.add(row['Helper'].trim());
+            if (row['Lorry']) lorriesSet.add(row['Lorry'].trim());
+        });
         
-        return true;
-    });
-    
-    const tbody = document.getElementById('schedSumTableBody');
-    if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No dispatches match your filter criteria.</td></tr>`;
-        return;
+        document.getElementById('schedSumFilterRoute').innerHTML = '<option value="ALL">All Routes</option>' + Array.from(routesSet).sort().map(r => `<option value="${r}">${r}</option>`).join('');
+        document.getElementById('schedSumFilterDriver').innerHTML = '<option value="ALL">All Drivers</option>' + Array.from(driversSet).sort().map(d => `<option value="${d}">${d}</option>`).join('');
+        document.getElementById('schedSumFilterHelper').innerHTML = '<option value="ALL">All Helpers</option>' + Array.from(helpersSet).sort().map(h => `<option value="${h}">${h}</option>`).join('');
+        document.getElementById('schedSumFilterLorry').innerHTML = '<option value="ALL">All Lorries</option>' + Array.from(lorriesSet).sort().map(l => `<option value="${l}">${l}</option>`).join('');
     }
-    
-    tbody.innerHTML = filtered.map(r => `
-        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-            <td class="py-3 px-3 font-bold text-slate-900 dark:text-white">${r.No || '-'}</td>
-            <td class="py-3 px-3 text-slate-600 dark:text-slate-300">${formatCustomDateTime(r.Date)}</td>
-            <td class="py-3 px-3 font-bold text-emerald-600">${r['Route Name'] || '-'}</td>
-            <td class="py-3 px-3">${r.Driver || '-'}</td>
-            <td class="py-3 px-3">${r.Helper || '-'}</td>
-            <td class="py-3 px-3 font-mono font-bold">${r.Lorry || '-'}</td>
-            <td class="py-3 px-3 font-mono">${formatCustomTime(r['Start Time'] || r.Time)}</td>
-            <td class="py-3 px-3 font-mono">${r['GSM KM'] || '-'}</td>
-            <td class="py-3 px-3 text-slate-500">${r['Special Note'] || '-'}</td>
-        </tr>
-    `).join('');
-}
+
+    function applyScheduleSummaryFilters() {
+        const filterDate = document.getElementById('schedSumFilterDate').value;
+        const filterRoute = document.getElementById('schedSumFilterRoute').value;
+        const filterDriver = document.getElementById('schedSumFilterDriver').value;
+        const filterHelper = document.getElementById('schedSumFilterHelper').value;
+        const filterLorry = document.getElementById('schedSumFilterLorry').value;
+        
+        const filtered = globalScheduleSummaryData.filter(row => {
+            const rowDate = extractDateInputVal(row.Date || row['End Date']);
+            const rowRoute = String(row['Route Name'] || '').trim();
+            const rowDriver = String(row.Driver || '').trim();
+            const rowHelper = String(row.Helper || '').trim();
+            const rowLorry = String(row.Lorry || '').trim();
+            
+            if (filterDate && rowDate !== filterDate) return false;
+            if (filterRoute !== 'ALL' && rowRoute !== filterRoute) return false;
+            if (filterDriver !== 'ALL' && rowDriver !== filterDriver) return false;
+            if (filterHelper !== 'ALL' && rowHelper !== filterHelper) return false;
+            if (filterLorry !== 'ALL' && rowLorry !== filterLorry) return false;
+            
+            return true;
+        });
+        
+        const tbody = document.getElementById('schedSumTableBody');
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No dispatches match your filter criteria.</td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = filtered.map(r => `
+            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                <td class="py-3 px-3 font-bold text-slate-900 dark:text-white">${r.No || '-'}</td>
+                <td class="py-3 px-3 text-slate-600 dark:text-slate-300">${formatCustomDateTime(r.Date)}</td>
+                <td class="py-3 px-3 font-bold text-emerald-600">${r['Route Name'] || '-'}</td>
+                <td class="py-3 px-3">${r.Driver || '-'}</td>
+                <td class="py-3 px-3">${r.Helper || '-'}</td>
+                <td class="py-3 px-3 font-mono font-bold">${r.Lorry || '-'}</td>
+                <td class="py-3 px-3 font-mono">${formatCustomTime(r['Start Time'] || r.Time)}</td>
+                <td class="py-3 px-3 font-mono">${r['GSM KM'] || '-'}</td>
+                <td class="py-3 px-3 text-slate-500">${r['Special Note'] || '-'}</td>
+            </tr>
+        `).join('');
+    }
 
     async function reloadTotalPlanSummary() {
         const container = document.getElementById('totalPlanSummaryResultsContainer');
@@ -3901,7 +4169,7 @@ function applyScheduleSummaryFilters() {
         initTotalPlanSummaryData();
     }
 
-async function initTotalPlanSummaryData() {
+    async function initTotalPlanSummaryData() {
         if (!globalScheduleSummaryData || globalScheduleSummaryData.length === 0) {
             try {
                 const response = await fetch(`${API_URL}?action=getDeliveryScheduleSummary&_t=${Date.now()}`);
@@ -3961,7 +4229,6 @@ async function initTotalPlanSummaryData() {
     function renderTotalPlanSummaryCards(plansObj) {
         const container = document.getElementById('totalPlanSummaryResultsContainer');
         
-        // Sorted Z to A (descending order)
         const planNos = Object.keys(plansObj).sort((a, b) => {
             return String(b).localeCompare(String(a), undefined, { numeric: true, sensitivity: 'base' });
         });
@@ -3975,7 +4242,6 @@ async function initTotalPlanSummaryData() {
             const items = plansObj[planNo];
             const routeName = items.routeName || 'Unassigned Route';
             
-            // Calculate total invoices and total invoice value for this plan
             const totalInvoices = items.length;
             let totalValue = 0;
             items.forEach(item => {
@@ -4012,20 +4278,16 @@ async function initTotalPlanSummaryData() {
                 </div>
                 
                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-1xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
-               
-               <div><strong>Start Date : </strong> <span class="font-bold text-white">${startDate}</span></div>
+                   <div><strong>Start Date : </strong> <span class="font-bold text-white">${startDate}</span></div>
                     <div><strong>Start Time : </strong> <span class="font-bold text-white">${startTime}</span></div>
                     <div><strong>End Date : </strong> <span class="font-bold text-white">${endDate}</span></div>
                     <div><strong>End Time : </strong> <span class="font-bold text-white">${endTime}</span></div>
                     <div><strong>GSM KM : </strong> <span class="font-bold text-white">${gsmKm}</span></div>
-                   
                 </div>
                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-950 p-3 rounded-1xl border border-slate-200 dark:border-slate-800 text-xs text-gray-400 mt-1">
-               
                  <div><strong>No. of Invoices : </strong> <span class="font-bold text-teal-400">${totalInvoices}</span></div>
- <div><strong>Total Value : </strong> <span class="font-bold font-slate text-emerald-400">${formattedTotalValue}</span></div>
- 
-        </div>
+                 <div><strong>Total Value : </strong> <span class="font-bold font-slate text-emerald-400">${formattedTotalValue}</span></div>
+                </div>
                 
                 <div class="overflow-x-auto pt-2">
                     <table class="w-full text-xs text-left border-collapse">
@@ -4055,17 +4317,308 @@ async function initTotalPlanSummaryData() {
         }).join('');
     }
 
+    function resetTotalPlanSummaryFilters() {
+        document.getElementById('totalPlanFilterNo').value = '';
+        document.getElementById('totalPlanFilterCustomer').value = '';
+        document.getElementById('totalPlanFilterRoute').value = 'All Routes';
+        reloadTotalPlanSummary();
+    }
+
+    // ================= VEHICLE MAINTENANCE MODULE =================
+    async function fetchVehicleMaintenanceData() {
+        const tbody = document.getElementById('maintenanceTableBody');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-blue-500 font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading maintenance requests...</td></tr>`;
+        
+        try {
+            const response = await fetch(`${API_URL}?action=getVehicleMaintenance&_t=${Date.now()}`);
+            const result = await response.json();
+            if (result.status === "success" && result.maintenance) {
+                globalMaintenanceData = result.maintenance;
+                renderMaintenanceTable(globalMaintenanceData);
+            }
+        } catch (e) {
+            console.error("Failed to load maintenance data", e);
+            if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-rose-500 font-bold">Failed to load maintenance requests.</td></tr>`;
+        }
+    }
+
+    function renderMaintenanceTable(data) {
+        const tbody = document.getElementById('maintenanceTableBody');
+        if (!tbody) return;
+        
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No vehicle maintenance requests found.</td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = data.map((item, idx) => `
+            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                <td class="p-3 font-bold font-bold text-teal-600">${item.NoRequest || item['NoRequest'] || '-'}</td>
+                <td class="p-3">${formatCustomDateTime(item.Date) || item['Date'] || '-'}</td>
+                <td class="p-1">${item.Department || item['Department'] || '-'}</td>
+                <td class="p-3 font-bold font-bold">${item['Vehicle No'] || item.vehicleNo || '-'}</td>
+                <td class="p-3">${item['Request By'] || item.requestBy || '-'}</td>
+                <td class="p-3 font-bold">${item['Issue Type'] || item.issueType || '-'}</td>
+                <td class="p-3 text-slate-500">${item.Details || item['Details'] || '-'}</td>
+                <td class="p-3">${item['Department Head'] || item.departmentHead || '-'}</td>
+                <td class="p-3 text-right">
+                    <button onclick="downloadMaintenanceA4Pdf(${idx})" class="px-3.5 py-1 bg-teal-900 hover:bg-teal-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function openAddMaintenanceModal() {
+        document.getElementById('mDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('mNoRequest').value = 'vm-' + Math.floor(100000 + Math.random() * 900000);
+        
+        const vSelect = document.getElementById('mVehicleNo');
+        if (vehicles && vehicles.length > 0) {
+            vSelect.innerHTML = vehicles.map(v => `<option value="${v['Vehicle No'] || v.vehicleNo}">${v['Vehicle No'] || v.vehicleNo}</option>`).join('');
+        } else {
+            vSelect.innerHTML = `<option value="WP-CAB-1234">WP-CAB-1234</option>`;
+        }
+        
+        document.getElementById('maintenanceModal').classList.remove('hidden');
+    }
+
+    function closeMaintenanceModal() {
+        document.getElementById('maintenanceModal').classList.add('hidden');
+    }
+
+    async function handleMaintenanceFormSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('saveMaintenanceBtn');
+        setButtonLoading(btn, true, "Save & Close");
+        
+        const payload = {
+            action: 'saveVehicleMaintenance',
+            data: {
+                noRequest: document.getElementById('mNoRequest').value.trim(),
+                date: document.getElementById('mDate').value,
+                department: document.getElementById('mDepartment').value.trim(),
+                vehicleNo: document.getElementById('mVehicleNo').value.trim(),
+                requestBy: document.getElementById('mRequestBy').value.trim(),
+                issueType: document.getElementById('mIssueType').value.trim(),
+                details: document.getElementById('mDetails').value.trim(),
+                departmentHead: document.getElementById('mDepartmentHead').value.trim(),
+                remarks: document.getElementById('mRemarks').value.trim()
+            }
+        };
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload)
+            });
+            const res = await response.json();
+            if (res.status === "success") {
+                closeMaintenanceModal();
+                fetchVehicleMaintenanceData();
+            } else {
+                alert("Error saving request: " + res.message);
+            }
+        } catch (err) {
+            alert("Failed to save maintenance request.");
+        } finally {
+            setButtonLoading(btn, false, "Save & Close");
+        }
+    }
+
+    function downloadMaintenanceA4Jpg(index) {
+        const item = globalMaintenanceData[index];
+        if (!item) return;
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 1240;
+        canvas.height = 1754;
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
+        
+        ctx.strokeRect(60, 60, canvas.width - 120, 110);
+        
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 28px Inter, sans-serif';
+        ctx.fillText("HARUMI HOLDINGS (PVT) LTD", 90, 105);
+        
+        ctx.font = 'bold 20px Iskoola Pota, sans-serif';
+        ctx.fillText("වාහන නඩත්තු කටයුතු සඳහා ඉල්ලුම් කිරීම", 90, 140);
+        
+        ctx.strokeRect(canvas.width - 380, 60, 320, 110);
+        ctx.beginPath();
+        ctx.moveTo(canvas.width - 380, 96); ctx.lineTo(canvas.width - 60, 96);
+        ctx.moveTo(canvas.width - 380, 133); ctx.lineTo(canvas.width - 60, 133);
+        ctx.moveTo(canvas.width - 240, 60); ctx.lineTo(canvas.width - 240, 170);
+        ctx.stroke();
+        
+        ctx.font = 'bold 16px Inter, sans-serif';
+        ctx.fillText("Doc No:", canvas.width - 370, 83);
+        ctx.fillText("F 5.5", canvas.width - 230, 83);
+        
+        ctx.fillText("Issued Date:", canvas.width - 370, 120);
+        ctx.fillText("12/01/2021", canvas.width - 230, 120);
+        
+        ctx.fillText("Version No:", canvas.width - 370, 157);
+        ctx.fillText("001", canvas.width - 230, 157);
+        
+        let startY = 200;
+        ctx.strokeRect(60, startY, canvas.width - 120, 220);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`ඉල්ලුම් කරන දිනය :`, 90, startY + 40);
+        ctx.font = '18px Inter, sans-serif';
+        ctx.fillText(item.Date || item['Date'] || '-', 270, startY + 40);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`ඉල්ලුම් අංකය :`, 650, startY + 40);
+        ctx.font = 'bold 18px Inter, sans-serif';
+        ctx.fillText(item.NoRequest || item['NoRequest'] || '-', 800, startY + 40);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`වාහන අංකය :`, 90, startY + 90);
+        ctx.font = 'bold 20px Inter, sans-serif';
+        ctx.fillText(item['Vehicle No'] || item.vehicleNo || '-', 270, startY + 90);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`අංශය :`, 650, startY + 90);
+        ctx.font = '18px Inter, sans-serif';
+        ctx.fillText(item.Department || item['Department'] || '-', 800, startY + 90);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`ඉල්ලුම් කරන්නාගේ නම :`, 90, startY + 140);
+        ctx.font = '18px Inter, sans-serif';
+        ctx.fillText(item['Request By'] || item.requestBy || '-', 270, startY + 140);
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`කාණ්ඩය :`, 650, startY + 140);
+        ctx.font = '18px Inter, sans-serif';
+        ctx.fillText(item['Issue Type'] || item.issueType || '-', 800, startY + 140);
+        
+        startY = 440;
+        ctx.strokeRect(60, startY, canvas.width - 120, 280);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(61, startY + 1, canvas.width - 122, 40);
+        ctx.fillStyle = '#000000';
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`① නඩත්තු කටයුතු වල ස්වභාවය :`, 80, startY + 28);
+        ctx.font = '16px Inter, sans-serif';
+        ctx.fillText(`වාහන පරීක්ෂණ පත්‍රය පිටුපස අමුණා ඇත ─────────>`, 600, startY + 28);
+        
+        ctx.font = '18px Inter, sans-serif';
+        ctx.fillText(`Issue Type: ${item['Issue Type'] || item.issueType || ''}`, 90, startY + 80);
+        ctx.fillText(`Description: ${item.Details || item['Details'] || ''}`, 90, startY + 120);
+        ctx.fillText(`Remarks: ${item.Remarks || item['Remarks'] || 'None'}`, 90, startY + 160);
+        
+        ctx.font = '16px Iskoola Pota, sans-serif';
+        ctx.fillText(`ඉල්ලුම් කරන්නාගේ අත්සන : ..............................................................`, 600, startY + 230);
+        
+        startY = 740;
+        ctx.strokeRect(60, startY, canvas.width - 120, 320);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(61, startY + 1, canvas.width - 122, 40);
+        ctx.fillStyle = '#000000';
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`② කාර්මික පරීක්ෂණ සටහන් : (හඳුනාගත් දෝෂ, නිර්දේශිත අලුත්වැඩියා සහ අනෙකුත් නිරීක්ෂණ)`, 80, startY + 28);
+        
+        ctx.strokeRect(canvas.width - 450, startY + 200, 370, 100);
+        ctx.font = '16px Iskoola Pota, sans-serif';
+        ctx.fillText(`( පරීක්ෂා කිරීම )`, canvas.width - 330, startY + 235);
+        ctx.font = 'bold 16px Iskoola Pota, sans-serif';
+        ctx.fillText(`තාක්ෂණික නිලධාරී`, canvas.width - 340, startY + 275);
+        
+        startY = 1080;
+        ctx.strokeRect(60, startY, canvas.width - 120, 260);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(61, startY + 1, canvas.width - 122, 40);
+        ctx.fillStyle = '#000000';
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`③ කාර්යාලීය ප්‍රයෝජනය සඳහා :`, 80, startY + 28);
+        ctx.fillText(`දිනය : ........................`, 750, startY + 28);
+        ctx.font = '16px Iskoola Pota, sans-serif';
+        ctx.fillText(`කාර්යාලීය අනුමැතිය ( ගණකාධිකරණ අංශය )`, 80, startY + 70);
+        
+        startY = 1360;
+        ctx.strokeRect(60, startY, canvas.width - 120, 320);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(61, startY + 1, canvas.width - 122, 40);
+        ctx.fillStyle = '#000000';
+        
+        ctx.font = 'bold 18px Iskoola Pota, sans-serif';
+        ctx.fillText(`④ අවසන් කළ අලුත්වැඩියා හා සේවාවන් :`, 80, startY + 28);
+        
+        ctx.font = '16px Iskoola Pota, sans-serif';
+        ctx.fillText(`අවසන් කළ දිනය : ...................................`, 90, startY + 180);
+        ctx.fillText(`අවසන් පිරිවැය : ...................................`, 650, startY + 180);
+        ctx.fillText(`අවසන් කළ බවට :`, 90, startY + 220);
+        
+        let sigY = startY + 270;
+        ctx.font = 'bold 14px Iskoola Pota, sans-serif';
+        ctx.fillText(`තාක්ෂණික නිලධාරී`, 120, sigY);
+        ctx.fillText(`ආරක්ෂක නිලධාරී`, 430, sigY);
+        ctx.fillText(`ගිණුම් අංශය`, 740, sigY);
+        ctx.fillText(`දෙපාර්තමේන්තු ප්‍රධානී`, 1000, sigY);
+        
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.download = `Vehicle_Maintenance_${item.NoRequest || 'Form'}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     
-function resetTotalPlanSummaryFilters() {
-    document.getElementById('totalPlanFilterNo').value = '';
-    document.getElementById('totalPlanFilterCustomer').value = '';
-    document.getElementById('totalPlanFilterRoute').value = 'All Routes';
-reloadTotalPlanSummary();
+function downloadMaintenanceA4Pdf(index) {
+    const item = globalMaintenanceData[index];
+    if (!item) return;
+    
+    // Populate modal fields
+    document.getElementById('pdfDate').textContent = formatCustomDateTime(item.Date) || item['Date'] || '-';
+    document.getElementById('pdfNoRequest').textContent = item.NoRequest || item['NoRequest'] || '-';
+    document.getElementById('pdfVehicleNo').textContent = item['Vehicle No'] || item.vehicleNo || '-';
+    document.getElementById('pdfDepartment').textContent = item.Department || item['Department'] || '-';
+    document.getElementById('pdfRequestBy').textContent = item['Request By'] || item.requestBy || '-';
+    document.getElementById('pdfIssueType').textContent = item['Issue Type'] || item.issueType || '-';
+    document.getElementById('pdfDetails').textContent = item.Details || item['Details'] || '-';
+    document.getElementById('pdfRemarks').textContent = item.Remarks || item['Remarks'] || 'None';
+    
+    // Open modal
+    document.getElementById('maintenancePdfModal').classList.remove('hidden');
 }
 
+function closeMaintenancePdfModal() {
+    document.getElementById('maintenancePdfModal').classList.add('hidden');
+}
 
-
-
+function printMaintenancePdf() {
+    const printContent = document.getElementById('printableA4Form').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    // Temporarily replace body with printable form for clean A4 printing/PDF saving
+    document.body.innerHTML = `
+        <div style="padding: 10px; text-black font-family: 'Iskoola Pota', Inter, sans-serif;">
+            ${printContent}
+        </div>
+    `;
+    
+    window.print();
+    
+    // Restore original view
+    document.body.innerHTML = originalContent;
+    window.location.reload();
+}
+    
 </script>
 
 </body>
