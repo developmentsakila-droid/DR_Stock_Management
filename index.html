@@ -1477,8 +1477,8 @@
 </div>
 
 <!-- Modal: Summary Report -->
-<div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+<div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-90 flex items-center justify-center p-4 hidden">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl max-w-1xl w-full max-h-full flex flex-col shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
             <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-600"></i> Stock & QA Summary Report</h3>
             <button onclick="closeReportModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
@@ -1494,7 +1494,7 @@
         <input type="date" id="modalEndDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
     </div>
     <div class="flex-1">
-        <label class="block text-[11px] font-extrabold uppercase mb-1">Search Note / Defect</label>
+        <label class="block text-[11px] font-extrabold uppercase mb-1">Search Box</label>
         <input type="text" id="reportSearchInput" oninput="filterSummaryReport()" placeholder="Search Note column..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
     </div>
     <button onclick="fetchSummaryReport()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs">Generate</button>
@@ -1535,10 +1535,10 @@
                 <div>
                     <label class="block text-[11px] font-extrabold uppercase mb-1">Severity</label>
                     <select id="qaSeverity" required class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-                        <option value="Low">Low</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
+                        <option value="Low">Green</option>
+                        <option value="Medium" selected>Amber</option>
+                        <option value="High">Red</option>
+                        
                     </select>
                 </div>
             </div>
@@ -3247,9 +3247,17 @@
     }
 
     function openReportModal() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('modalStartDate').value = today;
-        document.getElementById('modalEndDate').value = today;
+        const todayObj = new Date();
+const todayStr = todayObj.toISOString().split('T')[0];
+
+// Subtract 30 days correctly using Date methods
+const pastDateObj = new Date();
+pastDateObj.setDate(todayObj.getDate() - 30);
+const pastDateStr = pastDateObj.toISOString().split('T')[0];
+
+document.getElementById('modalStartDate').value = pastDateStr;
+document.getElementById('modalEndDate').value = todayStr;
+
         document.getElementById('reportResult').innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">Select date range and click Generate.</p>';
         document.getElementById('downloadReportBtn').disabled = true;
         document.getElementById('reportModal').classList.remove('hidden');
@@ -3304,7 +3312,7 @@ function renderDefectsReportTable(rows) {
                         <th class="p-2">Category</th>
                         <th class="p-2">Severity</th>
                         <th class="p-2 text-right">Qty</th>
-                        <th class="p-2">Note / Box</th>
+                        <th class="p-2">Box No</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -3323,15 +3331,40 @@ function renderDefectsReportTable(rows) {
             </table>`;
 }
 
-    function downloadCSVReport() {
-        if (!lastReportData || lastReportData.length === 0) return;
-        const headerss = Object.keys(lastReportData[0]);
-        let csv = headerss.join(",") + "\r\n" + lastReportData.map(row => headerss.map(h => `"${row[h] || ''}"`).join(",")).join("\r\n");
-        let link = document.createElement("a");
-        link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-        link.download = `Stock_Report_${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+function downloadCSVReport() {
+    if (!lastDefectsReport || lastDefectsReport.length === 0) {
+        alert("No data available to download.");
+        return;
     }
+    
+    // Define clean CSV headers matching the defects report table
+    const headers = ["Timestamp", "Item Code", "Item Name", "Category", "Severity", "Quantity", "Notes"];
+    
+    let csv = headers.join(",") + "\r\n";
+    
+    lastDefectsReport.forEach(row => {
+        const values = [
+            `"${(row.timestamp || '').replace(/"/g, '""')}"`,
+            `"${(row.itemCode || '').replace(/"/g, '""')}"`,
+            `"${(row.itemName || '').replace(/"/g, '""')}"`,
+            `"${(row.category || '').replace(/"/g, '""')}"`,
+            `"${(row.severity || '').replace(/"/g, '""')}"`,
+            `"${(row.quantity || 0)}"`,
+            `"${(row.notes || '').replace(/"/g, '""')}"`
+        ];
+        csv += values.join(",") + "\r\n";
+    });
+    
+    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    let url = URL.createObjectURL(blob);
+    let link = document.createElement("a");
+    link.href = url;
+    link.download = `QA_Defects_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
 
     function openQADefectModal() {
         document.getElementById('qaItemCode').value = document.getElementById('itemCode').value || "N/A";
