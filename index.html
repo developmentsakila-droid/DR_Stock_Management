@@ -4156,8 +4156,8 @@
                 <td class="py-3 px-3">${r.Driver || '-'}</td>
                 <td class="py-3 px-3">${r.Helper || '-'}</td>
                 <td class="py-3 px-3 font-mono font-bold">${r.Lorry || '-'}</td>
-                <td class="py-3 px-3 font-mono">${formatCustomTime(r['Start Time'] || r.Time)}</td>
-                <td class="py-3 px-3 font-mono">${formatCustomTime(r['End Time'] || r.Time)}</td>
+                <td class="py-3 px-3 font-mono">${formatCustomTime(r['Start Time'] || '-')}</td>
+                <td class="py-3 px-3 font-mono">${formatCustomTime(r['End Time'] || '-')}</td>
                 <td class="py-3 px-3 font-mono">${r['GSM KM'] || '-'}</td>
                 <td class="py-3 px-3 text-slate-500">${r['Special Note'] || '-'}</td>
             </tr>
