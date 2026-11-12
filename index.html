@@ -341,7 +341,7 @@
 <!-- Modal: Printable Vehicle Maintenance A4 PDF Preview -->
 <div id="maintenancePdfModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-black flex flex-col">
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10 ">
     <h3 class="font-extrabold text-base flex items-center gap-2 text-white"><i class="fa-solid fa-file-pdf text-teal-500"></i> Vehicle Maintenance Form (A4 Preview)</h3>
     <div class="flex items-center gap-2">
         <button onclick="printMaintenancePdf()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
@@ -559,7 +559,7 @@
     <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 text-slate-900 dark:text-slate-100">
         <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
             <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-teal-500"></i> New Vehicle Maintenance Request</h3>
-            <button onclick="closeMaintenanceModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="closeMaintenanceModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-red-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="maintenanceForm" onsubmit="handleMaintenanceFormSubmit(event)" class="space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -593,7 +593,7 @@
                         <option value="Mechanical Repair">Mechanical Repair</option>
                         <option value="Brake Overhaul">Brake Overhaul</option>
                         <option value="Electrical Repair">Electrical Repair</option>
-                        <option value="Routine Service">Routine Service</option>
+                        <option value="Routine Service">Service</option>
                         <option value="Tire Replacement">Tire Replacement</option>
                     </select>
                 </div>
@@ -614,7 +614,7 @@
             </div>
             <div class="pt-3 flex gap-3">
                 <button type="button" onclick="closeMaintenanceModal()" class="w-1/2 py-3 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
-                <button type="submit" id="saveMaintenanceBtn" class="w-1/2 py-3 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl shadow-md text-xs">Save & Close</button>
+                <button type="submit" id="saveMaintenanceBtn" class="w-1/2 py-3 bg-green-600 hover:bg-teal-700 text-white font-extrabold rounded-xl shadow-md text-xs">Save & Close</button>
             </div>
         </form>
     </div>
@@ -4375,40 +4375,48 @@
     }
 
     function renderMaintenanceTable(data) {
-        const tbody = document.getElementById('maintenanceTableBody');
-        if (!tbody) return;
-        
-        if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No vehicle maintenance requests found.</td></tr>`;
-            return;
-        }
-        
-        tbody.innerHTML = data.map((item, idx) => `
-            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                <td class="p-3 font-bold font-bold text-rose-400">${item.NoRequest || item['NoRequest'] || '-'}</td>
-                <td class="p-3">${formatCustomDateTime(item.Date) || item['Date'] || '-'}</td>
-                <td class="p-1">${item.Department || item['Department'] || '-'}</td>
-                <td class="p-3 font-bold font-bold">${item['Vehicle No'] || item.vehicleNo || '-'}</td>
-                <td class="p-3">${item['Request By'] || item.requestBy || '-'}</td>
-                <td class="p-3 font-bold">${item['Issue Type'] || item.issueType || '-'}</td>
-                <td class="p-3 text-slate-500">${item.Details || item['Details'] || '-'}</td>
-                <td class="p-3">${item['Department Head'] || item.departmentHead || '-'}</td>
-                <td class="p-3 text-right">
-                    <button onclick="downloadMaintenanceA4Pdf(${idx})" class="px-3.5 py-1 bg-rose-900 hover:bg-rose-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
-                        <i class="fa-solid fa-file-pdf"></i> PDF
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    const tbody = document.getElementById('maintenanceTableBody');
+    if (!tbody) return;
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No vehicle maintenance requests found.</td></tr>`;
+        return;
     }
+    
+    // Sort data Z to A (Descending / Newest to Oldest) by Date
+    const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(a.Date || a['Date'] || 0);
+        const dateB = new Date(b.Date || b['Date'] || 0);
+        return dateB - dateA; // Latest date comes first
+    });
+    
+    tbody.innerHTML = sortedData.map((item, idx) => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+            <td class="p-3 font-bold text-rose-400">${item.NoRequest || item['NoRequest'] || '-'}</td>
+            <td class="p-3 font-mono">${formatCustomDateTime(item.Date) || item['Date'] || '-'}</td>
+            <td class="p-1 text-slate-400">${item.Department || item['Department'] || '-'}</td>
+            <td class="p-3 font-bold">${item['Vehicle No'] || item.vehicleNo || '-'}</td>
+            <td class="p-3">${item['Request By'] || item.requestBy || '-'}</td>
+            <td class="p-3 font-bold text-slate-400">${item['Issue Type'] || item.issueType || '-'}</td>
+            <td class="p-3 text-slate-300">${item.Details || item['Details'] || '-'}</td>
+            <td class="p-3 text-slate-300">${item['Department Head'] || item.departmentHead || '-'}</td>
+            <td class="p-3 text-right">
+                <button onclick="downloadMaintenanceA4Pdf(${idx})" class="px-3.5 py-1 bg-red-900 hover:bg-rose-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
 
     function openAddMaintenanceModal() {
         document.getElementById('mDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('mNoRequest').value = 'vm-' + Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('mNoRequest').value = 'VM-' + Math.floor(100000 + Math.random() * 900000);
         
         const vSelect = document.getElementById('mVehicleNo');
         if (vehicles && vehicles.length > 0) {
-            vSelect.innerHTML = vehicles.map(v => `<option value="${v['Vehicle No'] || v.vehicleNo}">${v['Vehicle No'] || v.vehicleNo}</option>`).join('');
+            vSelect.innerHTML = vehicles.map(v => `<option value="${v['Vehicle No'] || v.vehicleNo}">${v.vehicleNo || v.vehicleNo}</option>`).join('');
         } else {
             vSelect.innerHTML = `<option value="WP-CAB-1234">WP-CAB-1234</option>`;
         }
