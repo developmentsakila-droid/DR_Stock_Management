@@ -2346,6 +2346,10 @@ window.addEventListener('popstate', (event) => {
         if (!loginActivityInterval) {
             loginActivityInterval = setInterval(fetchLatestLoginActivity, 3000);
         }
+
+         // Push history state so mobile back button closes the report modal
+history.pushState({ modal: 'loginActivityModal' }, document.title, window.location.href);
+document.getElementById('loginActivityModal').classList.remove('hidden');
     }
 
     function closeLoginActivityModal() {
