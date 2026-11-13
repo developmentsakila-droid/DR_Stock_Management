@@ -850,11 +850,11 @@
 
     <section class="glass-card dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xl flex items-center justify-between gap-4">
         <div>
-            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Summary Report</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Generate and export inventory stock additions & defects CSV</p>
+            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Warehouse Defect Summary Report</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Generate and export inventory defects CSV</p>
         </div>
-        <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
-            Open Report
+        <button type="button" onclick="openReportModal()" class="px-5 py-3 bg-slate-900 dark:hover:bg-yellow-900 dark:bg-yellow-800 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0">
+            Defect Report
         </button>
     </section>
 
@@ -1476,41 +1476,49 @@
     </div>
 </div>
 
+
 <!-- Modal: Summary Report -->
-<div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-90 flex items-center justify-center p-4 hidden">
-    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl max-w-1xl w-full max-h-full flex flex-col shadow-2xl overflow-hidden">
+<div id="reportModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-1xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-            <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-600"></i> Stock & QA Summary Report</h3>
-            <button onclick="closeReportModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-red-900 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-extrabold text-base flex items-center gap-2"><i class="fa-solid fa-file-excel text-yellow-600"></i> Stock & QA Summary Report</h3>
+            <button onclick="closeReportModal()" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-rose-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <!-- Inside #reportModal -->
-<div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-wrap gap-3 items-end">
-    <div class="flex-1">
-        <label class="block text-[11px] font-extrabold uppercase mb-1">Start Date</label>
-        <input type="date" id="modalStartDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-    </div>
-    <div class="flex-1">
-        <label class="block text-[11px] font-extrabold uppercase mb-1">End Date</label>
-        <input type="date" id="modalEndDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
-    </div>
-    <div class="flex-1">
-        <label class="block text-[11px] font-extrabold uppercase mb-1">Search Box</label>
-        <input type="text" id="reportSearchInput" oninput="filterSummaryReport()" placeholder="Search Note column..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
-    </div>
-    <button onclick="fetchSummaryReport()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs">Generate</button>
-    
-   
-    
-</div>
-
-
+        
+        <!-- Filter Controls Header -->
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-wrap gap-3 items-end">
+            <div class="flex-1">
+                <label class="block text-[11px] font-extrabold uppercase mb-1">Start Date</label>
+                <input type="date" id="modalStartDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            </div>
+            <div class="flex-1">
+                <label class="block text-[11px] font-extrabold uppercase mb-1">End Date</label>
+                <input type="date" id="modalEndDate" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
+            </div>
+            <div class="flex-1">
+                <label class="block text-[11px] font-extrabold uppercase mb-1">Search Note / Box</label>
+                <input type="text" id="reportSearchInput" oninput="filterSummaryReport()" placeholder="Search Box No..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+            </div>
+            <button onclick="fetchSummaryReport()" class="px-5 py-2.5 bg-yellow-700 hover:bg-yellow-800 text-white font-bold rounded-xl text-xs">Generate</button>
+        </div>
+        
+        <!-- Summary Statistics Header Bar -->
+        <div id="reportHeaderStats" class="px-6 py-2.5 bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+            <div><strong>Matching Records:</strong> <span id="statMatchingCount" class="font-bold text-yellow-600">0</span></div>
+            <div><strong>Total Qty:</strong> <span id="statTotalQty" class="font-extrabold text-yellow-400 text-sm">0</span></div>
+        </div>
+        
         <div id="reportResult" class="p-4 overflow-y-auto grow max-h-[45vh]"></div>
+        
         <div class="px-6 py-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2 bg-slate-50 dark:bg-slate-950 shrink-0">
-            <button id="downloadReportBtn" onclick="downloadCSVReport()" class="px-4 py-2 bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-sm" disabled>Download CSV</button>
+            <button id="downloadReportBtn" onclick="downloadCSVReport()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow-sm" disabled>Download CSV</button>
             <button onclick="closeReportModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 rounded-xl font-bold text-xs">Close</button>
         </div>
     </div>
 </div>
+
+
+
 
 <!-- Modal: QA Defect Logging -->
 <div id="qaDefectModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
@@ -3249,39 +3257,59 @@
         });
     }
 
-    function openReportModal() {
-        
-        const todayObj = new Date();
-const todayStr = todayObj.toISOString().split('T')[0];
+function openReportModal() {
+    const todayObj = new Date();
+    const todayStr = todayObj.toISOString().split('T')[0];
+    
+    // Correct 30-day date calculation
+    const pastDateObj = new Date();
+    pastDateObj.setDate(todayObj.getDate() - 30);
+    const pastDateStr = pastDateObj.toISOString().split('T')[0];
+    
+    document.getElementById('modalStartDate').value = pastDateStr;
+    document.getElementById('modalEndDate').value = todayStr;
+    document.getElementById('reportSearchInput').value = '';
+    
+    // Hide dashboard back button if visible
+    const backBtn = document.getElementById('backToDashBtn');
+    if (backBtn) backBtn.classList.add('hidden');
+    
+    document.getElementById('reportResult').innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">Select date range and click Generate.</p>';
+    document.getElementById('statMatchingCount').textContent = '0';
+    document.getElementById('statTotalQty').textContent = '0';
+    document.getElementById('downloadReportBtn').disabled = true;
+    document.getElementById('reportModal').classList.remove('hidden');
+    
+    fetchSummaryReport();
+}
 
-// Subtract 30 days correctly using Date methods
-const pastDateObj = new Date();
-pastDateObj.setDate(todayObj.getDate() - 30);
-const pastDateStr = pastDateObj.toISOString().split('T')[0];
-
-document.getElementById('modalStartDate').value = pastDateStr;
-document.getElementById('modalEndDate').value = todayStr;
-
-        document.getElementById('reportResult').innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">Select date range and click Generate.</p>';
-        document.getElementById('downloadReportBtn').disabled = true;
-        document.getElementById('reportModal').classList.remove('hidden');
-        
-        // Hide the back to dashboard button while report modal is open
-const backBtn = document.getElementById('backToDashBtn');
-if (backBtn) backBtn.classList.add('hidden');
-       
-        
+function closeReportModal() {
+    document.getElementById('reportModal').classList.add('hidden');
+    
+    // Check which section is currently active and restore backToDashBtn visibility accordingly
+    const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'vehicleMaintenance'];
+    let currentTab = 'dashboard';
+    for (const s of activeSections) {
+        if (s === 'dashboard') continue;
+        const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+        if (el && !el.classList.contains('hidden')) {
+            currentTab = s;
+            break;
+        }
     }
-
-    function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
-
+    
+    const backBtn = document.getElementById('backToDashBtn');
+    if (backBtn) {
+        backBtn.classList.toggle('hidden', currentTab === 'dashboard');
+    }
+}
 
 
 function fetchSummaryReport() {
     const startDate = document.getElementById('modalStartDate').value;
     const endDate = document.getElementById('modalEndDate').value;
     const reportResultDiv = document.getElementById('reportResult');
-    reportResultDiv.innerHTML = '<p class="text-center text-blue-500 font-bold text-xs mt-6">Generating report...</p>';
+    reportResultDiv.innerHTML = '<p class="text-center text-yellow-500 font-bold text-xs mt-6">Generating report...</p>';
     
     fetch(`${API_URL}?action=getSummaryReport&startDate=${startDate}&endDate=${endDate}`)
         .then(res => res.json())
@@ -3306,6 +3334,14 @@ function filterSummaryReport() {
 
 function renderDefectsReportTable(rows) {
     const reportResultDiv = document.getElementById('reportResult');
+    
+    // Calculate total quantity and matching records
+    const totalQty = rows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+    
+    // Update header stats bar
+    document.getElementById('statMatchingCount').textContent = rows.length;
+    document.getElementById('statTotalQty').textContent = totalQty;
+    
     if (rows.length === 0) {
         reportResultDiv.innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">No QA defects match your search.</p>';
         document.getElementById('downloadReportBtn').disabled = true;
@@ -3313,40 +3349,33 @@ function renderDefectsReportTable(rows) {
     }
     document.getElementById('downloadReportBtn').disabled = false;
     
-    // Calculate total quantity across all filtered rows
-    const totalQty = rows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
-    
     reportResultDiv.innerHTML = `
-        <div class="mb-2 flex items-center justify-between bg-slate-100 dark:bg-slate-950 px-2 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
-            <div><strong>Matching Records:</strong> <span class="font-bold text-emerald-600">${rows.length}</span></div>
-            <div><strong>Total Qty:</strong> <span class="font-bold text-teal-400 text-sm">${totalQty}</span></div>
-        </div>
-        <table class="w-full text-xs text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                    <th class="p-2">Timestamp</th>
-                    <th class="p-2">Item Code</th>
-                    <th class="p-2">Name</th>
-                    <th class="p-2">Category</th>
-                    <th class="p-2">Severity</th>
-                    <th class="p-2 text-right">Qty</th>
-                    <th class="p-2">Box No</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${rows.map(r => `
-                    <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                        <td class="p-2 font-mono text-[12px]">${formatCustomDateTime(r.timestamp).substring(0, 19)}</td>
-                        <td class="p-2 font-mono font-bold">${r.itemCode}</td>
-                        <td class="p-2">${r.itemName}</td>
-                        <td class="p-2">${r.category}</td>
-                        <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.severity === 'Critical' ? 'bg-rose-500 text-white' : 'bg-amber-100 text-amber-800'}">${r.severity}</span></td>
-                        <td class="p-2 text-right font-bold text-rose-500">${r.quantity}</td>
-                        <td class="p-2 font-bold text-slate-700 dark:text-slate-300">${r.notes}</td>
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                        <th class="p-2">Timestamp</th>
+                        <th class="p-2">Item Code</th>
+                        <th class="p-2">Name</th>
+                        <th class="p-2">Category</th>
+                        <th class="p-2">Status</th>
+                        <th class="p-2 text-right">Qty</th>
+                        <th class="p-2">Box No</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>`;
+                </thead>
+                <tbody>
+                    ${rows.map(r => `
+                        <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                            <td class="p-1 font-mono text-[12px]">${formatCustomDateTime(r.timestamp).substring(0, 19)}</td>
+                            <td class="p-2 font-mono font-bold">${r.itemCode}</td>
+                            <td class="p-2 y-1">${r.itemName}</td>
+                            <td class="p-2">${r.category}</td>
+                            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.severity === 'Critical' ? 'bg-rose-500 text-white' : 'bg-black text-white'}">${r.severity}</span></td>
+                            <td class="p-2 text-right font-bold text-rose-600">${r.quantity}</td>
+                            <td class="p-2 font-bold text-slate-700 dark:text-slate-500">${r.notes}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
 }
 function downloadCSVReport() {
     if (!lastDefectsReport || lastDefectsReport.length === 0) {
