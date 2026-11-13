@@ -3355,14 +3355,21 @@ function filterSummaryReport() {
 function renderDefectsReportTable(rows) {
     const reportResultDiv = document.getElementById('reportResult');
     
-    // Calculate total quantity and matching records
-    const totalQty = rows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+    // Sort rows Z to A (Descending / Newest to Oldest) by Timestamp
+    const sortedRows = [...rows].sort((a, b) => {
+        const dateA = new Date(a.timestamp || a['Timestamp'] || 0);
+        const dateB = new Date(b.timestamp || b['Timestamp'] || 0);
+        return dateB - dateA;
+    });
+    
+    // Calculate total quantity and matching records from sorted rows
+    const totalQty = sortedRows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
     
     // Update header stats bar
-    document.getElementById('statMatchingCount').textContent = rows.length;
+    document.getElementById('statMatchingCount').textContent = sortedRows.length;
     document.getElementById('statTotalQty').textContent = totalQty;
     
-    if (rows.length === 0) {
+    if (sortedRows.length === 0) {
         reportResultDiv.innerHTML = '<p class="text-center text-slate-400 text-xs mt-6">No QA defects match your search.</p>';
         document.getElementById('downloadReportBtn').disabled = true;
         return;
@@ -3383,11 +3390,11 @@ function renderDefectsReportTable(rows) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${rows.map(r => `
+                    ${sortedRows.map(r => `
                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-950/40">
                             <td class="p-1 font-mono text-[12px]">${formatCustomDateTime(r.timestamp).substring(0, 19)}</td>
                             <td class="p-2 font-mono font-bold">${r.itemCode}</td>
-                            <td class="p-2 y-1">${r.itemName}</td>
+                            <td class="p-2 py-1">${r.itemName}</td>
                             <td class="p-2">${r.category}</td>
                             <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.severity === 'Critical' ? 'bg-rose-500 text-white' : 'bg-black text-white'}">${r.severity}</span></td>
                             <td class="p-2 text-right font-bold text-rose-600">${r.quantity}</td>
@@ -3397,6 +3404,8 @@ function renderDefectsReportTable(rows) {
                 </tbody>
             </table>`;
 }
+
+
 function downloadCSVReport() {
     if (!lastDefectsReport || lastDefectsReport.length === 0) {
         alert("No data available to download.");
