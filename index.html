@@ -1637,27 +1637,34 @@
         history.replaceState({ tab: 'dashboard' }, document.title, window.location.href);
     });
 
-    // ================= MOBILE BACK BUTTON HANDLING =================
-    window.addEventListener('popstate', (event) => {
-        const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'customerForm', 'vehicleMaintenance'];
-        let currentActiveTab = 'dashboard';
-
-        for (const s of activeSections) {
-            if (s === 'dashboard') continue;
-            const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
-            if (el && !el.classList.contains('hidden')) {
-                currentActiveTab = s;
-                break;
-            }
+   // ================= MOBILE BACK BUTTON HANDLING =================
+window.addEventListener('popstate', (event) => {
+    // If the Report Modal is open, close it first on back button press
+    const reportModal = document.getElementById('reportModal');
+    if (reportModal && !reportModal.classList.contains('hidden')) {
+        closeReportModal();
+        return;
+    }
+    
+    const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'customerForm', 'vehicleMaintenance'];
+    let currentActiveTab = 'dashboard';
+    
+    for (const s of activeSections) {
+        if (s === 'dashboard') continue;
+        const el = document.getElementById(`section${s.charAt(0).toUpperCase() + s.slice(1)}`);
+        if (el && !el.classList.contains('hidden')) {
+            currentActiveTab = s;
+            break;
         }
-
-        if (currentActiveTab !== 'dashboard') {
-            history.pushState({ tab: 'dashboard' }, document.title, window.location.href);
-            switchTabWithoutPush('dashboard');
-        } else {
-            closeHtmlApp();
-        }
-    });
+    }
+    
+    if (currentActiveTab !== 'dashboard') {
+        history.pushState({ tab: 'dashboard' }, document.title, window.location.href);
+        switchTabWithoutPush('dashboard');
+    } else {
+        closeHtmlApp();
+    }
+});
 
     function setButtonLoading(btnEl, isLoading, defaultHtml) {
         if (!btnEl) return;
@@ -3281,7 +3288,6 @@ function openReportModal() {
     const todayObj = new Date();
     const todayStr = todayObj.toISOString().split('T')[0];
     
-    // Correct 30-day date calculation
     const pastDateObj = new Date();
     pastDateObj.setDate(todayObj.getDate() - 30);
     const pastDateStr = pastDateObj.toISOString().split('T')[0];
@@ -3290,7 +3296,6 @@ function openReportModal() {
     document.getElementById('modalEndDate').value = todayStr;
     document.getElementById('reportSearchInput').value = '';
     
-    // Hide dashboard back button if visible
     const backBtn = document.getElementById('backToDashBtn');
     if (backBtn) backBtn.classList.add('hidden');
     
@@ -3298,6 +3303,9 @@ function openReportModal() {
     document.getElementById('statMatchingCount').textContent = '0';
     document.getElementById('statTotalQty').textContent = '0';
     document.getElementById('downloadReportBtn').disabled = true;
+    
+    // Push history state so mobile back button closes the report modal
+    history.pushState({ modal: 'reportModal' }, document.title, window.location.href);
     document.getElementById('reportModal').classList.remove('hidden');
     
     fetchSummaryReport();
@@ -3306,7 +3314,6 @@ function openReportModal() {
 function closeReportModal() {
     document.getElementById('reportModal').classList.add('hidden');
     
-    // Check which section is currently active and restore backToDashBtn visibility accordingly
     const activeSections = ['dashboard', 'delivery', 'stock', 'vehicle', 'schedule', 'actionReport', 'deliveryPlan', 'deliverySummary', 'attendance', 'deliveryScheduleSummary', 'totalPlanSummary', 'vehicleMaintenance'];
     let currentTab = 'dashboard';
     for (const s of activeSections) {
