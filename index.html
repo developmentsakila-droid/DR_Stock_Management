@@ -3680,7 +3680,7 @@ function fetchDeliveryScheduleReport(weekNo) {
 
     if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
     const container = document.getElementById('scheduleReportResult');
-    container.innerHTML = '<p class="text-center text-purple-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
+    container.innerHTML = '<p class="text-center text-purple-500 font-bold text-xs py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading delivery schedule...</p>';
 
     fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
         .then(res => res.json())
