@@ -3533,7 +3533,7 @@ function downloadCSVReport() {
         var day = d.getDay(); 
         var hours = d.getHours(); 
         
-        var isMondayAfterNoon = (day === 6 && hours >= 05);
+        var isMondayAfterNoon = (day === 6 && hours >= 08);
         var isTuesdayBeforeNoon = (day === 7 && hours < 17);
         
         if (isMondayAfterNoon || isTuesdayBeforeNoon) {
@@ -3552,7 +3552,7 @@ function downloadCSVReport() {
     }
 
     function formatCustomDateTime(dateString) {
-        if (!dateString) return "-";
+        if (!dateString) return "";
         var cleanStr = String(dateString).replace(/ *\([^)]*\)/g, "").trim();
         var d = new Date(cleanStr);
         if (isNaN(d.getTime())) return dateString;
@@ -3601,111 +3601,188 @@ function downloadCSVReport() {
         return "";
     }
 
-    function fetchDeliveryScheduleReport(weekNo) {
-        const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-        const isAuthorized = ["executive", "manager"].includes(userLevel);
 
-        const saveBtnEl = document.getElementById('scsave');
-        if (saveBtnEl) {
-            if (isAuthorized) {
-                saveBtnEl.classList.remove('hidden');
-                saveBtnEl.classList.add('flex');
-            } else {
-                saveBtnEl.classList.add('hidden');
-                saveBtnEl.classList.remove('flex');
+function formatCleanTime(val) {
+    if (!val) return '';
+    const strVal = String(val);
+    
+    // If it contains a time string like "10:45:00" or "10:45", extract just HH:mm
+    if (strVal.includes(':')) {
+        // If it's a full ISO or Date string (e.g. containing "1899-12-30" or "T"), grab the time part
+        if (strVal.includes('T') || strVal.includes('1899')) {
+            const dateObj = new Date(val);
+            if (!isNaN(dateObj)) {
+                const hours = String(dateObj.getHours()).padStart(2, '0');
+                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
             }
         }
-
-        if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
-        const container = document.getElementById('scheduleReportResult');
-        container.innerHTML = '<p class="text-center text-purple-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
-
-        fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success" && data.schedule) {
-                    data.schedule.sort((a, b) => {
-                        const dateA = new Date(a.Date || 0);
-                        const dateB = new Date(b.Date || 0);
-                        if (dateA - dateB !== 0) {
-                            return dateA - dateB;
-                        }
-                        const planA = String(a.No || '').toLowerCase();
-                        const planB = String(b.No || '').toLowerCase();
-                        return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
-                    });
-
-                    lastScheduleData = data.schedule;
-                    document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
-
-                    if (data.schedule.length === 0) {
-                        container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo}.</p>`;
-                        document.getElementById('downloadScheduleCsvBtn').disabled = true;
-                        return;
-                    }
-                    document.getElementById('downloadScheduleCsvBtn').disabled = false;
-                    
-                    const vehicleOptions = `<option value="">-- --</option>` + vehicles.map(v => {
-                        const vNo = v['Vehicle No'] || v.vehicleNo || '';
-                        return `<option value="${vNo}">${vNo}</option>`;
-                    }).join('');
-
-                    container.innerHTML = `
-                        <table class="w-full text-xs text-left border-collapse" id="scheduleTable">
-                            <thead>
-                                <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                                    <th class="p-2.5">Date</th>
-                                    <th class="p-2.5">Plan No</th>
-                                    <th class="p-2.5">Route Name</th>
-                                    <th class="p-2.5">Driver</th>
-                                    <th class="p-2.5">Helper</th>
-                                    <th class="p-2.5">Time</th>
-                                    <th class="p-3.5">Lorry (Vehicle No)</th>
-                                    <th class="p-2.5">Start Time</th>
-                                    <th class="p-2.5">End Date</th>
-                                    <th class="p-2.5">End Time</th>
-                                    <th class="p-2.5">GSM KM</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${data.schedule.map((r, idx) => {
-                                    const statusClass = getDateStatusClass(r.Date);
-                                    const currentLorry = r.Lorry || '';
-                                    
-                                    let rowVehicleOptions = vehicleOptions;
-                                    if (currentLorry && !vehicles.some(v => (v['Vehicle No'] || v.vehicleNo) === currentLorry)) {
-                                        rowVehicleOptions += `<option value="${currentLorry}" selected>${currentLorry}</option>`;
-                                    } else {
-                                        rowVehicleOptions = rowVehicleOptions.replace(`value="${currentLorry}"`, `value="${currentLorry}" selected`);
-                                    }
-
-                                    return `
-                                    <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row" data-index="${idx}">
-                                        <td class="py-1.5 px-2 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
-                                        <td class="py-1.5 px-2 font-bold ${statusClass}">${r.No || '-'}</td>
-                                        <td class="py-1.5 px-2 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
-                                        <td class="py-1.5 px-2 ${statusClass}">
-                                            ${isAuthorized ? `<input type="text" data-field="Driver" value="${r.Driver || ''}" onchange="updateScheduleField(${idx}, 'Driver', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">` : `<span>${r.Driver || '-'}</span>`}
-                                        </td>
-                                        <td class="py-1.5 px-2 ${statusClass}">
-                                            ${isAuthorized ? `<input type="text" data-field="Helper" value="${r.Helper || ''}" onchange="updateScheduleField(${idx}, 'Helper', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">` : `<span>${r.Helper || '-'}</span>`}
-                                        </td>
-                                        <td class="py-1.5 px-2 font-mono ${statusClass}">${formatCustomTime(r.Time)}</td>
-                                        <td class="py-1.5 px-2">
-                                            ${isAuthorized ? `<select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">${rowVehicleOptions}</select>` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
-                                        </td>
-                                        <td class="py-1.5 px-2 font-mono"><span>${formatCustomTime(r['Start Time'])}</span></td>
-                                        <td class="py-1.5 px-2 font-mono"><span>${formatCustomDateTime(r['End Date'])}</span></td>
-                                        <td class="py-1.5 px-2 font-mono"><span>${formatCustomTime(r['End Time'])}</span></td>
-                                        <td class="py-1.5 px-2 font-bold"><span>${r['GSM KM'] || '-'}</span></td>
-                                    </tr>`;
-                                }).join('')}
-                            </tbody>
-                        </table>`;
-                }
-            })
-            .catch(() => { container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`; });
+        // Otherwise it's already a time snippet, just take the first 5 chars ("HH:mm")
+        return strVal.substring(0, 5);
     }
+    return strVal;
+}
+
+
+function formatDDMMYYYY(val) {
+    if (!val || val === '-' || val === 'undefined' || val === 'null') return '-';
+    
+    const strVal = String(val).trim();
+    
+    // Check if the date is in MM/DD/YYYY or M/D/YYYY format from the sheet
+    const parts = strVal.split(/[\/\-]/);
+    if (parts.length === 3) {
+        // Assuming Sheet format is MM/DD/YYYY (parts[0]=month, parts[1]=day, parts[2]=year)
+        // Let's rearrange to DD/MM/YYYY: day = parts[1], month = parts[0], year = parts[2]
+        let month = parts[0].padStart(2, '0');
+        let day = parts[1].padStart(2, '0');
+        let year = parts[2];
+        
+        // If year is 2 digits (e.g. '26'), expand to '2026'
+        if (year.length === 2) {
+            year = '20' + year;
+        }
+        
+        if (year.length === 4 && !isNaN(day) && !isNaN(month)) {
+            return `${day}/${month}/${year}`;
+        }
+    }
+    
+    // Fallback parser if it's an ISO string or standard Date object
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        if (year > 2000) {
+            return `${day}/${month}/${year}`;
+        }
+    }
+    
+    return strVal;
+}
+
+
+function fetchDeliveryScheduleReport(weekNo) {
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager", "admin"].includes(userLevel);
+
+    const saveBtnEl = document.getElementById('scsave');
+    if (saveBtnEl) {
+        if (isAuthorized) {
+            saveBtnEl.classList.remove('hidden');
+            saveBtnEl.classList.add('flex');
+        } else {
+            saveBtnEl.classList.add('hidden');
+            saveBtnEl.classList.remove('flex');
+        }
+    }
+
+    if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
+    const container = document.getElementById('scheduleReportResult');
+    container.innerHTML = '<p class="text-center text-purple-500 font-bold text-xs py-8">Loading delivery schedule...</p>';
+
+    fetch(`${API_URL}?action=getDeliverySchedule&weekNo=${weekNo}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success" && data.schedule) {
+                data.schedule.sort((a, b) => {
+                    const dateA = new Date(a.Date || 0);
+                    const dateB = new Date(b.Date || 0);
+                    if (dateA - dateB !== 0) {
+                        return dateA - dateB;
+                    }
+                    const planA = String(a.No || '').toLowerCase();
+                    const planB = String(b.No || '').toLowerCase();
+                    return planA.localeCompare(planB, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                lastScheduleData = data.schedule;
+                document.getElementById('reportWeekNo').value = data.currentWeek || weekNo;
+
+                if (data.schedule.length === 0) {
+                    container.innerHTML = `<p class="text-center text-slate-400 text-xs py-8">No delivery records found for Week ${weekNo}.</p>`;
+                    document.getElementById('downloadScheduleCsvBtn').disabled = true;
+                    return;
+                }
+                document.getElementById('downloadScheduleCsvBtn').disabled = false;
+                
+                const vehicleOptions = `<option value="">-- --</option>` + vehicles.map(v => {
+                    const vNo = v['Vehicle No'] || v.vehicleNo || '';
+                    return `<option value="${vNo}">${vNo}</option>`;
+                }).join('');
+
+                container.innerHTML = `
+                    <table class="w-full text-xs text-left border-collapse" id="scheduleTable">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                                <th class="p-2.5">Date</th>
+                                <th class="p-2.5">Plan No</th>
+                                <th class="p-2.5">Route Name</th>
+                                <th class="p-2.5">Driver</th>
+                                <th class="p-2.5">Helper</th>
+                                <th class="p-2.5">Time</th>
+                                <th class="p-3.5">Lorry (Vehicle No)</th>
+                                <th class="p-2.5">Start Time</th>
+                                <th class="p-2.5">End Date</th>
+                                <th class="p-2.5">End Time</th>
+                                <th class="p-2.5">GSM KM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.schedule.map((r, idx) => {
+                                const statusClass = getDateStatusClass(r.Date);
+                                const currentLorry = r.Lorry || '';
+                                
+                                // Check if GSM KM is present / true / completed
+                                const gsmKmVal = String(r['GSM KM'] || '').trim();
+                                const isGsmCompleted = gsmKmVal !== '' && gsmKmVal !== '-' && gsmKmVal !== '0' && gsmKmVal.toLowerCase() !== 'false';
+                                
+                                // A row is editable ONLY if user is authorized AND GSM KM is NOT completed/true
+                                const canEditRow = isAuthorized && !isGsmCompleted;
+                                
+                                let rowVehicleOptions = vehicleOptions;
+                                if (currentLorry && !vehicles.some(v => (v['Vehicle No'] || v.vehicleNo) === currentLorry)) {
+                                    rowVehicleOptions += `<option value="${currentLorry}" selected>${currentLorry}</option>`;
+                                } else {
+                                    rowVehicleOptions = rowVehicleOptions.replace(`value="${currentLorry}"`, `value="${currentLorry}" selected`);
+                                }
+
+                                return `
+                                <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-950/40 schedule-row ${isGsmCompleted ? 'bg-emerald-50/20 dark:bg-emerald-950/20' : ''}" data-index="${idx}">
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${r.No || '-'}</td>
+                                    <td class="py-1.5 px-2 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
+                                    <td class="py-1.5 px-2 ${statusClass}">
+                                        ${canEditRow ? `<input type="text" data-field="Driver" value="${r.Driver || ''}" onchange="updateScheduleField(${idx}, 'Driver', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">` : `<span>${r.Driver || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 ${statusClass}">
+                                        ${canEditRow ? `<input type="text" data-field="Helper" value="${r.Helper || ''}" onchange="updateScheduleField(${idx}, 'Helper', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-24">` : `<span>${r.Helper || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono ${statusClass}">${formatCustomTime(r.Time)}</td>
+                                    <td class="py-1.5 px-2">
+                                        ${canEditRow ? `<select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">${rowVehicleOptions}</select>` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono">
+                                        ${canEditRow ? `<input type="text" data-field="Start Time" value="${formatCleanTime(r['Start Time'])}" onchange="updateScheduleField(${idx}, 'Start Time', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="hh:mm">` : `<span>${formatCleanTime(r['Start Time'])}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono">
+                                        ${canEditRow ? `<input type="text" data-field="End Date" value="${formatCustomDateTime(r['End Date'])}" onchange="updateScheduleField(${idx}, 'End Date', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-28" placeholder="yyyy/dd/mm">` : `<span>${formatCustomDateTime(r['End Date'])}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-mono">
+                                        ${canEditRow ? `<input type="text" data-field="End Time" value="${formatCleanTime(r['End Time'])}" onchange="updateScheduleField(${idx}, 'End Time', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="hh:mm">` : `<span>${formatCleanTime(r['End Time'])}</span>`}
+                                    </td>
+                                    <td class="py-1.5 px-2 font-bold">
+                                        ${canEditRow ? `<input type="text" data-field="GSM KM" value="${r['GSM KM'] || ''}" onchange="updateScheduleField(${idx}, 'GSM KM', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20">` : `<span class="text-emerald-600 dark:text-emerald-400 font-extrabold">${r['GSM KM'] || '-'}</span>`}
+                                    </td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>`;
+            }
+        })
+        .catch(() => { container.innerHTML = `<p class="text-center text-rose-500 text-xs py-8">Error loading schedule report.</p>`; });
+}
 
     function updateScheduleField(index, field, value) {
         if (!lastScheduleData || !lastScheduleData[index]) return;
@@ -3713,54 +3790,52 @@ function downloadCSVReport() {
     }
 
     async function saveAllScheduleChanges() {
-        const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-        const saveBtn = document.getElementById('scsave');
-        
-        if (!["executive", "manager", "admin"].includes(userLevel)) {
-            alert("Permission denied. Only Executive, Manager, and Admin levels are authorized to edit schedule details.");
-            return;
-        }
-        
-        setButtonLoading(saveBtn, true, "Save Schedule Changes");
-        
-        try {
-            const rows = document.querySelectorAll('.schedule-row');
-            rows.forEach(row => {
-                const idx = row.getAttribute('data-index');
-                const inputs = row.querySelectorAll('.schedule-input');
-                inputs.forEach(input => {
-                    const field = input.getAttribute('data-field');
-                    if (field && lastScheduleData[idx]) {
-                        lastScheduleData[idx][field] = input.value;
-                    }
-                });
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const saveBtn = document.getElementById('scsave');
+    
+    if (!["executive", "manager", "admin"].includes(userLevel)) {
+        alert("Permission denied. Only Executive, Manager, and Admin levels are authorized to edit schedule details.");
+        return;
+    }
+    
+    setButtonLoading(saveBtn, true, "Save Schedule Changes");
+    
+    try {
+        const rows = document.querySelectorAll('.schedule-row');
+        rows.forEach(row => {
+            const idx = row.getAttribute('data-index');
+            const inputs = row.querySelectorAll('.schedule-input');
+            inputs.forEach(input => {
+                const field = input.getAttribute('data-field');
+                if (field && lastScheduleData[idx]) {
+                    lastScheduleData[idx][field] = input.value;
+                }
             });
-            
-            const body = new URLSearchParams();
-            body.append("payload", JSON.stringify({
+        });
+        
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({
                 action: "saveDeliveryScheduleBatch",
                 schedule: lastScheduleData
-            }));
-            
-            const res = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: body
-            });
-            
-            const result = await res.json();
-            if (result && result.status === "success") {
-                fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value);
-            } else {
-                throw new Error(result.message || "Unknown server error");
-            }
-        } catch (err) {
-            alert("Error saving schedule: " + err.message);
-        } finally {
-            setButtonLoading(saveBtn, false, "Save Schedule Changes");
+            })
+        });
+        
+        const result = await res.json();
+        if (result && result.status === "success") {
+           // alert("Schedule saved successfully!");
+            fetchDeliveryScheduleReport(document.getElementById('reportWeekNo').value);
+        } else {
+            throw new Error(result.message || "Unknown server error");
         }
+    } catch (err) {
+        alert("Error saving schedule: " + err.message);
+    } finally {
+        setButtonLoading(saveBtn, false, "Save Schedule Changes");
     }
-   
+}
+
     function downloadScheduleCSV() {
         if (!lastScheduleData || lastScheduleData.length === 0) return;
         const headers = Object.keys(lastScheduleData[0]);
