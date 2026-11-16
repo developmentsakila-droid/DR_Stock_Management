@@ -4694,11 +4694,10 @@ function applyMaintenanceFilters() {
     if (!tbody) return;
     
     if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No vehicle maintenance requests found matching your filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">No vehicle maintenance requests found matching your filters.</td></tr>`;
         return;
     }
     
-    // Sort data Z to A (Descending / Newest to Oldest) by Date
     const sortedData = [...data].sort((a, b) => {
         const dateA = new Date(a.Date || a['Date'] || 0);
         const dateB = new Date(b.Date || b['Date'] || 0);
@@ -4706,29 +4705,78 @@ function applyMaintenanceFilters() {
     });
     
     tbody.innerHTML = sortedData.map((item, idx) => {
-        // Find correct index in global array for PDF export mapping
         const originalIndex = globalMaintenanceData.findIndex(orig =>
             String(orig.NoRequest || orig['NoRequest']) === String(item.NoRequest || item['NoRequest'])
         );
         
+        const currentStatus = item.Status || item['Status'] || 'Pending';
+        
+        // Dynamic status badge styling for the dropdown
+        let statusBg = 'bg-gray-800 text-gray-200 border-black';
+        if (currentStatus === 'Complete') statusBg = 'bg-emerald-800 text-emerald-200 border-emerald-900';
+        else if (currentStatus === 'Ongoing') statusBg = 'bg-yellow-800 text-yellow-200 border-yellow-900';
+        else if (currentStatus === 'To Be Request') statusBg = 'bg-red-900 text-red-200 border-red-900';
+        
         return `
-                <tr class="hover:bg-slate-600 dark:hover:bg-slate-800 transition">
-                    <td class="p-3 font-bold text-rose-400">${item.NoRequest || item['NoRequest'] || '-'}</td>
-                    <td class="p-3 font-mono">${formatCustomDateTime(item.Date) || item['Date'] || '-'}</td>
-                    <td class="p-1 text-slate-400">${item.Department || item['Department'] || '-'}</td>
-                    <td class="p-3 font-bold">${item['Vehicle No'] || item.vehicleNo || '-'}</td>
-                    <td class="p-3">${item['Request By'] || item.requestBy || '-'}</td>
-                    <td class="p-3 font-bold text-slate-400">${item['Issue Type'] || item.issueType || '-'}</td>
-                    <td class="p-3 text-slate-300">${item.Details || item['Details'] || '-'}</td>
-                    <td class="p-3 text-slate-300">${item['Department Head'] || item.departmentHead || '-'}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="downloadMaintenanceA4Pdf(${originalIndex >= 0 ? originalIndex : idx})" class="px-3.5 py-1 bg-red-900 hover:bg-rose-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
-                            <i class="fa-solid fa-file-pdf"></i> PDF
-                        </button>
-                    </td>
-                </tr>
-            `;
+            <tr class="hover:bg-slate-600 dark:hover:bg-slate-800 transition">
+                <td class="p-3 font-bold text-rose-400">${item.NoRequest || item['NoRequest'] || '-'}</td>
+                <td class="p-3 font-mono">${formatCustomDateTime(item.Date) || item['Date'] || '-'}</td>
+                <td class="p-1 text-slate-400">${item.Department || item['Department'] || '-'}</td>
+                <td class="p-3 font-bold">${item['Vehicle No'] || item.vehicleNo || '-'}</td>
+                <td class="p-3">${item['Request By'] || item.requestBy || '-'}</td>
+                <td class="p-3 font-bold text-slate-400">${item['Issue Type'] || item.issueType || '-'}</td>
+                <td class="p-3 text-slate-300">${item.Details || item['Details'] || '-'}</td>
+                <td class="p-3">
+                    <select onchange="updateMaintenanceStatus('${item.NoRequest || item['NoRequest']}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${statusBg}">
+                    
+                        <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="To Be Request" ${currentStatus === 'To Be Request' ? 'selected' : ''}>To Be Request</option>
+                        <option value="Ongoing" ${currentStatus === 'Ongoing' ? 'selected' : ''}>Ongoing</option>
+                       
+                        <option value="Complete" ${currentStatus === 'Complete' ? 'selected' : ''}>Complete</option>
+                    </select>
+                </td>
+                <td class="p-3 text-slate-300">${item['Department Head'] || item.departmentHead || '-'}</td>
+                <td class="p-3 text-right">
+                    <button onclick="downloadMaintenanceA4Pdf(${originalIndex >= 0 ? originalIndex : idx})" class="px-3.5 py-1 bg-red-900 hover:bg-rose-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </button>
+                </td>
+            </tr>
+        `;
     }).join('');
+}
+
+
+async function updateMaintenanceStatus(noRequest, newStatus) {
+    // Update local memory state immediately
+    const item = globalMaintenanceData.find(i => String(i.NoRequest || i['NoRequest']) === String(noRequest));
+    if (item) {
+        item.Status = newStatus;
+    }
+    
+    try {
+        const body = new URLSearchParams();
+        body.append("payload", JSON.stringify({
+            action: "updateVehicleMaintenanceStatus",
+            data: { noRequest: String(noRequest).trim(), status: newStatus }
+        }));
+        
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body
+        });
+        
+        const result = await res.json();
+        if (result.status !== "success") {
+            console.error("Failed to auto-save status:", result.message);
+            alert("Error saving status: " + result.message);
+        }
+    } catch (err) {
+        console.error("Background sync error for maintenance status:", err);
+        alert("Network error while saving status.");
+    }
 }
 
 
