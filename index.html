@@ -4797,7 +4797,7 @@ function applyMaintenanceFilters() {
         let statusBg = 'bg-gray-800 text-gray-200 border-black';
         if (currentStatus === 'Complete') statusBg = 'bg-gray-900 text-green-500 border-black';
         else if (currentStatus === 'In Progress') statusBg = 'bg-gray-900 text-yellow-500 border-black';
-        else if (currentStatus === 'Awaiting Handover') statusBg = 'bg-gray-900 text-red-500 border-black';
+        else if (currentStatus === 'Awaiting Handover') statusBg = 'bg-red-900 text-white border-red-900';
         
         return `
             <tr class="hover:bg-slate-600 dark:hover:bg-slate-800 transition">
@@ -4819,7 +4819,7 @@ function applyMaintenanceFilters() {
                 </td>
                 <td class="p-3 text-slate-300">${item['Department Head'] || item.departmentHead || '-'}</td>
                 <td class="p-3 text-right">
-                    <button onclick="downloadMaintenanceA4Pdf(${originalIndex >= 0 ? originalIndex : idx})" class="px-3.5 py-1 bg-red-900 hover:bg-rose-800 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center gap-1.5 ml-auto transition">
+                    <button onclick="downloadMaintenanceA4Pdf(${originalIndex >= 0 ? originalIndex : idx})" class="px-3.5 py-2 bg-gray-800 hover:bg-rose-800 text-white font-extrabold rounded-1xl text-xs shadow-sm flex items-center gap-2 ml-auto transition">
                         <i class="fa-solid fa-file-pdf"></i> PDF
                     </button>
                 </td>
