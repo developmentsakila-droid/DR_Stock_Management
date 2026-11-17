@@ -4793,11 +4793,11 @@ function applyMaintenanceFilters() {
         
         const currentStatus = item.Status || item['Status'] || 'Pending';
         
-        // Dynamic status badge styling for the dropdown
+      // Dynamic status badge styling for the dropdown
         let statusBg = 'bg-gray-800 text-gray-200 border-black';
-        if (currentStatus === 'Complete') statusBg = 'bg-black-800 text-Orange-800 border-emerald-900';
-        else if (currentStatus === 'In Progress') statusBg = 'bg-yellow-800 text-yellow-200 border-yellow-900';
-        else if (currentStatus === 'Awaiting Handover') statusBg = 'bg-red-900 text-red-200 border-red-900';
+        if (currentStatus === 'Complete') statusBg = 'bg-gray-900 text-green-500 border-black';
+        else if (currentStatus === 'In Progress') statusBg = 'bg-gray-900 text-yellow-500 border-black';
+        else if (currentStatus === 'Awaiting Handover') statusBg = 'bg-gray-900 text-red-500 border-black';
         
         return `
             <tr class="hover:bg-slate-600 dark:hover:bg-slate-800 transition">
@@ -4810,11 +4810,10 @@ function applyMaintenanceFilters() {
                 <td class="p-3 text-slate-300">${item.Details || item['Details'] || '-'}</td>
                 <td class="p-3">
                     <select onchange="updateMaintenanceStatus('${item.NoRequest || item['NoRequest']}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${statusBg}">
-
-                         <option value="Awaiting Handoverr" ${currentStatus === 'Awaiting Handover' ? 'selected' : ''}>Awaiting Handover</option>
+                        
+                        <option value="Awaiting Handover" ${currentStatus === 'Awaiting Handover' ? 'selected' : ''}>Awaiting Handover</option>
                         <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>    
                         <option value="In Progress" ${currentStatus === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                       
                         <option value="Complete" ${currentStatus === 'Complete' ? 'selected' : ''}>Complete</option>
                     </select>
                 </td>
