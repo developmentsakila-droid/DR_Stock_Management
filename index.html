@@ -759,7 +759,7 @@
                 <p class="text-xs text-slate-500 font-medium">Select Plan No to view and update status online.</p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
-                <label class="text-xs font-bold text-slate-500 uppercase">Plan No:</label>
+                <label class="text-xs font-bold text-slate-500 uppercase"></label>
                 <select id="planNoSelect" onchange="onPlanNoChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white">
                     <option value="">-- Select Plan --</option>
                 </select>
@@ -2036,6 +2036,7 @@ window.addEventListener('popstate', (event) => {
             }
         }
         
+        
         else if (tab === 'deliverySummary') {
             resetDeliverySummaryFilters();
             
@@ -2104,6 +2105,8 @@ window.addEventListener('popstate', (event) => {
                 }
             }
         }
+        
+        
         else if (tab === 'stock') {
             const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
             const isAuthorized = ["executive", "manager"].includes(userLevel);
@@ -2707,6 +2710,16 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
     }
 
     function openEditVehicleModal(id) {
+        
+            // Check if logged in user has executive or manager permissions
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    
+    if (!isAuthorized) {
+        alert("Access Denied");
+        return; // Stops the modal from opening
+    }
+    
         const v = vehicles.find(item => String(item.id) === String(id));
         if (!v) return;
         document.getElementById('vehicleModalTitle').innerHTML = `<i class="fa-solid fa-pen text-amber-500"></i> Edit Vehicle`;
@@ -2766,6 +2779,16 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
     }
 
     async function deleteVehicle(id) {
+        
+          // Check if logged in user has executive or manager permissions
+  const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+  const isAuthorized = ["executive", "manager"].includes(userLevel);
+  
+  if (!isAuthorized) {
+      alert("Access Denied");
+      return; // Stops the modal from opening
+  }
+        
         if (confirm("Delete this vehicle record?")) {
             showLoading(true);
             try {
@@ -2849,7 +2872,7 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
                         <div class="flex items-start justify-between gap-2 mb-3">
                             <div>
                                 <span class="inline-block text-[10px] font-extrabold px-2.5 py-1 rounded-xl ${badgeClass} mb-1.5 shadow-sm">${item.type || 'Direct Customer'}</span>
-                                <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-gray-300 transition-colors">${item.name || ''}</h3>
+                                <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-green-200 transition-colors">${item.name || ''}</h3>
                             </div>
                             <span class="text-xs font-bold px-2.5 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shrink-0 flex items-center gap-1 shadow-sm">
                                 <i class="fa-solid fa-route text-emerald-500"></i>${item.route || ''}
@@ -2887,8 +2910,8 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
                             <span>${isExpanded ? 'Hide Details' : 'View Details'}</span>
                         </button>
                         <div class="flex items-center gap-1.5">
-                            <button onclick="openEditModal('${item.id}')" title="Edit" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-550 hover:bg-rose-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                            <button class="edit-btn" onclick="openEditModal('${item.id}')" title="Edit" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 text-slate-600 dark:text-slate-500 text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteLocation('${item.id}')" title="Delete" class="p-2.5 rounded-xl bg-rose-550 hover:bg-black-100 text-rose-600 text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             <a href="${mapSingleUrl}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-diamond-turn-right"></i> Navigate</a>
                         </div>
                     </div>
@@ -2945,25 +2968,36 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
         document.getElementById('locationModal').classList.remove('hidden');
     }
 
-    function openEditModal(id) {
-        const loc = locations.find(l => String(l.id) === String(id));
-        if (!loc) return;
-        document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Location`;
-        document.getElementById('formId').value = loc.id;
-        document.getElementById('formType').value = loc.type;
-        document.getElementById('formRoute').value = loc.route;
-        document.getElementById('formName').value = loc.name;
-        document.getElementById('formPhone').value = loc.phone;
-        document.getElementById('formLat').value = loc.lat;
-        document.getElementById('formLng').value = loc.lng;
-        document.getElementById('formCoordsCombined').value = `${loc.lat}, ${loc.lng}`;
-        document.getElementById('formAddress').value = loc.address;
-        document.getElementById('formAsm').value = loc.asm || '';
-        document.getElementById('formSalesRef').value = loc.salesRef || '';
-        document.getElementById('formNotes').value = loc.notes || '';
-        document.getElementById('locationModal').classList.remove('hidden');
+function openEditModal(id) {
+    // Check if logged in user has executive or manager permissions
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    
+    if (!isAuthorized) {
+        alert("Access Denied");
+        return; // Stops the modal from opening
     }
-
+    
+    const loc = locations.find(l => String(l.id) === String(id));
+    if (!loc) return;
+    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Location`;
+    document.getElementById('formId').value = loc.id;
+    document.getElementById('formType').value = loc.type;
+    document.getElementById('formRoute').value = loc.route;
+    document.getElementById('formName').value = loc.name;
+    document.getElementById('formPhone').value = loc.phone;
+    document.getElementById('formLat').value = loc.lat;
+    document.getElementById('formLng').value = loc.lng;
+    document.getElementById('formCoordsCombined').value = `${loc.lat}, ${loc.lng}`;
+    document.getElementById('formAddress').value = loc.address;
+    document.getElementById('formAsm').value = loc.asm || '';
+    document.getElementById('formSalesRef').value = loc.salesRef || '';
+    document.getElementById('formNotes').value = loc.notes || '';
+    document.getElementById('locationModal').classList.remove('hidden');
+}
+   
+   
+   
     function closeModal() { document.getElementById('locationModal').classList.add('hidden'); }
 
     async function handleLocationFormSubmit(e) {
@@ -2996,17 +3030,45 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
         }
     }
 
+    
+    
     async function deleteLocation(id) {
-        if (confirm("Delete this delivery location?")) {
-            showLoading(true);
-            try {
-                await postToApi("deleteLocation", { id });
-                await fetchAllData(true);
-            } catch (err) { showLoading(false); }
-        }
+    // Check if logged in user has executive or manager permissions
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    
+    if (!isAuthorized) {
+        alert("Access Denied");
+        return; // Stops the modal from opening
     }
+    
+    if (confirm("Delete this delivery location?")) {
+    showLoading(true);
+    try {
+        await postToApi("deleteLocation", { id });
+        await fetchAllData(true);
+    } catch (err) { showLoading(false); }
+}
+}
 
-    function openAddRouteModal() { document.getElementById('routeModal').classList.remove('hidden'); }
+
+
+    
+       
+        
+        
+         function openAddRouteModal() { 
+     // Check if logged in user has executive or manager permissions
+     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+     const isAuthorized = ["executive", "manager"].includes(userLevel);
+     
+     if (!isAuthorized) {
+         alert("Access Denied");
+         return; // Stops the modal from opening
+     }
+        document.getElementById('routeModal').classList.remove('hidden');
+        
+    }
     function closeRouteModal() { document.getElementById('routeModal').classList.add('hidden'); }
 
     async function handleRouteFormSubmit(e) {
@@ -3030,7 +3092,26 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
         }
     }
 
-    function openEmployeeModal() { renderEmployeeList(); document.getElementById('employeeModal').classList.remove('hidden'); }
+
+        
+        
+        
+        
+    
+   function openEmployeeModal() {
+    // Check if logged in user has executive or manager permissions
+    const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    
+    if (!isAuthorized) {
+        alert("Access Denied");
+        return; // Stops the modal from opening
+    }
+    renderEmployeeList(); document.getElementById('employeeModal').classList.remove('hidden'); 
+
+    }
+    
+    
     function closeEmployeeModal() { document.getElementById('employeeModal').classList.add('hidden'); }
 
     async function handleAddEmployee(e) {
