@@ -4795,9 +4795,9 @@ function applyMaintenanceFilters() {
         
         // Dynamic status badge styling for the dropdown
         let statusBg = 'bg-gray-800 text-gray-200 border-black';
-        if (currentStatus === 'Complete') statusBg = 'bg-emerald-800 text-emerald-200 border-emerald-900';
-        else if (currentStatus === 'Ongoing') statusBg = 'bg-yellow-800 text-yellow-200 border-yellow-900';
-        else if (currentStatus === 'To Be Handover') statusBg = 'bg-red-900 text-red-200 border-red-900';
+        if (currentStatus === 'Complete') statusBg = 'bg-black-800 text-Orange-800 border-emerald-900';
+        else if (currentStatus === 'In Progress') statusBg = 'bg-yellow-800 text-yellow-200 border-yellow-900';
+        else if (currentStatus === 'Awaiting Handover') statusBg = 'bg-red-900 text-red-200 border-red-900';
         
         return `
             <tr class="hover:bg-slate-600 dark:hover:bg-slate-800 transition">
@@ -4811,9 +4811,9 @@ function applyMaintenanceFilters() {
                 <td class="p-3">
                     <select onchange="updateMaintenanceStatus('${item.NoRequest || item['NoRequest']}', this.value)" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border ${statusBg}">
 
-                         <option value="To Be Handover" ${currentStatus === 'To Be Handover' ? 'selected' : ''}>To Be Handover</option>
+                         <option value="Awaiting Handoverr" ${currentStatus === 'Awaiting Handover' ? 'selected' : ''}>Awaiting Handover</option>
                         <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>    
-                        <option value="Ongoing" ${currentStatus === 'Ongoing' ? 'selected' : ''}>Ongoing</option>
+                        <option value="In Progress" ${currentStatus === 'In Progress' ? 'selected' : ''}>In Progress</option>
                        
                         <option value="Complete" ${currentStatus === 'Complete' ? 'selected' : ''}>Complete</option>
                     </select>
