@@ -3755,7 +3755,7 @@ function fetchDeliveryScheduleReport(weekNo) {
                                 }
 
                                 return `
-                                <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-slate-550/40 schedule-row ${isGsmCompleted ? 'bg-emerald-50/20 dark:bg-emerald-950/20' : ''}" data-index="${idx}">
+                                <tr class="border-b border-slate-900 dark:border-slate-600/60 hover:bg-slate-50 dark:hover:bg-gray-800 schedule-row ${isGsmCompleted ? 'bg-emerald-50/20 dark:bg-emerald-950/20' : ''}" data-index="${idx}">
                                     <td class="py-1.5 px-2 font-bold ${statusClass}">${formatCustomDateTime(r.Date)}</td>
                                     <td class="py-1.5 px-2 font-bold ${statusClass}">${r.No || '-'}</td>
                                     <td class="py-1.5 px-2 font-bold ${statusClass}">${r['Route Name'] || '-'}</td>
