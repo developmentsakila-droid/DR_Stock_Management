@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Html5-Qrcode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
@@ -940,6 +941,15 @@
                 <p class="text-xs text-slate-500 font-medium">Filter attendance by Month, Employee Name, and Date range with automated OT calculation.</p>
             </div>
             <div class="flex items-center gap-2 flex justify-end">
+                
+                                    <!-- Download JPG Button -->
+                    <button onclick="downloadAttendanceJPG()" class="px-3 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-image"></i> Download JPG
+                    </button>
+                    <!-- Summary Form Modal Trigger Button -->
+                    <button onclick="openAttendanceSummaryModal()" class="px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie"></i> OT Summary Form
+                    </button>
                 <button onclick="resetAttendanceFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                     Reset Filters
                 </button>
@@ -949,6 +959,34 @@
             </div>
         </div>
         
+        
+        <!-- Summary Modal (Add at the bottom of your HTML body) -->
+<div id="attendanceSummaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-user-clock text-indigo-500"></i> Employee Total OT Summary
+            </h3>
+            <button onclick="closeAttendanceSummaryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <div class="p-5 max-h-[60vh] overflow-y-auto">
+            <div id="summaryModalContent" class="space-y-3">
+                <!-- Dynamically injected employee name & total OTs list -->
+                <div class="text-center py-6 text-slate-500">
+                    <i class="fa-solid fa-spinner fa-spin text-indigo-600 mr-2"></i> Calculating OT Summary...
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+            <button onclick="closeAttendanceSummaryModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
         <!-- Filter Grid (4 columns: Month, Employee, Start Date, End Date) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
             <div>
@@ -4524,6 +4562,96 @@ function calculateWorkingAndOTHours(row) {
     };
 }
 // timeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+function downloadAttendanceJPG() {
+    const targetElement = document.getElementById('attendanceTableContainer') || document.querySelector('table');
+    if (!targetElement) {
+        alert('Table container not found.');
+        return;
+    }
+    
+    // Clone element or ensure styles are fully opaque and visible for canvas capture
+    html2canvas(targetElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff' // Prevents transparent black backgrounds in output JPG
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Attendance_OT_Summary_Report.jpg';
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.click();
+    }).catch(err => {
+        console.error('JPG Export Error:', err);
+        alert('Failed to download JPG.');
+    });
+}
+
+// 2. Correct Summary Modal & Data Parser
+function openAttendanceSummaryModal() {
+    const modal = document.getElementById('attendanceSummaryModal');
+    const contentContainer = document.getElementById('summaryModalContent');
+    if (!modal || !contentContainer) return;
+    
+    modal.classList.remove('hidden');
+    contentContainer.innerHTML = `
+            <div class="text-center py-6 text-slate-500">
+                <i class="fa-solid fa-spinner fa-spin text-indigo-600 mr-2"></i> Calculating OT Summary...
+            </div>
+        `;
+    
+    const rows = document.querySelectorAll('#attendanceTableBody tr');
+    const otMap = {};
+    let validRowsCount = 0;
+    
+    rows.forEach(tr => {
+        const cols = tr.querySelectorAll('td');
+        // Check if row has data cells (ignoring loading or error colspan rows)
+        if (cols.length >= 7 && !tr.innerText.includes('Loading...') && !tr.innerText.includes('No records')) {
+            const name = cols[2]?.innerText.trim() || 'Unknown';
+            const otHours = parseFloat(cols[5]?.innerText.trim()) || 0;
+            
+            if (name && name !== 'Unknown') {
+                otMap[name] = (otMap[name] || 0) + otHours;
+                validRowsCount++;
+            }
+        }
+    });
+    
+    const entries = Object.entries(otMap);
+    if (validRowsCount === 0 || entries.length === 0) {
+        contentContainer.innerHTML = `
+                <p class="text-center text-sm text-slate-500 py-4">
+                    <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i> No attendance data loaded yet. Please wait for table records to load.
+                </p>
+            `;
+        return;
+    }
+    
+    // Sort by highest OT hours descending
+    entries.sort((a, b) => b[1] - a[1]);
+    
+    contentContainer.innerHTML = `
+            <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${entries.map(([name, totalOt]) => `
+                    <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition">
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">
+                            <i class="fa-solid fa-user text-xs text-slate-400 mr-2"></i>${name}
+                        </span>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full">
+                            ${totalOt.toFixed(2)} Hrs
+                        </span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+}
+
+function closeAttendanceSummaryModal() {
+    const modal = document.getElementById('attendanceSummaryModal');
+    if (modal) modal.classList.add('hidden');
+}
+
 
 
     async function loadAttendanceData() {
