@@ -3980,7 +3980,7 @@ function fetchDeliveryScheduleReport(weekNo) {
                                         ${canEditRow ? `<select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">${rowVehicleOptions}</select>` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
                                     </td>
                                     <td class="py-1.5 px-2 font-mono">
-                                     ${canEditRow ? `<input type="text" data-field="Special Note" value="${r['Special Note']}" onchange="updateScheduleField(${idx}, 'Special Note', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="hh:mm">` : `<span>${r['Special Note']}</span>`}
+                                     ${canEditRow ? `<input type="text" data-field="Special Note" value="${r['Special Note']}" onchange="updateScheduleField(${idx}, 'Special Note', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="-">` : `<span>${r['Special Note']}</span>`}
                                  </td>
                                     
                                     <td class="py-1.5 px-2 font-mono">
