@@ -951,7 +951,7 @@
                         <i class="fa-solid fa-chart-pie"></i> OT Summary Form
                     </button>
                 <button onclick="resetAttendanceFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
-                    Reset Filters
+                    Reload & Reset
                 </button>
                 <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex justify-end">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -4776,7 +4776,7 @@ function resetAttendanceFilters() {
     document.getElementById('attFilterEmployee').value = 'ALL';
     document.getElementById('attFilterStartDate').value = '';
     document.getElementById('attFilterEndDate').value = '';
-    
+    loadAttendanceData();
      const monthSelect = document.getElementById('attFilterMonth');
  if (monthSelect) {
      const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
