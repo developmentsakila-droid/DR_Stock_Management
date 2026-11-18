@@ -649,10 +649,10 @@
     <div class="flex flex-wrap items-center justify-between gap-2 bg-white/50 dark:bg-gray-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800">
         <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">Quick Tools:</span>
         <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
+            <button id="tm" onclick="openEmployeeModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
                 <i class="fa-solid fa-users text-emerald-600"></i> Team
             </button>
-            <button onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
+            <button id="ad" onclick="openAddRouteModal()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition">
                 <i class="fa-solid fa-folder-plus text-emerald-600"></i> Add Route
             </button>
             <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/25 transition">
@@ -694,7 +694,7 @@
         <div>
             <div class="flex items-center justify-between mb-2 px-1">
                 <label class="block text-[11px] font-extrabold text-slate-400 uppercase">Select Delivery Route / Region</label>
-                <button onclick="openAddRouteModal()" class="text-xs text-emerald-600 hover:underline font-bold flex items-center gap-1">
+                <button id="nr" onclick="openAddRouteModal()" class="text-xs text-emerald-600 hover:underline font-bold flex items-center gap-1">
                     <i class="fa-solid fa-plus text-[10px]"></i> New Route
                 </button>
             </div>
@@ -1627,6 +1627,8 @@
     let allAttendanceRecords = [];
     let lastDefectsReport = [];
     
+    const access1 = ["executive", "manager"];
+    const access_admin = ["executive", "manager", "admin"];
     
     document.addEventListener("DOMContentLoaded", () => {
         initTheme();
@@ -2022,16 +2024,36 @@ window.addEventListener('popstate', (event) => {
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'schedule');
             
             const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            const isAuthorized = access1.includes(userLevel);
+            const isAuthorizedad = access_admin.includes(userLevel);
 
             const saveBtnEl = document.getElementById('scsave');
+            const saveBtnEldj = document.getElementById('downloadScheduleJpgBtn');
+            const saveBtnElde = document.getElementById('downloadScheduleCsvBtn');
             if (saveBtnEl) {
                 if (isAuthorized) {
+                    
+                    saveBtnEldj.classList.remove('hidden');
+                    saveBtnEldj.classList.add('flex');
+                    saveBtnElde.classList.remove('hidden');
+                    saveBtnElde.classList.add('flex');
+                } else {
+                   
+                    saveBtnEldj.classList.add('hidden');
+                    saveBtnEldj.classList.remove('flex');
+                    saveBtnElde.classList.add('hidden');
+                    saveBtnElde.classList.remove('flex');
+                }
+            }
+            else if (saveBtnEl) {
+                if (isAuthorizedad) {
                     saveBtnEl.classList.remove('hidden');
                     saveBtnEl.classList.add('flex');
+                    
                 } else {
                     saveBtnEl.classList.add('hidden');
                     saveBtnEl.classList.remove('flex');
+                    
                 }
             }
         }
@@ -2049,6 +2071,35 @@ window.addEventListener('popstate', (event) => {
             window.deliverySummaryInterval = setInterval(() => {
                 resetDeliverySummaryFilters();
             }, 600);
+        }
+        
+        
+                else if (tab === 'delivery') {
+                const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+        const isAuthorized = access1.includes(userLevel);
+        
+        
+        const saveBtnEl = document.getElementById('tm');
+        const saveBtnElad = document.getElementById('ad');
+        const saveBtnElnr = document.getElementById('nr');
+        if (saveBtnEl) {
+            if (isAuthorized) {
+                saveBtnEl.classList.remove('hidden');
+                saveBtnEl.classList.add('flex');
+                saveBtnElad.classList.remove('hidden');
+                saveBtnElad.classList.add('flex');
+                saveBtnElnr.classList.remove('hidden');
+                saveBtnElnr.classList.add('flex');
+            } else {
+                saveBtnEl.classList.add('hidden');
+                saveBtnEl.classList.remove('flex');
+                saveBtnElad.classList.add('hidden');
+                saveBtnElad.classList.remove('flex');
+                saveBtnElnr.classList.add('hidden');
+                saveBtnElnr.classList.remove('flex');
+            }
+        }
+        
         }
         
         else if (tab === 'attendance') {
@@ -2075,7 +2126,7 @@ window.addEventListener('popstate', (event) => {
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicleMaintenance');
             
                         const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            const isAuthorized = access1.includes(userLevel);
             
             const saveBtnEl = document.getElementById('btnprintpdf');
             if (saveBtnEl) {
@@ -2092,7 +2143,7 @@ window.addEventListener('popstate', (event) => {
         else if (tab === 'vehicle') {
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'vehicle');
             const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            const isAuthorized = access1.includes(userLevel);
             
             const saveBtnEl = document.getElementById('addv');
             if (saveBtnEl) {
@@ -2109,7 +2160,7 @@ window.addEventListener('popstate', (event) => {
         
         else if (tab === 'stock') {
             const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-            const isAuthorized = ["executive", "manager"].includes(userLevel);
+            const isAuthorized = access1.includes(userLevel);
             
             const saveBtnEl = document.getElementById('addNewItemBtn');
             if (saveBtnEl) {
@@ -2713,7 +2764,7 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
         
             // Check if logged in user has executive or manager permissions
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    const isAuthorized = access1.includes(userLevel);
     
     if (!isAuthorized) {
         alert("Access Denied");
@@ -2782,7 +2833,7 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
         
           // Check if logged in user has executive or manager permissions
   const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-  const isAuthorized = ["executive", "manager"].includes(userLevel);
+  const isAuthorized = access1.includes(userLevel);
   
   if (!isAuthorized) {
       alert("Access Denied");
@@ -2971,7 +3022,7 @@ document.getElementById('loginActivityModal').classList.remove('hidden');
 function openEditModal(id) {
     // Check if logged in user has executive or manager permissions
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    const isAuthorized = access1.includes(userLevel);
     
     if (!isAuthorized) {
         alert("Access Denied");
@@ -3035,7 +3086,7 @@ function openEditModal(id) {
     async function deleteLocation(id) {
     // Check if logged in user has executive or manager permissions
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    const isAuthorized = access1.includes(userLevel);
     
     if (!isAuthorized) {
         alert("Access Denied");
@@ -3060,7 +3111,7 @@ function openEditModal(id) {
          function openAddRouteModal() { 
      // Check if logged in user has executive or manager permissions
      const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-     const isAuthorized = ["executive", "manager"].includes(userLevel);
+     const isAuthorized = access1.includes(userLevel);
      
      if (!isAuthorized) {
          alert("Access Denied");
@@ -3101,12 +3152,10 @@ function openEditModal(id) {
    function openEmployeeModal() {
     // Check if logged in user has executive or manager permissions
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager"].includes(userLevel);
+    const isAuthorized = access1.includes(userLevel);
     
-    if (!isAuthorized) {
-        alert("Access Denied");
-        return; // Stops the modal from opening
-    }
+
+   
     renderEmployeeList(); document.getElementById('employeeModal').classList.remove('hidden'); 
 
     }
@@ -3752,18 +3801,9 @@ function formatDDMMYYYY(val) {
 
 function fetchDeliveryScheduleReport(weekNo) {
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-    const isAuthorized = ["executive", "manager", "admin"].includes(userLevel);
+    const isAuthorized = access_admin.includes(userLevel);
 
-    const saveBtnEl = document.getElementById('scsave');
-    if (saveBtnEl) {
-        if (isAuthorized) {
-            saveBtnEl.classList.remove('hidden');
-            saveBtnEl.classList.add('flex');
-        } else {
-            saveBtnEl.classList.add('hidden');
-            saveBtnEl.classList.remove('flex');
-        }
-    }
+    
 
     if (!weekNo) weekNo = document.getElementById('reportWeekNo').value || "43";
     const container = document.getElementById('scheduleReportResult');
@@ -3880,7 +3920,7 @@ function fetchDeliveryScheduleReport(weekNo) {
     const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
     const saveBtn = document.getElementById('scsave');
     
-    if (!["executive", "manager", "admin"].includes(userLevel)) {
+    if (!access_admin.includes(userLevel)) {
         alert("Permission denied. Only Executive, Manager, and Admin levels are authorized to edit schedule details.");
         return;
     }
