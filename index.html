@@ -323,7 +323,7 @@
          </div>
          <div class="space-y-1">
              <h4 class="font-bold text-base text-slate-900 dark:text-white">Attendance</h4>
-             <p class="text-xs text-slate-500 dark:text-slate-400"></p>
+             <p class="text-xs text-slate-500 dark:text-slate-400">Filter attendance by Month, Employee Name, and Date range with automated OT calculation.</p>
          </div>
      </div> 
      
@@ -992,8 +992,8 @@
                 <h3 class="text-xl font-black text-slate-900 dark:text-white" id="statTotalNormalHrs">0.00 hrs</h3>
             </div>
             <div class="glass-card dark:bg-slate-900 border border-orange-500/30 p-3 rounded-2xl shadow-sm space-y-1 bg-orange-50/20">
-                <span class="text-[10px] font-extrabold text-orange-600 uppercase">Total OT Hours</span>
-                <h3 class="text-xl font-black text-orange-600 dark:text-orange-400" id="statTotalOtHrs">0.00 hrs</h3>
+                <span class="text-[10px] font-extrabold text-orange-600 flex flex-center uppercase">Total OT Hours</span>
+                <h3 class="text-xl font-black text-orange-600 dark:text-orange-400 flex flex-center" id="statTotalOtHrs">0.00 hrs</h3>
             </div>
         </div>
         
@@ -1001,7 +1001,7 @@
         <div class="overflow-x-auto pt-2">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+                    <tr class="border-b border-slate-200 dark:bg-slate-950 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
                         <th class="py-3 px-4">Date</th>
                         <th class="py-3 px-4">Name</th>
                         <th class="py-3 px-4">Status</th>
@@ -1011,9 +1011,10 @@
                         <th class="py-3 px-4 text-right">OT Hours</th>
                     </tr>
                 </thead>
+ 
                 <tbody id="attendanceResultTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
                     <tr>
-                        <td colspan="7" class="text-center py-8 text-slate-400">Loading attendance logs...</td>
+                        <td colspan="7" class="text-center py-8 text-slate-400">Loading...</td>
                     </tr>
                 </tbody>
             </table>
@@ -2130,6 +2131,14 @@ window.addEventListener('popstate', (event) => {
         
         else if (tab === 'attendance') {
             loadAttendanceData();
+            
+            const monthSelect = document.getElementById('attFilterMonth');
+if (monthSelect) {
+    const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+    monthSelect.value = currentMonthStr;
+    onAttendanceMonthChange(currentMonthStr);
+}
+
             document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'attendance');
         }
         
@@ -4461,8 +4470,14 @@ function calculateWorkingAndOTHours(row) {
     
     // Saturday and Sunday are normal OT days (all hours count as OT)
     if (isWeekend) {
-        const totalWorked = outHours - inHours;
-        return { normalHours: 0, otHours: parseFloat(totalWorked.toFixed(2)-1) };
+        let totalWorked = outHours - inHours-1;
+        // Apply 22:30 to 23:30 ignore rule on weekends as well
+        const overlapStart = Math.max(inHours, 22.5);
+        const overlapEnd = Math.min(outHours, 23.5);
+        if (overlapEnd > overlapStart) {
+            totalWorked -= (overlapEnd - overlapStart-1);
+        }
+        return { normalHours: 0, otHours: parseFloat(Math.max(0, totalWorked).toFixed(2)) };
     }
     
     // Standard window limits
@@ -4483,15 +4498,19 @@ function calculateWorkingAndOTHours(row) {
     
     let otHours = morningOT + eveningOT;
     
-    // 3. Overnight deduction rule: If out time passes 23:00 (e.g. into next day), apply -1 hour adjustment
-    if (outHours > 23.0) {
-        otHours -= 1.0;
+    // 3. Ignore OT time between 22:30 (22.5) and 23:30 (23.5)
+    const ignoreStart = 22.5;
+    const ignoreEnd = 23.5;
+    const overlapStart = Math.max(inHours, ignoreStart);
+    const overlapEnd = Math.min(outHours, ignoreEnd);
+    if (overlapEnd > overlapStart) {
+        otHours -= (overlapEnd - overlapStart);
     }
     
     // Ensure OT doesn't drop below 0
     otHours = Math.max(0, otHours);
     
-    // 4. Normal Hours: Hours worked inside the 08:00 to 18:00 window (capped at 8 hours)
+    // 4. Normal Hours: Hours worked inside the 08:00 to 18:00 window (capped at 10 hours)
     let normalHours = 0;
     const windowStart = Math.max(inHours, standardStart);
     const windowEnd = Math.min(outHours, standardEnd);
@@ -4504,7 +4523,6 @@ function calculateWorkingAndOTHours(row) {
         otHours: parseFloat(otHours.toFixed(2))
     };
 }
-
 // timeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 
@@ -4573,7 +4591,16 @@ function applyAttendanceFilters() {
     let sumOtHrs = 0;
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">No attendance records found for the selected criteria.</td></tr>`;
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="7" class="text-center py-10 text-slate-500 dark:text-slate-400">
+                <div class="inline-flex items-center space-x-2">
+                    <i class="fa-solid fa-spinner fa-spin text-emerald-600"></i>
+                    <span class="text-sm font-medium">Loading...</span>
+                </div>
+            </td>
+        </tr>
+    `;
         document.getElementById('statTotalNormalHrs').textContent = '0.00 hrs';
         document.getElementById('statTotalOtHrs').textContent = '0.00 hrs';
         return;
@@ -4599,7 +4626,7 @@ function applyAttendanceFilters() {
         return `
                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                     <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTimew(date)}</td>
-                    <td class="py-3 px-4 font-extrabold text-slate-900 dark:text-white">${name}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">${name}</td>
                     <td class="py-3 px-4">
                         <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border ${badgeColor}">${status}</span>
                     </td>
@@ -4621,6 +4648,14 @@ function resetAttendanceFilters() {
     document.getElementById('attFilterEmployee').value = 'ALL';
     document.getElementById('attFilterStartDate').value = '';
     document.getElementById('attFilterEndDate').value = '';
+    
+     const monthSelect = document.getElementById('attFilterMonth');
+ if (monthSelect) {
+     const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+     monthSelect.value = currentMonthStr;
+     onAttendanceMonthChange(currentMonthStr);
+ }
+ 
     applyAttendanceFilters();
 }
 
