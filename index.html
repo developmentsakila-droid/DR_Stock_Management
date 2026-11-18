@@ -3938,6 +3938,7 @@ function fetchDeliveryScheduleReport(weekNo) {
                                 <th class="p-2.5">Helper</th>
                                 <th class="p-2.5">Time</th>
                                 <th class="p-3.5">Lorry (Vehicle No)</th>
+                                <th class="p-3.5">Special Note</th>
                                 <th class="p-2.5">Start Time</th>
                                 <th class="p-2.5">End Date</th>
                                 <th class="p-2.5">End Time</th>
@@ -3978,6 +3979,10 @@ function fetchDeliveryScheduleReport(weekNo) {
                                     <td class="py-1.5 px-2">
                                         ${canEditRow ? `<select data-field="Lorry" onchange="updateScheduleField(${idx}, 'Lorry', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-xs font-bold">${rowVehicleOptions}</select>` : `<span class="font-mono font-bold">${currentLorry || '-'}</span>`}
                                     </td>
+                                    <td class="py-1.5 px-2 font-mono">
+                                     ${canEditRow ? `<input type="text" data-field="Special Note" value="${r['Special Note']}" onchange="updateScheduleField(${idx}, 'Special Note', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="hh:mm">` : `<span>${r['Special Note']}</span>`}
+                                 </td>
+                                    
                                     <td class="py-1.5 px-2 font-mono">
                                         ${canEditRow ? `<input type="text" data-field="Start Time" value="${formatCleanTime(r['Start Time'])}" onchange="updateScheduleField(${idx}, 'Start Time', this.value)" class="schedule-input px-2 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20" placeholder="hh:mm">` : `<span>${formatCleanTime(r['Start Time'])}</span>`}
                                     </td>
