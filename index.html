@@ -937,22 +937,38 @@
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-user-clock text-emerald-500"></i> Attendance & OT Summary Report
                 </h4>
-                <p class="text-xs text-slate-500 font-medium">Filter attendance by Employee Name and Date range with automated OT calculation.</p>
-            </div> </div>
+                <p class="text-xs text-slate-500 font-medium">Filter attendance by Month, Employee Name, and Date range with automated OT calculation.</p>
+            </div>
             <div class="flex items-center gap-2 flex justify-end">
-                
                 <button onclick="resetAttendanceFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                     Reset Filters
                 </button>
-                
                 <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition flex justify-end">
-    <i class="fa-solid fa-arrow-left mr-1"></i> Back
-</button>
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                </button>
             </div>
+        </div>
         
-        
-        <!-- Filter Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+        <!-- Filter Grid (4 columns: Month, Employee, Start Date, End Date) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div>
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Select Month</label>
+                <select id="attFilterMonth" onchange="onAttendanceMonthChange(this.value)" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                    <option value="">-- Choose Month --</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
             <div>
                 <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Employee Name</label>
                 <select id="attFilterEmployee" onchange="applyAttendanceFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
@@ -969,14 +985,24 @@
             </div>
         </div>
         
+        <!-- Total Summary Cards Bar -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-sm space-y-1">
+                <span class="text-[10px] font-extrabold text-slate-400 uppercase">Total Normal Hours</span>
+                <h3 class="text-xl font-black text-slate-900 dark:text-white" id="statTotalNormalHrs">0.00 hrs</h3>
+            </div>
+            <div class="glass-card dark:bg-slate-900 border border-orange-500/30 p-3 rounded-2xl shadow-sm space-y-1 bg-orange-50/20">
+                <span class="text-[10px] font-extrabold text-orange-600 uppercase">Total OT Hours</span>
+                <h3 class="text-xl font-black text-orange-600 dark:text-orange-400" id="statTotalOtHrs">0.00 hrs</h3>
+            </div>
+        </div>
+        
         <!-- Attendance Table Result -->
         <div class="overflow-x-auto pt-2">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
                         <th class="py-3 px-4">Date</th>
-                      <!--  <th class="py-3 px-4">ETF</th>
-                        <th class="py-3 px-4">Role</th>  -->
                         <th class="py-3 px-4">Name</th>
                         <th class="py-3 px-4">Status</th>
                         <th class="py-3 px-4">In Time</th>
@@ -4508,62 +4534,97 @@ function calculateWorkingAndOTHours(row) {
         }
     }
 
-    function applyAttendanceFilters() {
-        const selectedEmp = document.getElementById('attFilterEmployee').value;
-        const startDate = document.getElementById('attFilterStartDate').value;
-        const endDate = document.getElementById('attFilterEndDate').value;
-        
-        const filtered = allAttendanceRecords.filter(row => {
-            const name = row.name || row.Name || '';
-            const date = row.date || row.Date || '';
-            
-            if (selectedEmp !== 'ALL' && name !== selectedEmp) return false;
-            if (startDate && date < startDate) return false;
-            if (endDate && date > endDate) return false;
-            return true;
-        });
-        
-        const tbody = document.getElementById('attendanceResultTableBody');
-        if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">No attendance records found for the selected criteria.</td></tr>`;
-            return;
-        }
-        
-        tbody.innerHTML = filtered.map(r => {
-            const date = r.date || r.Date || '-';
-            const name = r.name || r.Name || '-';
-            const status = r.status || r.Status || 'Present';
-            const cin = r.in || r.In || '-';
-            const cout = r.out || r.Out || '-';
-            
-            let badgeColor = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
-            if (status.toLowerCase() === 'absent') badgeColor = 'bg-rose-500/10 text-rose-600 border-rose-500/20';
-            if (status.toLowerCase() === 'delivery' || status.toLowerCase() === 'half day') badgeColor = 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-            
-            const { normalHours, otHours } = calculateWorkingAndOTHours(r);
+    function onAttendanceMonthChange(monthVal) {
+    if (!monthVal) return;
+    const year = new Date().getFullYear();
+    
+    // 1st day of selected month
+    const startDate = `${year}-${monthVal}-01`;
+    
+    // Last day of selected month (using day 0 of next month)
+    const lastDayObj = new Date(year, parseInt(monthVal, 10), 0);
+    const lastDay = String(lastDayObj.getDate()).padStart(2, '0');
+    const endDate = `${year}-${monthVal}-${lastDay}`;
+    
+    document.getElementById('attFilterStartDate').value = startDate;
+    document.getElementById('attFilterEndDate').value = endDate;
+    
+    applyAttendanceFilters();
+}
 
-            return `
+function applyAttendanceFilters() {
+    const selectedEmp = document.getElementById('attFilterEmployee').value;
+    const startDate = document.getElementById('attFilterStartDate').value;
+    const endDate = document.getElementById('attFilterEndDate').value;
+    
+    const filtered = allAttendanceRecords.filter(row => {
+        const name = row.name || row.Name || '';
+        const date = row.date || row.Date || '';
+        
+        if (selectedEmp !== 'ALL' && name !== selectedEmp) return false;
+        if (formatCustomDateTime(startDate) && formatCustomDateTime(date) < formatCustomDateTime(startDate)) return false;
+        if (formatCustomDateTime(endDate) && formatCustomDateTime(date) > formatCustomDateTime(endDate)) return false;
+        return true;
+    });
+    
+    const tbody = document.getElementById('attendanceResultTableBody');
+    
+    let sumNormalHrs = 0;
+    let sumOtHrs = 0;
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">No attendance records found for the selected criteria.</td></tr>`;
+        document.getElementById('statTotalNormalHrs').textContent = '0.00 hrs';
+        document.getElementById('statTotalOtHrs').textContent = '0.00 hrs';
+        return;
+    }
+    
+    tbody.innerHTML = filtered.map(r => {
+        const date = r.date || r.Date || '-';
+        const name = r.name || r.Name || '-';
+        const status = r.status || r.Status || 'Present';
+        const cin = r.in || r.In || '-';
+        const cout = r.out || r.Out || '-';
+        
+        let badgeColor = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
+        if (status.toLowerCase() === 'absent') badgeColor = 'bg-rose-500/10 text-rose-600 border-rose-500/20';
+        if (status.toLowerCase() === 'delivery' || status.toLowerCase() === 'half day') badgeColor = 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+        
+        const isAbsent = status.toLowerCase() === 'absent';
+        const { normalHours, otHours } = isAbsent ? { normalHours: 0, otHours: 0 } : calculateWorkingAndOTHours(r);
+        
+        sumNormalHrs += normalHours;
+        sumOtHrs += otHours;
+        
+        return `
                 <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTimew(r.Date)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTimew(date)}</td>
                     <td class="py-3 px-4 font-extrabold text-slate-900 dark:text-white">${name}</td>
                     <td class="py-3 px-4">
                         <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border ${badgeColor}">${status}</span>
                     </td>
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(r.In)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(r.Out)}</td>
-                    <td class="py-3 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${status.toLowerCase() === 'absent' ? '0.00' : normalHours.toFixed(2)} hrs</td>
-                    <td class="py-3 px-4 text-right font-mono font-extrabold text-orange-600 dark:text-orange-400">${status.toLowerCase() === 'absent' ? '0.00' : otHours.toFixed(2)} hrs</td>
+                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cin)}</td>
+                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cout)}</td>
+                    <td class="py-3 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${normalHours.toFixed(2)} hrs</td>
+                    <td class="py-3 px-4 text-right font-mono font-extrabold text-orange-600 dark:text-orange-400">${otHours.toFixed(2)} hrs</td>
                 </tr>
             `;
-        }).join('');
-    }
+    }).join('');
+    
+    // Update total summary cards
+    document.getElementById('statTotalNormalHrs').textContent = sumNormalHrs.toFixed(2) + ' hrs';
+    document.getElementById('statTotalOtHrs').textContent = sumOtHrs.toFixed(2) + ' hrs';
+}
 
-    function resetAttendanceFilters() {
-        document.getElementById('attFilterEmployee').value = 'ALL';
-        document.getElementById('attFilterStartDate').value = '';
-        document.getElementById('attFilterEndDate').value = '';
-        applyAttendanceFilters();
-    }
+function resetAttendanceFilters() {
+    document.getElementById('attFilterMonth').value = '';
+    document.getElementById('attFilterEmployee').value = 'ALL';
+    document.getElementById('attFilterStartDate').value = '';
+    document.getElementById('attFilterEndDate').value = '';
+    applyAttendanceFilters();
+}
+
+
 
     let globalScheduleSummaryData = [];
 
