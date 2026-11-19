@@ -964,7 +964,7 @@
         
         <!-- Summary Modal (Add at the bottom of your HTML body) -->
 <div id="attendanceSummaryModal" class="fixed inset-0 z-50 flex items-top justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200 dark:border-slate-800">
+    <div class="bg-white dark:bg-gray-900 rounded-1xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
             <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-user-clock text-indigo-500"></i> Employee Total OT Summary
@@ -4828,83 +4828,100 @@ function openAttendanceSummaryModal() {
     const modal = document.getElementById('attendanceSummaryModal');
     const contentContainer = document.getElementById('summaryModalContent');
     if (!modal || !contentContainer) return;
-    
+
     modal.classList.remove('hidden');
-    contentContainer.innerHTML = `
-        <div class="text-center py-6 text-slate-500">
-            <i class="fa-solid fa-spinner fa-spin text-indigo-600 mr-2"></i> Calculating OT Summary per employee...
-        </div>
-    `;
-    
-    const tableRows = Array.from(
-        document.querySelectorAll('#attendanceTableBody tr, #attendanceTableContainer tbody tr, #sectionAttendance tbody tr')
-    );
-    
-    const employeeMap = {};
-    let validRowsCount = 0;
-    
-    function addToEmployee(name, normalHours, otHours) {
-        if (!employeeMap[name]) {
-            employeeMap[name] = { name, otHours: 0, normalHours: 0, days: 0 };
-        }
-        employeeMap[name].otHours += otHours;
-        employeeMap[name].normalHours += normalHours;
-        employeeMap[name].days += 1;
-        validRowsCount++;
-    }
-    
-    tableRows.forEach(tr => {
-        const parsed = getEmployeeRowData(tr);
-        if (parsed) {
-            addToEmployee(parsed.name, parsed.normalHours, parsed.otHours);
-        }
+
+    // Use the exact same active filters (Month, Employee search, Start/End Date)
+    const empQuery = (document.getElementById('attFilterEmployee')?.value || '').trim().toLowerCase();
+    const startDate = document.getElementById('attFilterStartDate')?.value || '';
+    const endDate = document.getElementById('attFilterEndDate')?.value || '';
+
+    const filteredRecords = (allAttendanceRecords || []).filter(row => {
+        const name = String(row.name || row.Name || '').trim().toLowerCase();
+        const date = row.date || row.Date || '';
+
+        if (empQuery && !name.includes(empQuery)) return false;
+        if (startDate && formatCustomDateTime(date) < formatCustomDateTime(startDate)) return false;
+        if (endDate && formatCustomDateTime(date) > formatCustomDateTime(endDate)) return false;
+        return true;
     });
-    
-    if (validRowsCount === 0) {
-        getEmployeeDataFromMemory().forEach(item => {
-            addToEmployee(item.name, item.normalHours, item.otHours);
-        });
-    }
-    
-    const employees = Object.values(employeeMap);
-    if (validRowsCount === 0 || employees.length === 0) {
+
+    if (filteredRecords.length === 0) {
         contentContainer.innerHTML = `
-            <div class="text-center text-sm text-slate-500 py-5 space-y-1">
-                <p><i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i> No attendance records found.</p>
-                <p class="text-xs text-slate-400">Make sure attendance rows are loaded in the table first.</p>
+            <div class="text-center text-sm text-slate-500 py-6">
+                <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i>
+                No attendance records found for the selected filter.
             </div>
         `;
         return;
     }
-    
-    // Sort highest OT first
-    employees.sort((a, b) => b.otHours - a.otHours || a.name.localeCompare(b.name));
-    
-    const grandTotalOt = employees.reduce((sum, emp) => sum + emp.otHours, 0);
-    const grandTotalNormal = employees.reduce((sum, emp) => sum + emp.normalHours, 0);
-    
+
+    // Group and sum OT & Normal hours per individual employee (case-insensitive)
+    const employeeMap = {};
+
+    filteredRecords.forEach(row => {
+        const rawName = String(row.name || row.Name || '').trim();
+        if (!rawName || rawName === '-') return;
+
+        // Normalize key so "sakila" and "Sakila" merge together
+        const key = rawName.toLowerCase();
+        const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+        if (!employeeMap[key]) {
+            employeeMap[key] = {
+                name: displayName,
+                otHours: 0,
+                normalHours: 0,
+                days: 0
+            };
+        }
+
+        const status = String(row.status || row.Status || 'Present').trim().toLowerCase();
+        const isAbsent = status === 'absent';
+        const { normalHours, otHours } = isAbsent
+            ? { normalHours: 0, otHours: 0 }
+            : calculateWorkingAndOTHours(row);
+
+        employeeMap[key].normalHours += normalHours;
+        employeeMap[key].otHours += otHours;
+        if (!isAbsent) employeeMap[key].days += 1;
+    });
+
+    const employeesList = Object.values(employeeMap).sort(
+        (a, b) => b.otHours - a.otHours || a.name.localeCompare(b.name)
+    );
+
+    const grandTotalOt = employeesList.reduce((sum, emp) => sum + emp.otHours, 0);
+    const grandTotalNormal = employeesList.reduce((sum, emp) => sum + emp.normalHours, 0);
+
     contentContainer.innerHTML = `
-        <div class="mb-3 px-3 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+        <div class="mb-3 px-3.5 py-2.5 rounded-1xl bg-slate-100 dark:bg-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
             <span class="text-slate-600 dark:text-slate-300">
-                ${employees.length} Employees &bull; Normal: ${grandTotalNormal.toFixed(2)} Hrs
+                ${employeesList.length} Employees &bull; Normal: ${grandTotalNormal.toFixed(2)} hrs
             </span>
-            <span class="text-indigo-600 dark:text-indigo-400">
-                Total OT: ${grandTotalOt.toFixed(2)} Hrs
+            <span class="text-orange-600 dark:text-orange-400">
+                Total OT: ${grandTotalOt.toFixed(2)} hrs
             </span>
         </div>
-        <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[65vh] overflow-y-auto pr-1">
-            ${employees.map(emp => `
-                <div class="flex items-center justify-between gap-3 py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition">
-                    <div class="min-w-0">
-                        <div class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                            <i class="fa-solid fa-user text-xs text-slate-400 mr-2"></i>${emp.name}
-                        </div>
-                        <div class="text-[11px] text-slate-500 dark:text-slate-400 pl-5">
-                            ${emp.days} ${emp.days === 1 ? 'entry' : 'entries'} &bull; Normal: ${emp.normalHours.toFixed(2)}h
+
+        <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[60vh] pr-1">
+            ${employeesList.map((emp, index) => `
+                <div class="flex items-center justify-between gap-3 py-3 px-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-xl transition">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-6 h-6 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-extrabold flex items-center justify-center shrink-0">
+                            ${index + 1}
+                        </span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">
+                                ${emp.name}
+                            </div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                                ${emp.days} working ${emp.days === 1 ? 'day' : 'days'} &bull; Normal: ${emp.normalHours.toFixed(2)} hrs
+                            </div>
                         </div>
                     </div>
-                    <span class="shrink-0 text-xs font-bold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full">
-                        ${emp.otHours.toFixed(2)} Hrs OT
+                    <span class="shrink-0 text-xs font-extrabold px-3 py-1.5 bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 border border-orange-200/60 dark:border-orange-900/50 rounded-full font-mono">
+                        ${emp.otHours.toFixed(2)} hrs OT
                     </span>
                 </div>
             `).join('')}
