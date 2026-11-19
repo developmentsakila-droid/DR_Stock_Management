@@ -932,7 +932,7 @@
 
 <!-- ================= SECTION: ATTENDANCE SUMMARY ================= -->
 <div id="sectionAttendance" class="space-y-4 hidden">
-    <section class="glass-card dark:bg-slate-900/90 border border-slate-200/85 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+    <section class="glass-card dark:bg-gray-900 border border-slate-200/85 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
@@ -943,11 +943,13 @@
             <div class="flex items-center gap-2 flex justify-end">
                 
                                     <!-- Download JPG Button -->
-                    <button onclick="downloadAttendanceJPG()" class="px-3 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-file-image"></i> Download JPG
+                    <button id="downloadOtSheetBtn" onclick="downloadAttendanceJPG()" class="px-3 py-2 text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-700 rounded-lg shadow transition flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-not-allowed">
+                        <i id="downloadOtSheetIcon" class="fa-solid fa-file-image"></i>
+                        <span id="downloadOtSheetText">Download OT Sheet</span>
                     </button>
+                    
                     <!-- Summary Form Modal Trigger Button -->
-                    <button onclick="openAttendanceSummaryModal()" class="px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition flex items-center gap-1.5">
+                    <button onclick="openAttendanceSummaryModal()" class="px-3 py-2 text-xs font-semibold text-white bg-indigo-900 hover:bg-indigo-800 rounded-lg shadow transition flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-pie"></i> OT Summary Form
                     </button>
                 <button onclick="resetAttendanceFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
@@ -961,8 +963,8 @@
         
         
         <!-- Summary Modal (Add at the bottom of your HTML body) -->
-<div id="attendanceSummaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200 dark:border-slate-800">
+<div id="attendanceSummaryModal" class="fixed inset-0 z-50 flex items-top justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
             <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-user-clock text-indigo-500"></i> Employee Total OT Summary
@@ -1009,9 +1011,7 @@
             </div>
             <div>
                 <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Employee Name</label>
-                <select id="attFilterEmployee" onchange="applyAttendanceFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
-                    <option value="ALL">All Employees</option>
-                </select>
+                <input type="text" id="attFilterEmployee" oninput="applyAttendanceFilters()" placeholder="Search employee name..." class="w-full px-3 py-2 bg-white text-[14px] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold">
             </div>
             <div>
                 <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Start Date</label>
@@ -4499,10 +4499,20 @@ function calculateWorkingAndOTHours(row) {
         return 0;
     };
     
+    // Helper: Round down to nearest 15-minute block (0.25 hours)
+    // Examples: 6 mins -> 0, 41 mins -> 30 mins (0.50), 56 mins -> 45 mins (0.75)
+    const roundDownToQuarterHour = (decimalHours) => {
+        if (decimalHours <= 0) return 0;
+        // Math.round avoids floating-point bugs (e.g., 14.999999 mins turning into 0 instead of 15)
+        const totalMinutes = Math.round(decimalHours * 60);
+        const roundedMinutes = Math.floor(totalMinutes / 15) * 15;
+        return roundedMinutes / 60;
+    };
+    
     let inHours = extractDecimalHours(inStr);
     let outHours = extractDecimalHours(outStr);
     
-    // Handle overnight shifts: if out time is numerically less than in time, it's the next day (+24 hours)
+    // Handle overnight shifts
     if (outHours < inHours) {
         outHours += 24.0;
     }
@@ -4513,47 +4523,48 @@ function calculateWorkingAndOTHours(row) {
     
     // Saturday and Sunday are normal OT days (all hours count as OT)
     if (isWeekend) {
-        let totalWorked = outHours - inHours-1;
+        let totalWorked = outHours - inHours - 1;
         // Apply 22:30 to 23:30 ignore rule on weekends as well
         const overlapStart = Math.max(inHours, 22.5);
         const overlapEnd = Math.min(outHours, 23.5);
         if (overlapEnd > overlapStart) {
-            totalWorked -= (overlapEnd - overlapStart-1);
+            totalWorked -= (overlapEnd - overlapStart - 1);
         }
-        return { normalHours: 0, otHours: parseFloat(Math.max(0, totalWorked).toFixed(2)) };
+        const finalWeekendOT = roundDownToQuarterHour(Math.max(0, totalWorked));
+        return { normalHours: 0, otHours: parseFloat(finalWeekendOT.toFixed(2)) };
     }
     
     // Standard window limits
     const standardStart = 8.0; // 08:00
     const standardEnd = 18.0; // 18:00
     
-    // 1. Morning OT: Time worked before 08:00
+    // 1. Morning OT: Time worked before 08:00 (rounded down to 15-min blocks)
     let morningOT = 0;
     if (inHours < standardStart) {
-        morningOT = standardStart - inHours;
+        morningOT = roundDownToQuarterHour(standardStart - inHours);
     }
     
     // 2. Evening/Night OT: Time worked after 18:00
     let eveningOT = 0;
     if (outHours > standardEnd) {
         eveningOT = outHours - standardEnd;
+        
+        // Subtract 22:30 to 23:30 break if shift overlaps with it
+        const ignoreStart = 22.5;
+        const ignoreEnd = 23.5;
+        const overlapStart = Math.max(inHours, ignoreStart);
+        const overlapEnd = Math.min(outHours, ignoreEnd);
+        if (overlapEnd > overlapStart) {
+            eveningOT -= (overlapEnd - overlapStart);
+        }
+        
+        // Round evening OT down to 15-min blocks
+        eveningOT = roundDownToQuarterHour(eveningOT);
     }
     
-    let otHours = morningOT + eveningOT;
+    let otHours = Math.max(0, morningOT + eveningOT);
     
-    // 3. Ignore OT time between 22:30 (22.5) and 23:30 (23.5)
-    const ignoreStart = 22.5;
-    const ignoreEnd = 23.5;
-    const overlapStart = Math.max(inHours, ignoreStart);
-    const overlapEnd = Math.min(outHours, ignoreEnd);
-    if (overlapEnd > overlapStart) {
-        otHours -= (overlapEnd - overlapStart);
-    }
-    
-    // Ensure OT doesn't drop below 0
-    otHours = Math.max(0, otHours);
-    
-    // 4. Normal Hours: Hours worked inside the 08:00 to 18:00 window (capped at 10 hours)
+    // 3. Normal Hours: Hours worked inside the 08:00 to 18:00 window (capped at 10 hours)
     let normalHours = 0;
     const windowStart = Math.max(inHours, standardStart);
     const windowEnd = Math.min(outHours, standardEnd);
@@ -4566,33 +4577,218 @@ function calculateWorkingAndOTHours(row) {
         otHours: parseFloat(otHours.toFixed(2))
     };
 }
+
 // timeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
-function downloadAttendanceJPG() {
-    const targetElement = document.getElementById('attendanceTableContainer') || document.querySelector('table');
-    if (!targetElement) {
-        alert('Table container not found.');
+async function downloadAttendanceJPG() {
+    const sectionEl = document.getElementById('sectionAttendance');
+    if (!sectionEl || sectionEl.classList.contains('hidden')) {
+        alert('Please open the Attendance section first.');
         return;
     }
     
-    // Clone element or ensure styles are fully opaque and visible for canvas capture
-    html2canvas(targetElement, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff' // Prevents transparent black backgrounds in output JPG
-    }).then(canvas => {
+    const sourceElement =
+        document.getElementById('attendanceExportArea') ||
+        document.getElementById('attendanceTableContainer') ||
+        sectionEl.querySelector('table');
+    
+    if (!sourceElement) {
+        alert('Attendance table not found.');
+        return;
+    }
+    
+    if (typeof html2canvas !== 'function') {
+        alert('Image export library (html2canvas) is not loaded.');
+        return;
+    }
+    
+    const btnEl = document.getElementById('downloadOtSheetBtn');
+    const iconEl = document.getElementById('downloadOtSheetIcon');
+    const textEl = document.getElementById('downloadOtSheetText');
+    
+    // Start spinning & lock button
+    if (btnEl) btnEl.disabled = true;
+    if (iconEl) {
+        iconEl.classList.remove('fa-file-image');
+        iconEl.classList.add('fa-spinner', 'fa-spin');
+    }
+    if (textEl) textEl.textContent = 'Downloading...';
+    
+    // Read Month label and Total OT / Normal Hrs from the Attendance section
+    const monthSelect = document.getElementById('attFilterMonth');
+    const monthText =
+        monthSelect && monthSelect.selectedIndex > 0 ?
+        monthSelect.options[monthSelect.selectedIndex].text.trim() :
+        (document.getElementById('attFilterStartDate')?.value || 'All Months');
+    
+    const totalOtText = (document.getElementById('statTotalOtHrs')?.textContent || '0.00 hrs').trim();
+    const totalNormalText = (document.getElementById('statTotalNormalHrs')?.textContent || '0.00 hrs').trim();
+    const empFilterText = (document.getElementById('attFilterEmployee')?.value || '').trim();
+    
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    const exportWrapper = document.createElement('div');
+    exportWrapper.style.position = 'fixed';
+    exportWrapper.style.left = '-9999px';
+    exportWrapper.style.top = '0';
+    exportWrapper.style.width = Math.max(sourceElement.scrollWidth, 720) + 'px';
+    exportWrapper.style.padding = '20px';
+    exportWrapper.style.backgroundColor = isDark ? '#0f172a' : '#ffffff';
+    exportWrapper.style.color = isDark ? '#f8fafc' : '#0f172a';
+    exportWrapper.style.fontFamily = 'Inter, sans-serif';
+    
+    const summaryHeader = document.createElement('div');
+    summaryHeader.style.display = 'flex';
+    summaryHeader.style.flexWrap = 'wrap';
+    summaryHeader.style.justifyContent = 'space-between';
+    summaryHeader.style.alignItems = 'center';
+    summaryHeader.style.gap = '12px';
+    summaryHeader.style.padding = '14px 18px';
+    summaryHeader.style.marginBottom = '16px';
+    summaryHeader.style.borderRadius = '14px';
+    summaryHeader.style.border = isDark ? '1px solid #1e293b' : '1px solid #e2e8f0';
+    summaryHeader.style.backgroundColor = isDark ? '#1e293b' : '#f8fafc';
+    
+    summaryHeader.innerHTML = `
+        <div>
+            <div style="font-size:16px;font-weight:800;">Attendance & OT Summary Report</div>
+            <div style="font-size:12px;font-weight:700;color:#059669;margin-top:2px;">
+                Month: ${monthText}${empFilterText ? ` &bull; Employee: ${empFilterText}` : ''}
+            </div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;">
+            <div style="text-align:right;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#64748b;">Normal Hours</div>
+                <div style="font-size:14px;font-weight:800;">${totalNormalText}</div>
+            </div>
+            <div style="text-align:right;padding:8px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#ea580c;">Total OT</div>
+                <div style="font-size:16px;font-weight:900;color:#c2410c;">${totalOtText}</div>
+            </div>
+        </div>
+    `;
+    
+    const clonedElement = sourceElement.cloneNode(true);
+    clonedElement.style.maxWidth = '100%';
+    clonedElement.style.overflow = 'visible';
+    
+    exportWrapper.appendChild(summaryHeader);
+    exportWrapper.appendChild(clonedElement);
+    document.body.appendChild(exportWrapper);
+    
+    try {
+        // Brief yield so the browser paints the spinner before html2canvas blocks the main thread
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        
+        const canvas = await html2canvas(exportWrapper, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            backgroundColor: isDark ? '#0f172a' : '#ffffff'
+        });
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        const safeMonth = monthText.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const fileName = `Attendance_OT_${safeMonth}_${new Date().toISOString().slice(0, 10)}.jpg`;
+        
         const link = document.createElement('a');
-        link.download = 'Attendance_OT_Summary_Report.jpg';
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.href = dataUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
         link.click();
-    }).catch(err => {
+        document.body.removeChild(link);
+        
+        setTimeout(() => {
+            if (window.self !== window.top) {
+                const win = window.open('');
+                if (win) {
+                    win.document.write(
+                        `<title>${fileName}</title><body style="margin:0;background:#111;display:flex;justify-content:center;align-items:flex-start;"><img src="${dataUrl}" style="max-width:100%;height:auto;" /></body>`
+                    );
+                }
+            }
+        }, 300);
+    } catch (err) {
         console.error('JPG Export Error:', err);
-        alert('Failed to download JPG.');
-    });
+        alert('Failed to download JPG: ' + (err.message || err));
+    } finally {
+        if (exportWrapper.parentNode) {
+            exportWrapper.parentNode.removeChild(exportWrapper);
+        }
+        // Stop spinning & restore button
+        if (btnEl) btnEl.disabled = false;
+        if (iconEl) {
+            iconEl.classList.remove('fa-spinner', 'fa-spin');
+            iconEl.classList.add('fa-file-image');
+        }
+        if (textEl) textEl.textContent = 'Download OT Sheet';
+    }
 }
 
-// 2. Correct Summary Modal & Data Parser
+
+
+function parseNumericHours(rawText) {
+    if (typeof rawText === 'number') return Number.isFinite(rawText) ? rawText : 0;
+    if (!rawText) return 0;
+    const match = String(rawText).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+    return match ? parseFloat(match[0]) || 0 : 0;
+}
+
+function getEmployeeRowData(tr) {
+    const cols = Array.from(tr.querySelectorAll('td'));
+    if (cols.length < 2) return null;
+    
+    const rowText = tr.innerText.toLowerCase();
+    if (
+        rowText.includes('loading') ||
+        rowText.includes('no record') ||
+        rowText.includes('no data') ||
+        tr.querySelector('td[colspan]')
+    ) {
+        return null;
+    }
+    
+    // Adjust column indexes if your attendance table columns differ:
+    // Example: cols[2] = Employee Name, cols[4] = Normal Hrs, cols[5] = OT Hrs
+    const name = (cols[2]?.innerText || cols[1]?.innerText || cols[0]?.innerText || '').trim();
+    const normalHours = parseNumericHours(cols[4]?.innerText || 0);
+    const otHours = parseNumericHours(cols[5]?.innerText || cols[6]?.innerText || 0);
+    
+    if (!name || name === '-' || name.toLowerCase() === 'unknown') {
+        return null;
+    }
+    
+    return { name, normalHours, otHours };
+}
+
+function getEmployeeDataFromMemory() {
+    const candidates = [
+        window.attendanceRecords,
+        window.attendanceData,
+        window.filteredAttendance,
+        window.allAttendance
+    ];
+    
+    const list = candidates.find(arr => Array.isArray(arr) && arr.length > 0);
+    if (!list) return [];
+    
+    return list
+        .map(item => {
+            const name = String(
+                item.employeeName || item.Employee || item.employee || item.name || item.Name || ''
+            ).trim();
+            const normalHours = parseNumericHours(
+                item.normalHours ?? item.normalHrs ?? item.normal ?? item.Normal ?? 0
+            );
+            const otHours = parseNumericHours(
+                item.otHours ?? item.otHrs ?? item.ot ?? item.OT ?? item.overtime ?? item.Overtime ?? 0
+            );
+            return name ? { name, normalHours, otHours } : null;
+        })
+        .filter(Boolean);
+}
+
 function openAttendanceSummaryModal() {
     const modal = document.getElementById('attendanceSummaryModal');
     const contentContainer = document.getElementById('summaryModalContent');
@@ -4600,56 +4796,85 @@ function openAttendanceSummaryModal() {
     
     modal.classList.remove('hidden');
     contentContainer.innerHTML = `
-            <div class="text-center py-6 text-slate-500">
-                <i class="fa-solid fa-spinner fa-spin text-indigo-600 mr-2"></i> Calculating OT Summary...
-            </div>
-        `;
+        <div class="text-center py-6 text-slate-500">
+            <i class="fa-solid fa-spinner fa-spin text-indigo-600 mr-2"></i> Calculating OT Summary per employee...
+        </div>
+    `;
     
-    const rows = document.querySelectorAll('#attendanceTableBody tr');
-    const otMap = {};
+    const tableRows = Array.from(
+        document.querySelectorAll('#attendanceTableBody tr, #attendanceTableContainer tbody tr, #sectionAttendance tbody tr')
+    );
+    
+    const employeeMap = {};
     let validRowsCount = 0;
     
-    rows.forEach(tr => {
-        const cols = tr.querySelectorAll('td');
-        // Check if row has data cells (ignoring loading or error colspan rows)
-        if (cols.length >= 7 && !tr.innerText.includes('Loading...') && !tr.innerText.includes('No records')) {
-            const name = cols[2]?.innerText.trim() || 'Unknown';
-            const otHours = parseFloat(cols[5]?.innerText.trim()) || 0;
-            
-            if (name && name !== 'Unknown') {
-                otMap[name] = (otMap[name] || 0) + otHours;
-                validRowsCount++;
-            }
+    function addToEmployee(name, normalHours, otHours) {
+        if (!employeeMap[name]) {
+            employeeMap[name] = { name, otHours: 0, normalHours: 0, days: 0 };
+        }
+        employeeMap[name].otHours += otHours;
+        employeeMap[name].normalHours += normalHours;
+        employeeMap[name].days += 1;
+        validRowsCount++;
+    }
+    
+    tableRows.forEach(tr => {
+        const parsed = getEmployeeRowData(tr);
+        if (parsed) {
+            addToEmployee(parsed.name, parsed.normalHours, parsed.otHours);
         }
     });
     
-    const entries = Object.entries(otMap);
-    if (validRowsCount === 0 || entries.length === 0) {
+    if (validRowsCount === 0) {
+        getEmployeeDataFromMemory().forEach(item => {
+            addToEmployee(item.name, item.normalHours, item.otHours);
+        });
+    }
+    
+    const employees = Object.values(employeeMap);
+    if (validRowsCount === 0 || employees.length === 0) {
         contentContainer.innerHTML = `
-                <p class="text-center text-sm text-slate-500 py-4">
-                    <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i> No attendance data loaded yet. Please wait for table records to load.
-                </p>
-            `;
+            <div class="text-center text-sm text-slate-500 py-5 space-y-1">
+                <p><i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i> No attendance records found.</p>
+                <p class="text-xs text-slate-400">Make sure attendance rows are loaded in the table first.</p>
+            </div>
+        `;
         return;
     }
     
-    // Sort by highest OT hours descending
-    entries.sort((a, b) => b[1] - a[1]);
+    // Sort highest OT first
+    employees.sort((a, b) => b.otHours - a.otHours || a.name.localeCompare(b.name));
+    
+    const grandTotalOt = employees.reduce((sum, emp) => sum + emp.otHours, 0);
+    const grandTotalNormal = employees.reduce((sum, emp) => sum + emp.normalHours, 0);
     
     contentContainer.innerHTML = `
-            <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                ${entries.map(([name, totalOt]) => `
-                    <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition">
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">
-                            <i class="fa-solid fa-user text-xs text-slate-400 mr-2"></i>${name}
-                        </span>
-                        <span class="text-xs font-bold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full">
-                            ${totalOt.toFixed(2)} Hrs
-                        </span>
+        <div class="mb-3 px-3 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+            <span class="text-slate-600 dark:text-slate-300">
+                ${employees.length} Employees &bull; Normal: ${grandTotalNormal.toFixed(2)} Hrs
+            </span>
+            <span class="text-indigo-600 dark:text-indigo-400">
+                Total OT: ${grandTotalOt.toFixed(2)} Hrs
+            </span>
+        </div>
+        <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[65vh] overflow-y-auto pr-1">
+            ${employees.map(emp => `
+                <div class="flex items-center justify-between gap-3 py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition">
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                            <i class="fa-solid fa-user text-xs text-slate-400 mr-2"></i>${emp.name}
+                        </div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 pl-5">
+                            ${emp.days} ${emp.days === 1 ? 'entry' : 'entries'} &bull; Normal: ${emp.normalHours.toFixed(2)}h
+                        </div>
                     </div>
-                `).join('')}
-            </div>
-        `;
+                    <span class="shrink-0 text-xs font-bold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full">
+                        ${emp.otHours.toFixed(2)} Hrs OT
+                    </span>
+                </div>
+            `).join('')}
+        </div>
+    `;
 }
 
 function closeAttendanceSummaryModal() {
@@ -4659,31 +4884,21 @@ function closeAttendanceSummaryModal() {
 
 
 
-    async function loadAttendanceData() {
-        try {
-            const response = await fetch(API_URL + "?action=getAttendance");
-            const result = await response.json();
-            
-            allAttendanceRecords = result.attendance || result.data || [];
-            
-            const employeeSet = [...new Set(allAttendanceRecords.map(r => r.name || r.Name || r['Name']).filter(Boolean))].sort();
-            const empSelect = document.getElementById('attFilterEmployee');
-            if (empSelect) {
-                empSelect.innerHTML = '<option value="ALL">All Employees</option>';
-                employeeSet.forEach(emp => {
-                    empSelect.innerHTML += `<option value="${emp}">${emp}</option>`;
-                });
-            }
-            
-            applyAttendanceFilters();
-        } catch (e) {
-            console.warn("Failed to load attendance from Apps Script, using fallback demo records", e);
-            allAttendanceRecords = [
-                { date: '2026-04-08', ETF: '768', Category: 'Executive', Name: 'Sakila', Status: 'Present', In: '08:00', Out: '19:30', Remark: 'Regular attendance' }
-            ];
-            applyAttendanceFilters();
-        }
+   async function loadAttendanceData() {
+    try {
+        const response = await fetch(API_URL + "?action=getAttendance");
+        const result = await response.json();
+        
+        allAttendanceRecords = result.attendance || result.data || [];
+        applyAttendanceFilters();
+    } catch (e) {
+        console.warn("Failed to load attendance from Apps Script, using fallback demo records", e);
+        allAttendanceRecords = [
+            { date: '2026-04-08', ETF: '768', Category: 'Executive', Name: 'Sakila', Status: 'Present', In: '08:00', Out: '19:30', Remark: 'Regular attendance' }
+        ];
+        applyAttendanceFilters();
     }
+}
 
     function onAttendanceMonthChange(monthVal) {
     if (!monthVal) return;
@@ -4704,15 +4919,15 @@ function closeAttendanceSummaryModal() {
 }
 
 function applyAttendanceFilters() {
-    const selectedEmp = document.getElementById('attFilterEmployee').value;
+    const empQuery = (document.getElementById('attFilterEmployee')?.value || '').trim().toLowerCase();
     const startDate = document.getElementById('attFilterStartDate').value;
     const endDate = document.getElementById('attFilterEndDate').value;
     
     const filtered = allAttendanceRecords.filter(row => {
-        const name = row.name || row.Name || '';
+        const name = String(row.name || row.Name || '').trim().toLowerCase();
         const date = row.date || row.Date || '';
         
-        if (selectedEmp !== 'ALL' && name !== selectedEmp) return false;
+        if (empQuery && !name.includes(empQuery)) return false;
         if (formatCustomDateTime(startDate) && formatCustomDateTime(date) < formatCustomDateTime(startDate)) return false;
         if (formatCustomDateTime(endDate) && formatCustomDateTime(date) > formatCustomDateTime(endDate)) return false;
         return true;
@@ -4746,9 +4961,9 @@ function applyAttendanceFilters() {
         const cin = r.in || r.In || '-';
         const cout = r.out || r.Out || '-';
         
-        let badgeColor = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
-        if (status.toLowerCase() === 'absent') badgeColor = 'bg-rose-500/10 text-rose-600 border-rose-500/20';
-        if (status.toLowerCase() === 'delivery' || status.toLowerCase() === 'half day') badgeColor = 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+        let badgeColor = 'bg-gray-900 text-emerald-600 border-gray-900';
+        if (status.toLowerCase() === 'absent') badgeColor = 'bg-gray-900 text-rose-600 border-gray-900';
+        if (status.toLowerCase() === 'delivery' || status.toLowerCase() === 'half day') badgeColor = 'bg-gray-900 text-amber-600 border-gray-900';
         
         const isAbsent = status.toLowerCase() === 'absent';
         const { normalHours, otHours } = isAbsent ? { normalHours: 0, otHours: 0 } : calculateWorkingAndOTHours(r);
@@ -4757,43 +4972,43 @@ function applyAttendanceFilters() {
         sumOtHrs += otHours;
         
         return `
-                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTimew(date)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">${name}</td>
-                    <td class="py-3 px-4">
-                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold border ${badgeColor}">${status}</span>
-                    </td>
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cin)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cout)}</td>
-                    <td class="py-3 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${normalHours.toFixed(2)} hrs</td>
-                    <td class="py-3 px-4 text-right font-mono font-extrabold text-orange-600 dark:text-orange-400">${otHours.toFixed(2)} hrs</td>
-                </tr>
-            `;
+            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomDateTimew(date)}</td>
+                <td class="py-3 px-4 text-slate-900 dark:text-white">${name}</td>
+                <td class="py-3 px-4">
+                    <span class="px-2.5 py-1 rounded-lg text-[12px] font-bold border ${badgeColor}">${status}</span>
+                </td>
+                <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cin)}</td>
+                <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300">${formatCustomTime(cout)}</td>
+                <td class="py-3 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${normalHours.toFixed(2)} hrs</td>
+                <td class="py-3 px-4 text-right font-mono font-extrabold text-orange-600 dark:text-orange-400">${otHours.toFixed(2)} hrs</td>
+            </tr>
+        `;
     }).join('');
     
-    // Update total summary cards
     document.getElementById('statTotalNormalHrs').textContent = sumNormalHrs.toFixed(2) + ' hrs';
     document.getElementById('statTotalOtHrs').textContent = sumOtHrs.toFixed(2) + ' hrs';
 }
 
 function resetAttendanceFilters() {
     document.getElementById('attFilterMonth').value = '';
-    document.getElementById('attFilterEmployee').value = 'ALL';
+    document.getElementById('attFilterEmployee').value = '';
     document.getElementById('attFilterStartDate').value = '';
     document.getElementById('attFilterEndDate').value = '';
     loadAttendanceData();
-     const monthSelect = document.getElementById('attFilterMonth');
- if (monthSelect) {
-     const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
-     monthSelect.value = currentMonthStr;
-     onAttendanceMonthChange(currentMonthStr);
- }
- 
+    const monthSelect = document.getElementById('attFilterMonth');
+    if (monthSelect) {
+        const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+        monthSelect.value = currentMonthStr;
+        onAttendanceMonthChange(currentMonthStr);
+    }
     applyAttendanceFilters();
 }
 
 
 
+ 
+ 
     let globalScheduleSummaryData = [];
 
     async function loadScheduleSummaryData() {
