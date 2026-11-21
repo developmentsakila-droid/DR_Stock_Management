@@ -4129,7 +4129,7 @@ function fetchDeliveryScheduleReport(weekNo) {
         const filterRoute = document.getElementById('schedSumFilterRoute').value;
         const filterDriver = document.getElementById('schedSumFilterDriver').value;
         const filterHelper = document.getElementById('schedSumFilterHelper').value;
-        const filterLorry = document.getElementById('schedSumFilterNote').value;
+        const filterLorry = document.getElementById('schedSumFilterLorry').value;
         
         const rowsToExport = globalScheduleSummaryData.filter(row => {
             const rowWeek = String(row['Week No'] || row.weekNo || '').trim();
