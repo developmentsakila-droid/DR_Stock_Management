@@ -3777,8 +3777,8 @@ function downloadCSVReport() {
         var day = d.getDay(); 
         var hours = d.getHours(); 
         
-        var isMondayAfterNoon = (day === 6 && hours >= 08);
-        var isTuesdayBeforeNoon = (day === 7 && hours < 17);
+        var isMondayAfterNoon = (day === 6 && hours >= 06);
+        var isTuesdayBeforeNoon = (day === 7 && hours < 20);
         
         if (isMondayAfterNoon || isTuesdayBeforeNoon) {
             weekNo += 1;
