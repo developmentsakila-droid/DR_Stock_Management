@@ -764,8 +764,8 @@
                 <select id="planNoSelect" onchange="onPlanNoChange(this.value)" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white">
                     <option value="">-- Select Plan --</option>
                 </select>
-                <button onclick="fetchAllData(true)" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-rotate"></i> Refresh
+                <button id="refreshBtn" onclick="fetchAllData(true)" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+                    <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh
                 </button>
                     <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                      <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -2303,44 +2303,52 @@ if (monthSelect) {
         return result;
     }
 
-    async function fetchAllData(forceRefresh = false) {
-        if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-            console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
-            return;
-        }
-        
-        if (!forceRefresh) {
-            const cachedData = localStorage.getItem('warehouse_portal_cache');
-            if (cachedData) {
-                try {
-                    const data = JSON.parse(cachedData);
-                    loadDataIntoMemory(data);
-                    loadDataIntoMemorynew(data);
-                } catch (e) {
-                    console.warn("Cache parse error", e);
-                }
+   async function fetchAllData(forceRefresh = false) {
+    if (API_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+        console.warn("Please configure your Google Apps Script Web App URL in API_URL.");
+        return;
+    }
+    
+    const icon = document.getElementById('refreshIcon');
+    const btn = document.getElementById('refreshBtn');
+    
+    if (icon) icon.classList.add('fa-spin');
+    if (btn) btn.disabled = true;
+    
+    if (!forceRefresh) {
+        const cachedData = localStorage.getItem('warehouse_portal_cache');
+        if (cachedData) {
+            try {
+                const data = JSON.parse(cachedData);
+                loadDataIntoMemory(data);
+                loadDataIntoMemorynew(data);
+            } catch (e) {
+                console.warn("Cache parse error", e);
             }
         }
-        
-        const hasExistingData = locations.length > 0 || vehicles.length > 0;
-        if (!hasExistingData) {
-            showLoading(true, "Loading system data...");
-        }
-        
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
-            loadDataIntoMemory(data);
-            loadDataIntoMemorynew(data);
-            
-        } catch (error) {
-            console.error("Error loading data from Google Sheets:", error);
-        } finally {
-            showLoading(false);
-        }
     }
+    
+    const hasExistingData = locations.length > 0 || vehicles.length > 0;
+    if (!hasExistingData) {
+        showLoading(true, "Loading system data...");
+    }
+    
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        localStorage.setItem('warehouse_portal_cache', JSON.stringify(data));
+        loadDataIntoMemory(data);
+        loadDataIntoMemorynew(data);
+        
+    } catch (error) {
+        console.error("Error loading data from Google Sheets:", error);
+    } finally {
+        if (icon) icon.classList.remove('fa-spin');
+        if (btn) btn.disabled = false;
+        showLoading(false);
+    }
+}
 
     function loadDataIntoMemory(data) {
         locations = data.locations || [];
