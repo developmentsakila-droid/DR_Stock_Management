@@ -2085,43 +2085,28 @@ window.addEventListener('popstate', (event) => {
         document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'dashboard');
         
         if (tab === 'schedule') {
-            const weekNo = document.getElementById('reportWeekNo').value || "43";
-            document.getElementById('backToDashBtn').classList.toggle('hidden', tab === 'schedule');
-            
-            const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
-            const isAuthorized = access1.includes(userLevel);
-            const isAuthorizedad = access_admin.includes(userLevel);
+  const weekNo = document.getElementById('reportWeekNo')?.value || "43";
+  document.getElementById('backToDashBtn')?.classList.toggle('hidden', tab === 'schedule');
 
-            const saveBtnEl = document.getElementById('scsave');
-            const saveBtnEldj = document.getElementById('downloadScheduleJpgBtn');
-            const saveBtnElde = document.getElementById('downloadScheduleCsvBtn');
-            if (saveBtnEl) {
-                if (isAuthorized) {
-                    
-                    saveBtnEldj.classList.remove('hidden');
-                    saveBtnEldj.classList.add('flex');
-                    saveBtnElde.classList.remove('hidden');
-                    saveBtnElde.classList.add('flex');
-                } else {
-                   
-                    saveBtnEldj.classList.add('hidden');
-                    saveBtnEldj.classList.remove('flex');
-                    saveBtnElde.classList.add('hidden');
-                    saveBtnElde.classList.remove('flex');
-                }
-            }
-            else if (saveBtnEl) {
-                if (isAuthorizedad) {
-                    saveBtnEl.classList.remove('hidden');
-                    saveBtnEl.classList.add('flex');
-                    
-                } else {
-                    saveBtnEl.classList.add('hidden');
-                    saveBtnEl.classList.remove('flex');
-                    
-                }
-            }
-        }
+  const userLevel = String(loggedInUser?.user_level || "").trim().toLowerCase();
+  const isAuthorized = Array.isArray(access1) && access1.includes(userLevel);
+  const isAuthorizedAd = Array.isArray(access_admin) && access_admin.includes(userLevel);
+
+  const saveBtnEl = document.getElementById('scsave');
+  const saveBtnEldj = document.getElementById('downloadScheduleJpgBtn');
+  const saveBtnElde = document.getElementById('downloadScheduleCsvBtn');
+
+  const setVisible = (el, visible) => {
+    if (!el) return;
+    el.classList.toggle('hidden', !visible);
+    el.classList.toggle('flex', visible);
+  };
+
+  // Show JPG/CSV download buttons to access1 (and admins if needed); show save button only to admins
+  setVisible(saveBtnEldj, isAuthorized || isAuthorizedAd);
+  setVisible(saveBtnElde, isAuthorized || isAuthorizedAd);
+  setVisible(saveBtnEl, isAuthorizedAd);
+}
         
         
         else if (tab === 'deliverySummary') {
