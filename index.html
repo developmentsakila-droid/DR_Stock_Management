@@ -1691,6 +1691,8 @@
     let warehouseActions = [];
     let allAttendanceRecords = [];
     let lastDefectsReport = [];
+    // Loaded from your Google Sheet "Calendar" tab (e.g., setCalendarSheetDates(data.calendar))
+let CALENDAR_DATES = [];
     
     const access1 = ["executive", "manager"];
     const access_admin = ["executive", "manager", "admin"];
@@ -4498,22 +4500,58 @@ function fetchDeliveryScheduleReport(weekNo) {
 
 
 
+window.CALENDAR_DATES = window.CALENDAR_DATES || [];
 
+function toIsoDateKey(val) {
+    if (!val) return '';
+    if (Object.prototype.toString.call(val) === '[object Date]' && !isNaN(val.getTime())) {
+        const y = val.getFullYear();
+        const m = String(val.getMonth() + 1).padStart(2, '0');
+        const d = String(val.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+    const str = String(val).replace(/ *\([^)]*\)/g, '').trim();
+    const ymd = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if (ymd) return `${ymd[1]}-${String(ymd[2]).padStart(2, '0')}-${String(ymd[3]).padStart(2, '0')}`;
+
+    const mdy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (mdy) return `${mdy[3]}-${String(mdy[1]).padStart(2, '0')}-${String(mdy[2]).padStart(2, '0')}`;
+
+    const parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) {
+        const y = parsed.getFullYear();
+        const m = String(parsed.getMonth() + 1).padStart(2, '0');
+        const d = String(parsed.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+    return '';
+}
+
+function setCalendarSheetDates(calendarRows) {
+    if (!Array.isArray(calendarRows)) return;
+    window.CALENDAR_DATES = calendarRows
+        .map(r => toIsoDateKey(r && (r.Date || r.date || r['Date'] || r)))
+        .filter(Boolean);
+}
 
 function calculateWorkingAndOTHours(row) {
     if (!row) return { normalHours: 0, otHours: 0 };
-    
+
     const dateStr = row.date || row.Date || row['Date'] || '';
     let inStr = row.in || row.In || row['In'] || row.checkIn || '';
     let outStr = row.out || row.Out || row['Out'] || row.checkOut || '';
-    
-    if (!inStr || !outStr || inStr === '-' || outStr === '-' || inStr === 'undefined' || outStr === 'undefined') {
+
+    if (!inStr || !outStr || ['-', 'undefined', 'null', ''].includes(String(inStr).trim().toLowerCase()) ||
+        ['-', 'undefined', 'null', ''].includes(String(outStr).trim().toLowerCase())) {
         return { normalHours: 0, otHours: 0 };
     }
-    
+
     const extractDecimalHours = (val) => {
-        let str = String(val).trim();
-        if (str.includes('T') || str.includes('1899-') || str.includes('-')) {
+        if (Object.prototype.toString.call(val) === '[object Date]' && !isNaN(val.getTime())) {
+            return val.getHours() + (val.getMinutes() / 60);
+        }
+        const str = String(val).trim();
+        if (str.includes('T') || str.includes('1899-') || /^\d{4}-\d{2}-\d{2}/.test(str)) {
             const d = new Date(str);
             if (!isNaN(d.getTime())) {
                 return d.getHours() + (d.getMinutes() / 60);
@@ -4527,80 +4565,67 @@ function calculateWorkingAndOTHours(row) {
         }
         return 0;
     };
-    
-    // Helper: Round down to nearest 15-minute block (0.25 hours)
-    // Examples: 6 mins -> 0, 41 mins -> 30 mins (0.50), 56 mins -> 45 mins (0.75)
+
     const roundDownToQuarterHour = (decimalHours) => {
         if (decimalHours <= 0) return 0;
-        // Math.round avoids floating-point bugs (e.g., 14.999999 mins turning into 0 instead of 15)
         const totalMinutes = Math.round(decimalHours * 60);
         const roundedMinutes = Math.floor(totalMinutes / 15) * 15;
         return roundedMinutes / 60;
     };
-    
+
     let inHours = extractDecimalHours(inStr);
     let outHours = extractDecimalHours(outStr);
-    
-    // Handle overnight shifts
+
     if (outHours < inHours) {
         outHours += 24.0;
     }
-    
-    const d = new Date(dateStr);
+
+    const isoDate = toIsoDateKey(dateStr);
+    const d = isoDate ? new Date(`${isoDate}T00:00:00`) : new Date(dateStr);
     const dayOfWeek = !isNaN(d.getTime()) ? d.getDay() : -1;
-    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6); // Saturday & Sunday
-    
-    // Saturday and Sunday are normal OT days (all hours count as OT)
-    if (isWeekend) {
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const isCalendarDay = Boolean(isoDate && Array.isArray(window.CALENDAR_DATES) && window.CALENDAR_DATES.includes(isoDate));
+
+    // Full OT if Saturday, Sunday, OR date exists in the Calendar sheet 22:30 to 23:30
+    if (isWeekend || isCalendarDay) {
         let totalWorked = outHours - inHours - 1;
-        // Apply 22:30 to 23:30 ignore rule on weekends as well
         const overlapStart = Math.max(inHours, 22.5);
         const overlapEnd = Math.min(outHours, 23.5);
         if (overlapEnd > overlapStart) {
-            totalWorked -= (overlapEnd - overlapStart - 1);
+            totalWorked -= (overlapEnd - overlapStart);
         }
-        const finalWeekendOT = roundDownToQuarterHour(Math.max(0, totalWorked));
-        return { normalHours: 0, otHours: parseFloat(finalWeekendOT.toFixed(2)) };
+        const finalFullOT = roundDownToQuarterHour(Math.max(0, totalWorked));
+        return { normalHours: 0, otHours: parseFloat(finalFullOT.toFixed(2)) };
     }
-    
-    // Standard window limits
-    const standardStart = 8.0; // 08:00
-    const standardEnd = 18.0; // 18:00
-    
-    // 1. Morning OT: Time worked before 08:00 (rounded down to 15-min blocks)
+
+    const standardStart = 8.0;
+    const standardEnd = 18.0;
+
     let morningOT = 0;
     if (inHours < standardStart) {
         morningOT = roundDownToQuarterHour(standardStart - inHours);
     }
-    
-    // 2. Evening/Night OT: Time worked after 18:00
+
     let eveningOT = 0;
     if (outHours > standardEnd) {
         eveningOT = outHours - standardEnd;
-        
-        // Subtract 22:30 to 23:30 break if shift overlaps with it
-        const ignoreStart = 22.5;
-        const ignoreEnd = 23.5;
-        const overlapStart = Math.max(inHours, ignoreStart);
-        const overlapEnd = Math.min(outHours, ignoreEnd);
+        const overlapStart = Math.max(inHours, 22.5);
+        const overlapEnd = Math.min(outHours, 23.5);
         if (overlapEnd > overlapStart) {
             eveningOT -= (overlapEnd - overlapStart);
         }
-        
-        // Round evening OT down to 15-min blocks
         eveningOT = roundDownToQuarterHour(eveningOT);
     }
-    
-    let otHours = Math.max(0, morningOT + eveningOT);
-    
-    // 3. Normal Hours: Hours worked inside the 08:00 to 18:00 window (capped at 10 hours)
+
+    const otHours = Math.max(0, morningOT + eveningOT);
+
     let normalHours = 0;
     const windowStart = Math.max(inHours, standardStart);
     const windowEnd = Math.min(outHours, standardEnd);
     if (windowEnd > windowStart) {
-        normalHours = Math.min(windowEnd - windowStart, 10.0);
+        normalHours = Math.min(windowEnd - windowStart, 10.0)-1;
     }
-    
+
     return {
         normalHours: parseFloat(normalHours.toFixed(2)),
         otHours: parseFloat(otHours.toFixed(2))
@@ -4932,13 +4957,22 @@ function closeAttendanceSummaryModal() {
 
    async function loadAttendanceData() {
     try {
-        const response = await fetch(API_URL + "?action=getAttendance");
-        const result = await response.json();
+        const [attRes, mainRes] = await Promise.all([
+            fetch(API_URL + "?action=getAttendance"),
+            fetch(API_URL)
+        ]);
+        const result = await attRes.json();
+        const mainData = await mainRes.json().catch(() => ({}));
+        
+        const calRows = mainData.calendar || (JSON.parse(localStorage.getItem('warehouse_portal_cache') || '{}').calendar) || [];
+        setCalendarSheetDates(calRows);
         
         allAttendanceRecords = result.attendance || result.data || [];
         applyAttendanceFilters();
     } catch (e) {
         console.warn("Failed to load attendance from Apps Script, using fallback demo records", e);
+        const cached = JSON.parse(localStorage.getItem('warehouse_portal_cache') || '{}');
+        if (cached.calendar) setCalendarSheetDates(cached.calendar);
         allAttendanceRecords = [
             { date: '2026-04-08', ETF: '768', Category: 'Executive', Name: 'Sakila', Status: 'Present', In: '08:00', Out: '19:30', Remark: 'Regular attendance' }
         ];
