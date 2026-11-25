@@ -1189,13 +1189,11 @@
             <div class="flex items-center gap-2">
                 <!-- ADDED RELOAD BUTTON HERE -->
                         
-                <button onclick="loadScheduleSummaryData()" class="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-rotate-right"></i> Reload
+                <button onclick="loadScheduleSummaryData()" class="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-900 hover:bg-emerald-100 text-emerald-600 dark:text-white border border-emerald-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-rotate-right"></i> Reset & Reload
                 </button>
                 
-                <button onclick="resetScheduleSummaryFilters()" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
-    Reset Filters
-</button>
+                
                 <button onclick="switchTab('dashboard')" class="px-3.5 py-2 bg-rose-400 dark:bg-rose-900 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Back
                 </button>
@@ -4953,7 +4951,47 @@ function closeAttendanceSummaryModal() {
     if (modal) modal.classList.add('hidden');
 }
 
+function setAttendanceTableLoading() {
+    const tbody = document.getElementById('attendanceResultTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-10 text-slate-500 dark:text-slate-400">
+                    <div class="inline-flex items-center space-x-2">
+                        <i class="fa-solid fa-spinner fa-spin text-emerald-600"></i>
+                        <span class="text-sm font-medium">Loading...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+    const normEl = document.getElementById('statTotalNormalHrs');
+    const otEl = document.getElementById('statTotalOtHrs');
+    if (normEl) normEl.textContent = '0.00 hrs';
+    if (otEl) otEl.textContent = '0.00 hrs';
+}
 
+function resetAttendanceFilters() {
+    document.getElementById('attFilterMonth').value = '';
+    document.getElementById('attFilterEmployee').value = '';
+    document.getElementById('attFilterStartDate').value = '';
+    document.getElementById('attFilterEndDate').value = '';
+    
+    // Show spinner immediately in table body when Reset is clicked
+    setAttendanceTableLoading();
+    
+    const monthSelect = document.getElementById('attFilterMonth');
+    if (monthSelect) {
+        const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+        monthSelect.value = currentMonthStr;
+        const year = new Date().getFullYear();
+        const lastDay = String(new Date(year, parseInt(currentMonthStr, 10), 0).getDate()).padStart(2, '0');
+        document.getElementById('attFilterStartDate').value = `${year}-${currentMonthStr}-01`;
+        document.getElementById('attFilterEndDate').value = `${year}-${currentMonthStr}-${lastDay}`;
+    }
+    
+    loadAttendanceData();
+}
 
    async function loadAttendanceData() {
     try {
