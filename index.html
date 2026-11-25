@@ -3534,7 +3534,7 @@ function openReportModal() {
     const todayStr = todayObj.toISOString().split('T')[0];
     
     const pastDateObj = new Date();
-    pastDateObj.setDate(todayObj.getDate() - 30);
+    pastDateObj.setDate(todayObj.getDate() - 60);
     const pastDateStr = pastDateObj.toISOString().split('T')[0];
     
     document.getElementById('modalStartDate').value = pastDateStr;
