@@ -5084,7 +5084,8 @@ function applyAttendanceFilters() {
         const cout = r.out || r.Out || '-';
         
         let badgeColor = 'dark:bg-gray-900 bg-gray-200 border-gray-200 text-emerald-600 dark:border-gray-900';
-        if (status.toLowerCase() === 'absent' || status.toLowerCase() === 'Holiday') badgeColor = 'dark:bg-gray-900 bg-gray-200 border-gray-900 text-rose-600 Dark:border-gray-900';
+        if (status.toLowerCase() === 'absent') badgeColor = 'dark:bg-gray-900 bg-gray-200 border-gray-900 text-rose-600 Dark:border-gray-900';
+         if (status.toLowerCase() === 'Holiday') badgeColor = 'dark:bg-gray-900 bg-gray-200 border-gray-900 text-rose-600 Dark:border-gray-900';
         if (status.toLowerCase() === 'delivery' || status.toLowerCase() === 'half day') badgeColor = 'dark:bg-gray-900 bg-gray-200 border-gray-200 text-amber-600 dark:border-gray-900';
         
         const isAbsent = status.toLowerCase() === 'absent';
