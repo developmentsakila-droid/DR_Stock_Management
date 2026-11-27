@@ -930,19 +930,19 @@
         <!-- Search & Filter Controls Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
             <div>
-                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Search Plan No</label>
+                <label class="block text-[12px] font-extrabold text-slate-400 dark:text-slate-300 uppercase mb-1">Search Plan No</label>
                 <input type="text" id="totalPlanFilterNo" oninput="applyTotalPlanSummaryFilters()" placeholder="e.g. 1024..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
             </div>
             <div>
-                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Search Customer Name</label>
+                <label class="block text-[12px] font-extrabold text-slate-400 dark:text-slate-300 uppercase mb-1">Search Customer Name</label>
                 <input type="text" id="totalPlanFilterCustomer" oninput="applyTotalPlanSummaryFilters()" placeholder="Customer name..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
             </div>
             <div>
-    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Search Invoice No.</label>
+    <label class="block text-[12px] font-extrabold text-slate-400 dark:text-slate-300 uppercase mb-1">Search Invoice No.</label>
     <input type="text" id="totalPlanFilterInv" oninput="applyTotalPlanSummaryFilters()" placeholder="Invoice No..." class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
 </div>
             <div>
-                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Route</label>
+                <label class="block text-[12px] font-extrabold text-slate-400 dark:text-slate-300 uppercase mb-1">Route</label>
                 <select id="totalPlanFilterRoute" onchange="applyTotalPlanSummaryFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
                     <option value="ALL">All Routes</option>
                 </select>
@@ -968,12 +968,17 @@
             </div>
             <div class="flex items-center gap-2 flex justify-end">
                 
+                <button onclick="openBatchAttendanceModal()" class="px-3 py-2 text-xs font-semibold text-white bg-gray-600 hover:bg-gray-700 rounded-lg shadow transition flex items-center gap-1.5">
+    <i class="fa-solid fa-list-check"></i> At. Mark
+</button>
+                
                                     <!-- Download JPG Button -->
                     <button id="downloadOtSheetBtn" onclick="downloadAttendanceJPG()" class="px-3 py-2 text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-700 rounded-lg shadow transition flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-not-allowed">
                         <i id="downloadOtSheetIcon" class="fa-solid fa-file-image"></i>
                         <span id="downloadOtSheetText">OT Sheet</span>
                     </button>
                     
+
                     <!-- Summary Form Modal Trigger Button -->
                     <button onclick="openAttendanceSummaryModal()" class="px-3 py-2 text-xs font-semibold text-white bg-orange-900 hover:bg-orange-800 rounded-lg shadow transition flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-pie"></i> OT Sum..
@@ -1018,7 +1023,7 @@
         <!-- Filter Grid (4 columns: Month, Employee, Start Date, End Date) -->
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
             <div>
-                <label class="block text-[10px] font-extrabold dark:text-slate-400 text-slate-800 uppercase mb-1">Select Month</label>
+                <label class="block text-[12px] font-extrabold dark:text-slate-300  text-slate-800 uppercase mb-1">Select Month</label>
                 <select id="attFilterMonth" onchange="onAttendanceMonthChange(this.value)" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
                     <option value="">-- Choose Month --</option>
                     <option value="01">January</option>
@@ -1036,18 +1041,73 @@
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-extrabold dark:text-slate-400 text-slate-800 uppercase mb-1">Employee Name</label>
-                <input type="text" id="attFilterEmployee" oninput="applyAttendanceFilters()" placeholder="Search employee name..." class="w-full px-3 py-2 bg-white text-[14px] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold">
+                <label class="block text-[12px] font-extrabold dark:text-slate-300 text-slate-800 uppercase mb-1">Employee Name</label>
+                <input type="text" id="attFilterEmployee" oninput="applyAttendanceFilters()" placeholder="Search employee name..." class="w-full px-3 py-2 bg-white text-[11px] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold">
             </div>
             <div>
-                <label class="block text-[10px] font-extrabold dark:text-slate-400 text-slate-800 uppercase mb-1">Start Date</label>
+                <label class="block text-[12px] font-extrabold dark:text-slate-300 text-slate-800 uppercase mb-1">Start Date</label>
                 <input type="date" id="attFilterStartDate" onchange="applyAttendanceFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
             </div>
             <div>
-                <label class="block text-[10px] font-extrabold dark:text-slate-400 text-slate-800 uppercase mb-1">End Date</label>
+                <label class="block text-[12px] font-extrabold dark:text-slate-300 text-slate-800 uppercase mb-1">End Date</label>
                 <input type="date" id="attFilterEndDate" onchange="applyAttendanceFilters()" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs">
             </div>
         </div>
+        
+<!-- Modal: Batch Mark Attendance (Sheet Layout) -->
+<div id="batchAttendanceModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex flex items-top justify-center  p-4 hidden">
+    <div class="glass-card dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl p-5 text-slate-900 dark:text-slate-100">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-3 shrink-0">
+            <div>
+                <h3 class="font-extrabold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-indigo-500"></i> Mark Daily Attendance
+                </h3>
+                <p class="text-[11px] text-slate-500">Edit statuses, In/Out times, or remarks and save all rows to the Attendance sheet.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input type="date" id="batchAttDate" onchange="syncBatchAttendanceDate(this.value)" class="px-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold">
+                <button type="button" onclick="loadRosterFromPreviousAttendance()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-users mr-1"></i> Load Staff Roster
+                </button>
+                <button type="button" onclick="addBatchAttendanceRow()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-plus mr-1"></i> Add Row
+                </button>
+                <button onclick="closeBatchAttendanceModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="overflow-auto grow border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-950/60">
+            <table class="w-full text-xs text-left border-collapse">
+                <thead class="sticky top-0 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-[10px] font-extrabold uppercase text-slate-500">
+                    <tr>
+                        <th class="p-2.5">Date</th>
+                        <th class="p-2.5">ETF</th>
+                        <th class="p-2.5">Category</th>
+                        <th class="p-2.5">Name</th>
+                        <th class="p-2.5">Status</th>
+                        <th class="p-2.5">In</th>
+                        <th class="p-2.5">Out</th>
+                        <th class="p-2.5">Remark</th>
+                        <th class="p-2.5 text-center">Del</th>
+                    </tr>
+                </thead>
+                <tbody id="batchAttendanceTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/70"></tbody>
+            </table>
+        </div>
+        
+        <div class="pt-4 flex items-center justify-between gap-3 shrink-0">
+            <span id="batchAttRowCount" class="text-xs font-bold text-slate-500">0 rows ready</span>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="closeBatchAttendanceModal()" class="px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl font-bold text-xs">Cancel</button>
+                <button type="button" id="saveBatchAttendanceBtn" onclick="saveBatchAttendanceRows()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl shadow-md text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Save All Attendance
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
         
         <!-- Total Summary Cards Bar -->
         <div class="grid grid-cols-2 gap-4">
@@ -5951,6 +6011,158 @@ async function sendLocalAiMessage() {
     }
 }
 
+const ATTENDANCE_CATEGORIES = [
+    "Executive", "Admin", "Storekeeper", "Delivery",
+    "Picking/Checking", "FG Pallet", "Cleaning", "ManPower"
+];
+const ATTENDANCE_STATUSES = ["Present", "Half Day", "Absent", "Delivery", "Holiday"];
+
+function openBatchAttendanceModal() {
+    const todayIso = new Date().toISOString().split('T')[0];
+    document.getElementById('batchAttDate').value = todayIso;
+    document.getElementById('batchAttendanceTableBody').innerHTML = '';
+    loadRosterFromPreviousAttendance();
+    document.getElementById('batchAttendanceModal').classList.remove('hidden');
+}
+
+function closeBatchAttendanceModal() {
+    document.getElementById('batchAttendanceModal').classList.add('hidden');
+}
+
+function syncBatchAttendanceDate(newIsoDate) {
+    document.querySelectorAll('#batchAttendanceTableBody .batch-att-date').forEach(input => {
+        input.value = newIsoDate;
+    });
+}
+
+function loadRosterFromPreviousAttendance() {
+    const tbody = document.getElementById('batchAttendanceTableBody');
+    const selectedDate = document.getElementById('batchAttDate').value || new Date().toISOString().split('T')[0];
+    tbody.innerHTML = '';
+    
+    // Pull unique staff slots from existing attendance records (preserving order)
+    const seen = new Set();
+    const roster = [];
+    
+    (allAttendanceRecords || []).forEach(r => {
+        const etf = String(r.etf || r.ETF || '').trim();
+        const cat = String(r.category || r.Category || 'Admin').trim();
+        const name = String(r.name || r.Name || '').trim();
+        const key = `${etf}|${cat}|${name}`.toLowerCase();
+        if (!seen.has(key) && (name || etf)) {
+            seen.add(key);
+            roster.push({
+                date: selectedDate,
+                etf,
+                category: cat,
+                name,
+                status: 'Present',
+                inTime: '',
+                outTime: '',
+                remark: ''
+            });
+        }
+    });
+    
+    if (roster.length === 0) {
+        addBatchAttendanceRow({ date: selectedDate, status: 'Present' });
+    } else {
+        roster.forEach(item => addBatchAttendanceRow(item));
+    }
+    updateBatchRowCount();
+}
+
+function addBatchAttendanceRow(row = {}) {
+    const tbody = document.getElementById('batchAttendanceTableBody');
+    const defaultDate = row.date || document.getElementById('batchAttDate').value || new Date().toISOString().split('T')[0];
+    const etf = row.etf || '';
+    const category = row.category || 'Delivery';
+    const name = row.name || '';
+    const status = row.status || 'Present';
+    const inTime = row.inTime || '';
+    const outTime = row.outTime || '';
+    const remark = row.remark || '';
+    
+    const catOptions = ATTENDANCE_CATEGORIES.map(c =>
+        `<option value="${c}" ${c === category ? 'selected' : ''}>${c}</option>`
+    ).join('');
+    
+    const statusOptions = ATTENDANCE_STATUSES.map(s =>
+        `<option value="${s}" ${s === status ? 'selected' : ''}>${s}</option>`
+    ).join('');
+    
+    const tr = document.createElement('tr');
+    tr.className = 'batch-att-row hover:bg-slate-50 dark:hover:bg-slate-900/50';
+    tr.innerHTML = `
+        <td class="p-1.5"><input type="date" value="${defaultDate}" class="batch-att-date px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-mono"></td>
+        <td class="p-1.5"><input type="text" value="${etf}" placeholder="ETF" class="batch-att-etf px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-20"></td>
+        <td class="p-1.5"><select class="batch-att-cat px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold">${catOptions}</select></td>
+        <td class="p-1.5"><input type="text" value="${name}" placeholder="Name" class="batch-att-name px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold w-36"></td>
+        <td class="p-1.5"><select class="batch-att-status px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-bold">${statusOptions}</select></td>
+        <td class="p-1.5"><input type="time" value="${inTime}" class="batch-att-in px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-mono"></td>
+        <td class="p-1.5"><input type="time" value="${outTime}" class="batch-att-out px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-mono"></td>
+        <td class="p-1.5"><input type="text" value="${remark}" placeholder="e.g. Delivery" class="batch-att-remark px-2 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs w-28"></td>
+        <td class="p-1.5 text-center"><button type="button" onclick="this.closest('tr').remove(); updateBatchRowCount();" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+    updateBatchRowCount();
+}
+
+function updateBatchRowCount() {
+    const count = document.querySelectorAll('#batchAttendanceTableBody .batch-att-row').length;
+    const el = document.getElementById('batchAttRowCount');
+    if (el) el.textContent = `${count} row${count === 1 ? '' : 's'} ready`;
+}
+
+async function saveBatchAttendanceRows() {
+    const btn = document.getElementById('saveBatchAttendanceBtn');
+    const rows = Array.from(document.querySelectorAll('#batchAttendanceTableBody .batch-att-row'));
+    if (rows.length === 0) {
+        alert('Add at least one attendance row first.');
+        return;
+    }
+    
+    setButtonLoading(btn, true, '<i class="fa-solid fa-floppy-disk"></i> Save All Attendance');
+    
+    try {
+        for (const row of rows) {
+            const payloadData = {
+                date: row.querySelector('.batch-att-date').value,
+                etf: row.querySelector('.batch-att-etf').value.trim(),
+                category: row.querySelector('.batch-att-cat').value,
+                name: row.querySelector('.batch-att-name').value.trim(),
+                status: row.querySelector('.batch-att-status').value,
+                in: row.querySelector('.batch-att-in').value,
+                out: row.querySelector('.batch-att-out').value,
+                remark: row.querySelector('.batch-att-remark').value.trim()
+            };
+            
+            const body = new URLSearchParams();
+            body.append('payload', JSON.stringify({
+                action: 'saveAttendance',
+                data: payloadData
+            }));
+            
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            });
+            const result = await res.json();
+            if (result.status !== 'success') {
+                throw new Error(result.message || 'Failed saving a row');
+            }
+        }
+        
+        closeBatchAttendanceModal();
+        await loadAttendanceData();
+    } catch (err) {
+        console.error('Batch attendance error:', err);
+        alert('Error saving attendance rows: ' + err.message);
+    } finally {
+        setButtonLoading(btn, false, '<i class="fa-solid fa-floppy-disk"></i> Save All Attendance');
+    }
+}
 </script>
 
 </body>
